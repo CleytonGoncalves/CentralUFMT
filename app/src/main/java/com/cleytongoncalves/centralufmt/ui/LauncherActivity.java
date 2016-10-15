@@ -21,7 +21,7 @@ public class LauncherActivity extends BaseActivity {
 		activityComponent().inject(this);
 		Intent intent;
 
-		if (mDataManager.isLoggedIn() && ! FORCE_LOGIN) {
+		if (mDataManager.isLoggedInSiga() && ! FORCE_LOGIN) {
 			intent = MainActivity.getStartIntent(this, false);
 		} else if (mDataManager.getPreferencesHelper().getAnonymousLogIn() && ! FORCE_LOGIN) {
 			intent = MainActivity.getStartIntent(this, false);

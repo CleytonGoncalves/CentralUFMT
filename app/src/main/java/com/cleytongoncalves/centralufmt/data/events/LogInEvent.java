@@ -1,19 +1,19 @@
 package com.cleytongoncalves.centralufmt.data.events;
 
 public final class LogInEvent {
-	public final static int ACCESS_DENIED = - 3;
-	public final static int USER_CANCELED = - 4;
-	public final static int GENERAL_ERROR = - 5;
+	public final static String ACCESS_DENIED = "ACCESS DENIED";
+	public final static String USER_CANCELED = "USER CANCELED";
+	public final static String GENERAL_ERROR = "NETWORK/IO ERROR";
 
 	private Object mLogInObjectResult;
-	private Integer mFailureReason;
+	private String mFailureReason;
 
 	public LogInEvent(Object result) {
 		mLogInObjectResult = result;
 	}
 
-	public LogInEvent(int reason) {
-		this.mFailureReason = reason;
+	public LogInEvent(String reason) {
+		mFailureReason = reason;
 	}
 
 	public Object getObjectResult() {
@@ -24,7 +24,7 @@ public final class LogInEvent {
 		return mLogInObjectResult != null;
 	}
 
-	public int getFailureReason() {
+	public String getFailureReason() {
 		return mFailureReason;
 	}
 }

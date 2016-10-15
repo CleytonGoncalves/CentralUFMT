@@ -1,7 +1,6 @@
 package com.cleytongoncalves.centralufmt.data.remote;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.cleytongoncalves.centralufmt.data.events.LogInEvent;
 import com.cleytongoncalves.centralufmt.data.events.NetworkOperation;
@@ -14,7 +13,7 @@ import java.util.List;
 import okhttp3.Cookie;
 import okhttp3.FormBody;
 
-public final class MoodleLogInTask extends AsyncTask<Void, Void, LogInEvent> {
+public final class MoodleLogInTask extends AsyncTask<Void, Void, LogInEvent> implements LogInTask {
 	private static final String TAG = MoodleLogInTask.class.getSimpleName();
 	private static final String BASE_AVA_URL = "http://www.ava.ufmt.br";
 	private static final String POST_AVA_URL = "/index.php?pag=login";
@@ -30,6 +29,17 @@ public final class MoodleLogInTask extends AsyncTask<Void, Void, LogInEvent> {
 	}
 
 	@Override
+	public void start() {
+		//Wrapper on execute, to make this class a child of LogInTask interface
+		this.execute();
+	}
+
+	@Override
+	public void cancelTask() {
+		return;
+	}
+
+	@Override
 	protected LogInEvent doInBackground(Void... Void) {
 		FormBody params = createAvaFormParams();
 		NetworkOperation logInPost = mNetworkService.post(BASE_AVA_URL + POST_AVA_URL, params);
@@ -38,14 +48,12 @@ public final class MoodleLogInTask extends AsyncTask<Void, Void, LogInEvent> {
 		if (logInPost.hasFailed()) {
 			event = new LogInEvent(LogInEvent.GENERAL_ERROR);
 		} else {
-			Log.e(TAG, "" + logInPost.getResponseBody().contains("ALGORITMOS I"));
-
 			List<Cookie> cookies = mNetworkService.getCookieFromJar(BASE_AVA_URL);
 
 			if (cookies.isEmpty()) {
 				event = new LogInEvent(LogInEvent.GENERAL_ERROR);
 			} else {
-				event = new LogInEvent(cookies);
+				event = new LogInEvent(cookies.get(0));
 			}
 		}
 

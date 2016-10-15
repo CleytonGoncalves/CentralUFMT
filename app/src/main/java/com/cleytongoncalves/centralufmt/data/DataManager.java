@@ -1,8 +1,12 @@
 package com.cleytongoncalves.centralufmt.data;
 
+import android.util.Log;
+
 import com.cleytongoncalves.centralufmt.data.events.LogInEvent;
 import com.cleytongoncalves.centralufmt.data.local.PreferencesHelper;
 import com.cleytongoncalves.centralufmt.data.model.Student;
+import com.cleytongoncalves.centralufmt.data.remote.LogInTask;
+import com.cleytongoncalves.centralufmt.data.remote.MoodleLogInTask;
 import com.cleytongoncalves.centralufmt.data.remote.NetworkService;
 import com.cleytongoncalves.centralufmt.data.remote.SigaLogInTask;
 
@@ -12,14 +16,18 @@ import org.greenrobot.eventbus.Subscribe;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import okhttp3.Cookie;
+
 @Singleton
 public class DataManager {
+	public static final int LOGIN_SIGA = 0;
+	public static final int LOGIN_MOODLE = - 1;
 	private static final String TAG = "DataManager";
-
 	public final NetworkService mNetworkService;
 	private final PreferencesHelper mPreferencesHelper;
-	private SigaLogInTask mSigaLoginTask;
+	private LogInTask mLogInTask;
 	private Student mStudent;
+	private Cookie mMoodleCookie;
 
 	@Inject
 	public DataManager(PreferencesHelper preferencesHelper, NetworkService networkService) {
@@ -36,11 +44,15 @@ public class DataManager {
 		return mStudent;
 	}
 
+	public Cookie getMoodleCookie() {
+		return mMoodleCookie;
+	}
+
 	/**
 	 * Parses recurse-intensive Student info on a background thread.
 	 */
 	public void doHeavyStudentParsing(final Student student) {
-		//TODO: Maybe make this a Service?
+		//TODO: MAYBE MAKE THE STUDENT PARSING A SERVICE
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -53,34 +65,55 @@ public class DataManager {
 	}
 
 	/* ----- LogIn Methods ----- */
-	public void logIn(String rga, char[] password) {
+	public void logIn(String rga, char[] password, int platform) {
 		EventBus.getDefault().register(this);
-		mPreferencesHelper.putCredentials(rga, password);
-		mSigaLoginTask = new SigaLogInTask(rga, password, mNetworkService);
-		mSigaLoginTask.execute();
+
+		if (platform == LOGIN_MOODLE) {
+			mLogInTask = new MoodleLogInTask(rga, password, mNetworkService);
+		} else {
+			mPreferencesHelper.putCredentials(rga, password);
+			mLogInTask = new SigaLogInTask(rga, password, mNetworkService);
+		}
+		mLogInTask.start();
 	}
 
 	public void cancelLogIn() {
-		if (mSigaLoginTask != null) {
-			mSigaLoginTask.cancelTask();
+		if (mLogInTask != null) {
+			//TODO: SEARCH ABOUT ASYNCTASK CANCEL
+			mLogInTask.cancelTask();
 		}
 	}
 
 	public boolean isLogInHappening() {
-		return mSigaLoginTask != null;
+		return mLogInTask != null;
 	}
 
-	public boolean isLoggedIn() {
+	public boolean isLoggedInSiga() {
 		return mStudent != null;
+	}
+
+	public boolean isLoggedInMoodle() {
+		return mMoodleCookie != null;
 	}
 
 	@Subscribe
 	public void onLogInCompleted(LogInEvent event) {
-		mSigaLoginTask = null;
+		mLogInTask = null;
 		if (event.isSuccessful()) {
-			mStudent = (Student) event.getObjectResult();
-			mPreferencesHelper.putLoggedInStudent(mStudent);
+			Object obj = event.getObjectResult();
+
+			if (obj.getClass() == Student.class) {
+				mStudent = (Student) obj;
+				mPreferencesHelper.putLoggedInStudent(mStudent);
+			} else if (obj.getClass() == Cookie.class) {
+				mMoodleCookie = (Cookie) obj;
+			} else {
+				Log.e(TAG, "LOGIN EVENT OBJECT UNKNOWN: " + obj.getClass());
+			}
+		} else {
+			Log.w(TAG, "LOGIN FAILED: " + event.getFailureReason());
 		}
+
 		EventBus.getDefault().unregister(this);
 	}
 }

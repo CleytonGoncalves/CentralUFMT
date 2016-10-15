@@ -27,7 +27,6 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.cleytongoncalves.centralufmt.R;
-import com.cleytongoncalves.centralufmt.data.DataManager;
 import com.cleytongoncalves.centralufmt.ui.base.BaseActivity;
 
 import javax.inject.Inject;
@@ -40,7 +39,6 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 	private static String AVA_URL = "http://www.ava.ufmt.br/index.php?pag=ambientevirtual";
 
 	@Inject MoodlePresenter mMoodlePresenter;
-	@Inject DataManager mDataManager;
 
 	@BindView(R.id.moodle_web_view) WebView mWebView;
 	@BindView(R.id.progress_moodle) ProgressBar mProgressBar;
@@ -68,8 +66,6 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 		}
 		cookieManager.setAcceptCookie(true);
 		//cookieManager.removeSessionCookie();
-		//TODO: FIGURE OUT THE BEST WAY TO NOT HAVE TO LOGIN EVERY TIME
-		mMoodlePresenter.doLogIn();
 
 		return rootView;
 	}
@@ -138,6 +134,11 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 	@Override
 	public void showWebView(boolean enabled) {
 		mWebView.setVisibility(enabled ? View.VISIBLE : View.GONE);
+	}
+
+	@Override
+	public void showGeneralLogInError() {
+		Toast.makeText(getActivity(), R.string.error_generic_log_in, Toast.LENGTH_SHORT).show();
 	}
 
 	private class MyBrowser extends WebViewClient {

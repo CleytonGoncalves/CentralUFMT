@@ -2,13 +2,10 @@ package com.cleytongoncalves.centralufmt.ui.moodle;
 
 import com.cleytongoncalves.centralufmt.data.DataManager;
 import com.cleytongoncalves.centralufmt.data.events.LogInEvent;
-import com.cleytongoncalves.centralufmt.data.remote.MoodleLogInTask;
 import com.cleytongoncalves.centralufmt.ui.base.Presenter;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -26,6 +23,11 @@ public final class MoodlePresenter implements Presenter<MoodleMvpView> {
 	@Override
 	public void attachView(MoodleMvpView mvpView) {
 		mMoodleMvpView = mvpView;
+		if (mDataManager.isLoggedInMoodle()) {
+			onLogInSuccessful(mDataManager.getMoodleCookie());
+		} else {
+			doLogIn();
+		}
 	}
 
 	@Override
@@ -33,26 +35,40 @@ public final class MoodlePresenter implements Presenter<MoodleMvpView> {
 		mMoodleMvpView = null;
 	}
 
-	void doLogIn() {
+	private void onLogInSuccessful(Cookie cookie) {
+		mMoodleMvpView.onLogInSuccessful(getCookieString(cookie));
+		mMoodleMvpView.showWebView(true);
+		mMoodleMvpView.showProgressBar(false);
+	}
+
+	private void doLogIn() {
 		final String rga = mDataManager.getPreferencesHelper().getRga();
 		final char[] password = mDataManager.getPreferencesHelper().getAuth();
 
 		EventBus.getDefault().register(this);
-		new MoodleLogInTask(rga, password, mDataManager.mNetworkService).execute();
+		mDataManager.logIn(rga, password, DataManager.LOGIN_MOODLE);
+
 		mMoodleMvpView.showProgressBar(true);
 		mMoodleMvpView.showWebView(false);
 	}
 
+	private String getCookieString(Cookie cookie) {
+		return cookie.name() + "=" + cookie.value() + "; domain=" + cookie.domain();
+	}
+
 	@Subscribe
-	public void onLogIn(LogInEvent event) {
+	public void onLogInEvent(LogInEvent event) {
 		if (event.isSuccessful()) {
-			Cookie cookie = ((List<Cookie>) event.getObjectResult()).get(0);
-			String cookieString = cookie.name() + "=" + cookie.value() + "; domain=" + cookie
-					                                                                           .domain();
-			mMoodleMvpView.onLogInSuccessful(cookieString);
+			Cookie cookie = (Cookie) event.getObjectResult();
+			onLogInSuccessful(cookie);
+		} else {
+			onLogInFailure(event.getFailureReason());
 		}
-		mMoodleMvpView.showProgressBar(false);
-		mMoodleMvpView.showWebView(true);
 		EventBus.getDefault().unregister(this);
+	}
+
+	private void onLogInFailure(String reason) {
+		mMoodleMvpView.showGeneralLogInError();
+		mMoodleMvpView.showProgressBar(false);
 	}
 }

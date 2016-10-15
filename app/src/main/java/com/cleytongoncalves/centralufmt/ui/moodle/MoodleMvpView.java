@@ -8,4 +8,6 @@ interface MoodleMvpView extends MvpView {
 	void showProgressBar(boolean enabled);
 
 	void showWebView(boolean enabled);
+
+	void showGeneralLogInError();
 }

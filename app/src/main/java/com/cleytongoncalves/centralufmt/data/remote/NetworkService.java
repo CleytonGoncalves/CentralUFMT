@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import okhttp3.CacheControl;
 import okhttp3.Cookie;
 import okhttp3.CookieJar;
 import okhttp3.FormBody;
@@ -35,8 +34,6 @@ public final class NetworkService {
 	NetworkOperation get(String url) {
 		Request request = new Request.Builder()
 				                  .url(url)
-				                  .cacheControl(CacheControl.FORCE_NETWORK) //TODO: ADDED BECAUSE
-				                  // OF AVA LOGIN BUG, EVALUATE
 				                  .build();
 
 		NetworkOperation result;
@@ -61,8 +58,6 @@ public final class NetworkService {
 	NetworkOperation post(String url, FormBody params) {
 		Request request = new Request.Builder()
 				                  .url(url)
-				                  .cacheControl(CacheControl.FORCE_NETWORK) //TODO: ADDED BECAUSE
-				                  // OF AVA LOGIN BUG, EVALUATE
 				                  .post(params)
 				                  .build();
 

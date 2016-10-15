@@ -21,7 +21,7 @@ public final class LogInPresenter implements Presenter<LogInMvpView> {
 	@Override
 	public void attachView(LogInMvpView mvpView) {
 		mMvpView = mvpView;
-		if (mDataManager.isLoggedIn()) {
+		if (mDataManager.isLoggedInSiga()) {
 			//Check if it isn't already logged in when attaching the view
 			OnLogInSuccess(false);
 		}
@@ -36,43 +36,48 @@ public final class LogInPresenter implements Presenter<LogInMvpView> {
 		mDataManager.getPreferencesHelper().setAnonymousLogIn(anonymous);
 		mMvpView.showProgress(false);
 		mMvpView.onLogInSuccessful();
+
+		//Triggers moodle login - TODO: MAKE THIS A SETTING
+		//final String rga = mDataManager.getPreferencesHelper().getRga();
+		//final char[] password = mDataManager.getPreferencesHelper().getAuth();
+		//mDataManager.logIn(rga, password, DataManager.LOGIN_MOODLE);
 	}
 
-	void attemptLogIn(String rga, char[] password) {
+	void doLogIn(String rga, char[] password) {
 		EventBus.getDefault().register(this);
-		mDataManager.logIn(rga, password);
+		mDataManager.logIn(rga, password, DataManager.LOGIN_SIGA);
+
 		mMvpView.setLogInButtonEnabled(false);
 		mMvpView.setAnonymousLogInEnabled(false);
 		mMvpView.showProgress(true);
 	}
 
-	boolean isLogInHappening() {
-		return mDataManager.isLogInHappening();
-	}
-
-	void cancelLogin() {
-		mDataManager.cancelLogIn();
-	}
-
-	void anonymousLogIn() {
+	void doAnonymousLogIn() {
 		OnLogInSuccess(true); //Goes directly to the result
 		mMvpView.setLogInButtonEnabled(false);
 		mMvpView.setAnonymousLogInEnabled(false);
 		mMvpView.showProgress(true);
 	}
 
+	void cancelLogin() {
+		mDataManager.cancelLogIn();
+	}
+
+	boolean isLogInHappening() {
+		return mDataManager.isLogInHappening();
+	}
+
 	@Subscribe
-	public void onLogInCompleted(LogInEvent event) {
+	public void onLogInEvent(LogInEvent event) {
 		if (event.isSuccessful()) {
 			OnLogInSuccess(false);
 		} else {
 			onLogInFailure(event.getFailureReason());
 		}
-
 		EventBus.getDefault().unregister(this);
 	}
 
-	private void onLogInFailure(int reason) {
+	private void onLogInFailure(String reason) {
 		mMvpView.showProgress(false);
 		mMvpView.setLogInButtonEnabled(true);
 		mMvpView.setAnonymousLogInEnabled(true);

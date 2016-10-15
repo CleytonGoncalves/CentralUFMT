@@ -77,7 +77,7 @@ public class MainActivity extends BaseActivity
 		TextView secondaryText = (TextView) headerView.findViewById(R.id.nav_header_rga);
 		TextView tertiaryText = (TextView) headerView.findViewById(R.id.nav_header_curso);
 
-		if (mDataManager.isLoggedIn()) {
+		if (mDataManager.isLoggedInSiga()) {
 			Student student = mDataManager.getStudent();
 			mainText.setText(student.getFirstName() + " " + student.getLastName());
 			secondaryText.setText(student.getRga());

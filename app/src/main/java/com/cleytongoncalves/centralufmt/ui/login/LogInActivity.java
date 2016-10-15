@@ -35,6 +35,7 @@ public final class LogInActivity extends BaseActivity implements LogInMvpView {
 	@BindView(R.id.button_log_in) Button mLogInButton;
 	@BindView(R.id.progress) ProgressBar mProgressView;
 	@BindView(R.id.button_anonymous_log_in) TextView mAnonymousLogInButton;
+
 	private boolean mShouldFinishOnStop;
 
 	/**
@@ -126,7 +127,7 @@ public final class LogInActivity extends BaseActivity implements LogInMvpView {
 			// form field with an error.
 			focusView.requestFocus();
 		} else {
-			mLogInPresenter.attemptLogIn(rga, password);
+			mLogInPresenter.doLogIn(rga, password);
 		}
 	}
 
@@ -148,7 +149,7 @@ public final class LogInActivity extends BaseActivity implements LogInMvpView {
 
 	@OnClick(R.id.button_anonymous_log_in)
 	protected void onAnonymousLogInClick() {
-		mLogInPresenter.anonymousLogIn();
+		mLogInPresenter.doAnonymousLogIn();
 	}
 
 	@Override

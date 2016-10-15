@@ -17,9 +17,7 @@ import java.util.Map;
 
 import okhttp3.FormBody;
 
-public final class SigaLogInTask extends AsyncTask<Void, Void, LogInEvent> {
-	public static final int SIGA_LOGIN = - 1;
-	public static final int AVA_LOGIN = - 2;
+public final class SigaLogInTask extends AsyncTask<Void, Void, LogInEvent> implements LogInTask {
 	private static final String TAG = SigaLogInTask.class.getSimpleName();
 	private static final String BASE_SIGA_URL = "http://sia.ufmt.br/www-siga/dll/";
 	private static final String GET_SIGA_URL = "autenticacao_unica/LoginUnicoIDBUFMT" +
@@ -37,6 +35,16 @@ public final class SigaLogInTask extends AsyncTask<Void, Void, LogInEvent> {
 		mPassword = password;
 		mNetworkService = networkService;
 		mCancelTask = false;
+	}
+
+	@Override
+	public void start() {
+		//Wrapper on execute, to make this class a child of LogInTask interface
+		this.execute();
+	}
+
+	public void cancelTask() {
+		mCancelTask = true;
 	}
 
 	@Override
@@ -120,9 +128,5 @@ public final class SigaLogInTask extends AsyncTask<Void, Void, LogInEvent> {
 
 	private LogInEvent accessDenied() {
 		return new LogInEvent(LogInEvent.ACCESS_DENIED);
-	}
-
-	public void cancelTask() {
-		mCancelTask = true;
 	}
 }
