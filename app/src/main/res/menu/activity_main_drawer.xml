@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group
+        android:id="@+id/nav_group_logged_only"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_schedule"
+            android:icon="@drawable/ic_schedule"
+            android:title="@string/title_fragment_schedule"/>
+        <item
+            android:id="@+id/nav_student"
+            android:icon="@drawable/ic_student"
+            android:title="@string/title_fragment_student"/>
+        <item
+            android:id="@+id/nav_curriculum"
+            android:icon="@drawable/ic_grid"
+            android:title="@string/title_fragment_curriculum"/>
+        <item
+            android:id="@+id/nav_moodle"
+            android:icon="@drawable/ic_ava"
+            android:title="@string/title_fragment_moodle"/>
+    </group>
+
+    <group
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_map"
+            android:icon="@drawable/ic_menu_map"
+            android:title="@string/title_fragment_map"/>
+        <item
+            android:id="@+id/nav_manage"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="@string/action_settings"/>
+    </group>
+
+    <group
+        android:id="@+id/nav_group_bottom"
+        android:checkableBehavior="none">
+        <item
+            android:id="@+id/nav_share"
+            android:icon="@drawable/ic_menu_share"
+            android:title="@string/action_share_app"/>
+    </group>
+
+</menu>

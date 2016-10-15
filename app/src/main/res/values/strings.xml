@@ -1,0 +1,57 @@
+<resources>
+    <string name="app_name">Central UFMT</string>
+
+    <!-- Sign in -->
+    <string name="text_siga_account">Entre com sua conta do Siga UFMT</string>
+    <string name="log_in_message">@string/app_name</string>
+    <string name="rga_log_in_hint">Matrícula (RGA)</string>
+    <string name="pass_log_in_hint">Senha do Siga</string>
+    <string name="action_log_in">Entrar</string>
+    <string name="action_log_out">Sair</string>
+    <string name="action_anonymous_log_in">Entrar mais tarde</string>
+    <string name="welcome_greetings">Olá %s!</string>
+    <string name="not_logged_in">Não Logado</string>
+
+    <!-- Main Activity -->
+    <string name="title_activity_main">@string/app_name</string>
+    <string name="menu_update_student">Forçar atualização dos dados</string>
+    <string name="action_share_app">Compartilhar</string>
+    <string name="action_settings">Configurações</string>
+
+    <!-- Map Fragment -->
+    <string name="title_fragment_map">Mapa</string>
+    <string name="menu_show_route">Mostrar rota do Ligeirinho</string>
+    <string name="menu_show_poi">Mostrar pontos de interesse</string>
+
+    <!-- Horarios Fragment -->
+    <string name="title_fragment_schedule">Horários</string>
+
+    <!-- Dialogs -->
+    <string name="dialog_action_ok">OK</string>
+    <string name="dialog_action_cancel">Cancelar</string>
+    <string name="dialog_error_title">Desculpe</string>
+    <string name="authentication_message">Você foi desconectado, por favor entre novamente!</string>
+
+    <!-- Error messages -->
+    <string name="error_field_required">Campo Obrigatório</string>
+    <string name="error_canceled_log_in">Autenticação cancelada.</string>
+    <string name="error_invalid_rga">Número de Matrícula inválido</string>
+    <string name="error_invalid_password">Senha inválida</string>
+    <string name="error_access_denied">Acesso Negado. Por favor confira os dados informados.</string>
+    <string name="error_generic_log_in">Não foi possível entrar no momento. Por favor tente novamente mais tarde.</string>
+    <string name="error_message_play_services">Desculpe, você precisa de um dispositivo que suporte o Google Play Services para utilizar este app.</string>
+
+    <!-- Accessibility -->
+    <string name="ufmt_logo_description">Logomarca da UFMT</string>
+    <string name="navigation_drawer_open">Abrir menu de navegação</string>
+    <string name="navigation_drawer_close">Fechar menu de navegação</string>
+
+    <!-- Uncategorized-->
+    <string name="title_fragment_student">Aluno</string>
+    <string name="title_fragment_curriculum">Grade do Curso</string>
+    <string name="title_fragment_moodle">AVA</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+</resources>

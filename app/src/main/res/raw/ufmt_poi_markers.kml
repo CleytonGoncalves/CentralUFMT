@@ -1,0 +1,506 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<kml xmlns='http://www.opengis.net/kml/2.2'>
+	<Document>
+		<name>Pontos de Interesse UFMT</name>
+		<Placemark>
+			<name>Museu Rondon</name>
+			<styleUrl>#icon-1636-0288D1-nodesc</styleUrl>
+			<Point>
+				<coordinates>-56.072084,-15.614259,0.0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Instituto de Ciências Humanas e Sociais</name>
+			<styleUrl>#icon-1726-0288D1-nodesc</styleUrl>
+			<Point>
+				<coordinates>-56.0693,-15.612973,0.0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Complexo Esportivo</name>
+			<styleUrl>#icon-1696-0288D1-nodesc</styleUrl>
+			<Point>
+				<coordinates>-56.069611,-15.612203,0.0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Coordenação de Segurança</name>
+			<styleUrl>#icon-1657-0288D1-nodesc</styleUrl>
+			<Point>
+				<coordinates>-56.069766,-15.611526,0.0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Ginásio de Esportes</name>
+			<styleUrl>#icon-1696-0288D1-nodesc</styleUrl>
+			<Point>
+				<coordinates>-56.066923,-15.609925,0.0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Restaurante Universitário</name>
+			<styleUrl>#icon-1577-0288D1-nodesc</styleUrl>
+			<Point>
+				<coordinates>-56.066086,-15.608292,0.0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>DCE</name>
+			<styleUrl>#icon-1502-0288D1-nodesc</styleUrl>
+			<Point>
+				<coordinates>-56.065974,-15.608452,0.0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Instituto de Ciências da Terra</name>
+			<styleUrl>#icon-1726-0288D1-nodesc</styleUrl>
+			<Point>
+				<coordinates>-56.064863,-15.608251,0.0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Teatro Universitário</name>
+			<styleUrl>#icon-1709-0288D1-nodesc</styleUrl>
+			<Point>
+				<coordinates>-56.063439,-15.609958,0.0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Biblioteca Central</name>
+			<styleUrl>#icon-1664-0288D1-nodesc</styleUrl>
+			<Point>
+				<coordinates>-56.062911,-15.610586,0.0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Reitoria</name>
+			<styleUrl>#icon-1591-0288D1-nodesc</styleUrl>
+			<Point>
+				<coordinates>-56.062723,-15.610888,0.0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Zoológico</name>
+			<styleUrl>#icon-1743-0288D1-nodesc</styleUrl>
+			<Point>
+				<coordinates>-56.064713,-15.606907,0.0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Casarão</name>
+			<description><![CDATA[Pró-reitorias (PROPeq; PROPG, Proeg; Proplan; Proad) e protocolo.]]></description>
+			<styleUrl>#icon-1608-0288D1</styleUrl>
+			<Point>
+				<coordinates>-56.06069,-15.610129,0.0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>STI</name>
+			<styleUrl>#icon-1608-0288D1-nodesc</styleUrl>
+			<Point>
+				<coordinates>-56.060252,-15.608902,0.0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>UNISELVA</name>
+			<styleUrl>#icon-1739-0288D1-nodesc</styleUrl>
+			<Point>
+				<coordinates>-56.059834,-15.608617,0.0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Prefeitura do Campus</name>
+			<styleUrl>#icon-1591-0288D1-nodesc</styleUrl>
+			<Point>
+				<coordinates>-56.060384,-15.607282,0.0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Transporte</name>
+			<styleUrl>#icon-1739-0288D1-nodesc</styleUrl>
+			<Point>
+				<coordinates>-56.060116,-15.607416,0.0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Faculdade de Enfermagem</name>
+			<styleUrl>#icon-1726-0288D1-nodesc</styleUrl>
+			<Point>
+				<coordinates>-56.062935,-15.609126,0.0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Instituto de Saúde Coletiva</name>
+			<styleUrl>#icon-1726-0288D1-nodesc</styleUrl>
+			<Point>
+				<coordinates>-56.062422,-15.608909,0.0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Sala do Conexões de Saberes</name>
+			<styleUrl>#icon-1739-0288D1-nodesc</styleUrl>
+			<Point>
+				<coordinates>-56.062422,-15.608858,0.0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Instituto de Biociências</name>
+			<styleUrl>#icon-1726-0288D1-nodesc</styleUrl>
+			<Point>
+				<coordinates>-56.062044,-15.608597,0.0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Faculdade de Ciências Médicas</name>
+			<styleUrl>#icon-1726-0288D1-nodesc</styleUrl>
+			<Point>
+				<coordinates>-56.06173,-15.608328,0.0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Faculdade de Direito</name>
+			<styleUrl>#icon-1726-0288D1-nodesc</styleUrl>
+			<Point>
+				<coordinates>-56.061942,-15.610123,0.0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Centro Cultural</name>
+			<styleUrl>#icon-1599-0288D1-nodesc</styleUrl>
+			<Point>
+				<coordinates>-56.067671,-15.612645,0.0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>CAE</name>
+			<styleUrl>#icon-1608-0288D1-nodesc</styleUrl>
+			<Point>
+				<coordinates>-56.066438,-15.610999,0.0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>PROCEV</name>
+			<styleUrl>#icon-1739-0288D1-nodesc</styleUrl>
+			<Point>
+				<coordinates>-56.067602,-15.612717,0.0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>CCVE</name>
+			<description><![CDATA[Coordenação de Concursos Exames Vestibulares.]]></description>
+			<styleUrl>#icon-1608-0288D1</styleUrl>
+			<Point>
+				<coordinates>-56.061795,-15.609444,0.0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Museu de Arte e Cultura Popular</name>
+			<styleUrl>#icon-1636-0288D1-nodesc</styleUrl>
+			<Point>
+				<coordinates>-56.067371,-15.612528,0.0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>CABES</name>
+			<description><![CDATA[Coordenação de Assistência e Benefício ao Servidor]]></description>
+			<styleUrl>#icon-1739-0288D1</styleUrl>
+			<Point>
+				<coordinates>-56.063699,-15.611128,0.0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Polícia Comunitária</name>
+			<styleUrl>#icon-1655-0288D1-nodesc</styleUrl>
+			<Point>
+				<coordinates>-56.063898,-15.611635,0.0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>TV Universidade</name>
+			<styleUrl>#icon-1725-0288D1-nodesc</styleUrl>
+			<Point>
+				<coordinates>-56.060478,-15.610364,0.0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>EdUFMT</name>
+			<description><![CDATA[Editora da UFMT]]></description>
+			<styleUrl>#icon-1526-0288D1</styleUrl>
+			<Point>
+				<coordinates>-56.062959,-15.611443,0.0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>NDHIR</name>
+			<description><![CDATA[Núcleo de documentação e informação Histórica e Regional.]]></description>
+			<styleUrl>#icon-1739-0288D1</styleUrl>
+			<Point>
+				<coordinates>-56.069477,-15.61352,0.0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Pista de Caminhada</name>
+			<styleUrl>#icon-1680-0288D1-nodesc</styleUrl>
+			<Point>
+				<coordinates>-56.071301,-15.612125,0.0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Engenharia Florestal</name>
+			<styleUrl>#icon-1726-0288D1-nodesc</styleUrl>
+			<Point>
+				<coordinates>-56.065038,-15.610397,0.0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>FAMEV</name>
+			<description><![CDATA[Faculdade de Agronomia e Medicina Veterinária.]]></description>
+			<styleUrl>#icon-1726-0288D1</styleUrl>
+			<Point>
+				<coordinates>-56.065767,-15.610534,0.0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Instituto de Linguagens</name>
+			<styleUrl>#icon-1726-0288D1-nodesc</styleUrl>
+			<Point>
+				<coordinates>-56.071472,-15.614936,0.0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Instituto de Educação</name>
+			<styleUrl>#icon-1726-0288D1-nodesc</styleUrl>
+			<Point>
+				<coordinates>-56.070957,-15.615081,0.0</coordinates>
+			</Point>
+		</Placemark>
+		<Style id='icon-1502-0288D1-nodesc'>
+			<IconStyle>
+				<color>ffD18802</color>
+				<scale>1.0</scale>
+				<Icon>
+					<href>http://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+				</Icon>
+			</IconStyle>
+			<BalloonStyle>
+				<text><![CDATA[<h3>$[name]</h3>]]></text>
+			</BalloonStyle>
+		</Style>
+		<Style id='icon-1526-0288D1'>
+			<IconStyle>
+				<color>ffD18802</color>
+				<scale>1.0</scale>
+				<Icon>
+					<href>http://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+				</Icon>
+			</IconStyle>
+		</Style>
+		<Style id='icon-1577-0288D1-nodesc'>
+			<IconStyle>
+				<color>ffD18802</color>
+				<scale>1.0</scale>
+				<Icon>
+					<href>http://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+				</Icon>
+			</IconStyle>
+			<BalloonStyle>
+				<text><![CDATA[<h3>$[name]</h3>]]></text>
+			</BalloonStyle>
+		</Style>
+		<Style id='icon-1591-0288D1-nodesc'>
+			<IconStyle>
+				<color>ffD18802</color>
+				<scale>1.0</scale>
+				<Icon>
+					<href>http://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+				</Icon>
+			</IconStyle>
+			<BalloonStyle>
+				<text><![CDATA[<h3>$[name]</h3>]]></text>
+			</BalloonStyle>
+		</Style>
+		<Style id='icon-1599-0288D1-nodesc'>
+			<IconStyle>
+				<color>ffD18802</color>
+				<scale>1.0</scale>
+				<Icon>
+					<href>http://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+				</Icon>
+			</IconStyle>
+			<BalloonStyle>
+				<text><![CDATA[<h3>$[name]</h3>]]></text>
+			</BalloonStyle>
+		</Style>
+		<Style id='icon-1608-0288D1'>
+			<IconStyle>
+				<color>ffD18802</color>
+				<scale>1.0</scale>
+				<Icon>
+					<href>http://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+				</Icon>
+			</IconStyle>
+		</Style>
+		<Style id='icon-1608-0288D1-nodesc'>
+			<IconStyle>
+				<color>ffD18802</color>
+				<scale>1.0</scale>
+				<Icon>
+					<href>http://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+				</Icon>
+			</IconStyle>
+			<BalloonStyle>
+				<text><![CDATA[<h3>$[name]</h3>]]></text>
+			</BalloonStyle>
+		</Style>
+		<Style id='icon-1636-0288D1-nodesc'>
+			<IconStyle>
+				<color>ffD18802</color>
+				<scale>1.0</scale>
+				<Icon>
+					<href>http://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+				</Icon>
+			</IconStyle>
+			<BalloonStyle>
+				<text><![CDATA[<h3>$[name]</h3>]]></text>
+			</BalloonStyle>
+		</Style>
+		<Style id='icon-1655-0288D1-nodesc'>
+			<IconStyle>
+				<color>ffD18802</color>
+				<scale>1.0</scale>
+				<Icon>
+					<href>http://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+				</Icon>
+			</IconStyle>
+			<BalloonStyle>
+				<text><![CDATA[<h3>$[name]</h3>]]></text>
+			</BalloonStyle>
+		</Style>
+		<Style id='icon-1657-0288D1-nodesc'>
+			<IconStyle>
+				<color>ffD18802</color>
+				<scale>1.0</scale>
+				<Icon>
+					<href>http://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+				</Icon>
+			</IconStyle>
+			<BalloonStyle>
+				<text><![CDATA[<h3>$[name]</h3>]]></text>
+			</BalloonStyle>
+		</Style>
+		<Style id='icon-1664-0288D1-nodesc'>
+			<IconStyle>
+				<color>ffD18802</color>
+				<scale>1.0</scale>
+				<Icon>
+					<href>http://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+				</Icon>
+			</IconStyle>
+			<BalloonStyle>
+				<text><![CDATA[<h3>$[name]</h3>]]></text>
+			</BalloonStyle>
+		</Style>
+		<Style id='icon-1680-0288D1-nodesc'>
+			<IconStyle>
+				<color>ffD18802</color>
+				<scale>1.0</scale>
+				<Icon>
+					<href>http://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+				</Icon>
+			</IconStyle>
+			<BalloonStyle>
+				<text><![CDATA[<h3>$[name]</h3>]]></text>
+			</BalloonStyle>
+		</Style>
+		<Style id='icon-1696-0288D1-nodesc'>
+			<IconStyle>
+				<color>ffD18802</color>
+				<scale>1.0</scale>
+				<Icon>
+					<href>http://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+				</Icon>
+			</IconStyle>
+			<BalloonStyle>
+				<text><![CDATA[<h3>$[name]</h3>]]></text>
+			</BalloonStyle>
+		</Style>
+		<Style id='icon-1709-0288D1-nodesc'>
+			<IconStyle>
+				<color>ffD18802</color>
+				<scale>1.0</scale>
+				<Icon>
+					<href>http://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+				</Icon>
+			</IconStyle>
+			<BalloonStyle>
+				<text><![CDATA[<h3>$[name]</h3>]]></text>
+			</BalloonStyle>
+		</Style>
+		<Style id='icon-1725-0288D1-nodesc'>
+			<IconStyle>
+				<color>ffD18802</color>
+				<scale>1.0</scale>
+				<Icon>
+					<href>http://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+				</Icon>
+			</IconStyle>
+			<BalloonStyle>
+				<text><![CDATA[<h3>$[name]</h3>]]></text>
+			</BalloonStyle>
+		</Style>
+		<Style id='icon-1726-0288D1'>
+			<IconStyle>
+				<color>ffD18802</color>
+				<scale>1.0</scale>
+				<Icon>
+					<href>http://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+				</Icon>
+			</IconStyle>
+		</Style>
+		<Style id='icon-1726-0288D1-nodesc'>
+			<IconStyle>
+				<color>ffD18802</color>
+				<scale>1.0</scale>
+				<Icon>
+					<href>http://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+				</Icon>
+			</IconStyle>
+			<BalloonStyle>
+				<text><![CDATA[<h3>$[name]</h3>]]></text>
+			</BalloonStyle>
+		</Style>
+		<Style id='icon-1739-0288D1'>
+			<IconStyle>
+				<color>ffD18802</color>
+				<scale>1.0</scale>
+				<Icon>
+					<href>http://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+				</Icon>
+			</IconStyle>
+		</Style>
+		<Style id='icon-1739-0288D1-nodesc'>
+			<IconStyle>
+				<color>ffD18802</color>
+				<scale>1.0</scale>
+				<Icon>
+					<href>http://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+				</Icon>
+			</IconStyle>
+			<BalloonStyle>
+				<text><![CDATA[<h3>$[name]</h3>]]></text>
+			</BalloonStyle>
+		</Style>
+		<Style id='icon-1743-0288D1-nodesc'>
+			<IconStyle>
+				<color>ffD18802</color>
+				<scale>1.0</scale>
+				<Icon>
+					<href>http://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+				</Icon>
+			</IconStyle>
+			<BalloonStyle>
+				<text><![CDATA[<h3>$[name]</h3>]]></text>
+			</BalloonStyle>
+		</Style>
+	</Document>
+</kml>
