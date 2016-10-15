@@ -116,12 +116,6 @@ public final class MapFragment extends Fragment implements MapMvpView {
 	}
 
 	@Override
-	public void onPrepareOptionsMenu(Menu menu) {
-		//Hides the Student update refresh button
-		menu.findItem(R.id.menu_update_student).setVisible(false);
-	}
-
-	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case (R.id.menu_show_route):

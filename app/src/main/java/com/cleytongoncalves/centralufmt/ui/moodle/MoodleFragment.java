@@ -13,6 +13,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
@@ -35,8 +38,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
+@SuppressWarnings({"deprecation", "FieldCanBeLocal"})
 public final class MoodleFragment extends Fragment implements MoodleMvpView {
-	private static String AVA_URL = "http://www.ava.ufmt.br/index.php?pag=ambientevirtual";
+	private static String FRONT_PAGE_URL = "http://www.ava.ufmt.br/index.php?pag=ambientevirtual";
+	private static String AVA_BASE_URL = "www.ava.ufmt.br";
+	private static String ALT_AVA_BASE_URL = "200.129.241.132";
 
 	@Inject MoodlePresenter mMoodlePresenter;
 
@@ -48,6 +54,7 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		((BaseActivity) getActivity()).activityComponent().inject(this);
+		setHasOptionsMenu(true);
 	}
 
 	@Override
@@ -67,6 +74,7 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 		cookieManager.setAcceptCookie(true);
 		//cookieManager.removeSessionCookie();
 
+		mMoodlePresenter.onLoadingPage();
 		return rootView;
 	}
 
@@ -92,6 +100,22 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 	public void onDestroy() {
 		super.onDestroy();
 		mUnbinder.unbind();
+	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.fragment_moodle, menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.menu_refresh_page:
+				mWebView.reload();
+				return true;
+		}
+
+		return super.onOptionsItemSelected(item);
 	}
 
 	private void setUpWebViewDefaults() {
@@ -121,9 +145,10 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 
 	public void onLogInSuccessful(String cookieString) {
 		CookieManager.getInstance().setCookie("www.ava.ufmt.br", cookieString);
-		CookieSyncManager.getInstance().sync();
-
-		mWebView.loadUrl(AVA_URL);
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+			CookieSyncManager.getInstance().sync();
+		}
+		mWebView.loadUrl(FRONT_PAGE_URL);
 	}
 
 	@Override
@@ -134,6 +159,22 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 	@Override
 	public void showWebView(boolean enabled) {
 		mWebView.setVisibility(enabled ? View.VISIBLE : View.GONE);
+	}
+
+	@Override
+	public void showLoadingTitle() {
+		getActivity().setTitle(getString(R.string.title_fragment_moodle_loading));
+	}
+
+	@Override
+	public void showDefaultTitle() {
+		getActivity().setTitle(getString(R.string.title_fragment_moodle));
+	}
+
+	@Override
+	public void showDownloadStart() {
+		Toast.makeText(getActivity(), getString(R.string.download_started), Toast.LENGTH_LONG)
+		     .show();
 	}
 
 	@Override
@@ -155,8 +196,7 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 		}
 
 		private boolean handleUrl(Uri url) {
-			if (url.getHost().equals("www.ava.ufmt.br") || url.getHost()
-			                                                  .equals("200.129.241.132")) {
+			if (url.getHost().equals(AVA_BASE_URL) || url.getHost().equals(ALT_AVA_BASE_URL)) {
 				mWebView.loadUrl(url.toString());
 				return false;
 			}
@@ -170,11 +210,10 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 	private class MyWebChromeClient extends WebChromeClient {
 		@Override
 		public void onProgressChanged(WebView view, int newProgress) {
-			getActivity().setTitle("Carregando...");
-			getActivity().setProgress(newProgress * 100);
+			mMoodlePresenter.onLoadingPage();
 
 			if (newProgress == 100) {
-				getActivity().setTitle(getString(R.string.title_fragment_moodle));
+				mMoodlePresenter.onLoadComplete();
 			}
 		}
 	}
@@ -205,7 +244,7 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 							                                                         .DOWNLOAD_SERVICE);
 			dm.enqueue(request);
 
-			Toast.makeText(getActivity(), "Baixando arquivo", Toast.LENGTH_LONG).show();
+			mMoodlePresenter.onDownloadStart();
 		}
 	}
 

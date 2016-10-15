@@ -36,11 +36,6 @@ public final class LogInPresenter implements Presenter<LogInMvpView> {
 		mDataManager.getPreferencesHelper().setAnonymousLogIn(anonymous);
 		mMvpView.showProgress(false);
 		mMvpView.onLogInSuccessful();
-
-		//Triggers moodle login - TODO: MAKE THIS A SETTING
-		//final String rga = mDataManager.getPreferencesHelper().getRga();
-		//final char[] password = mDataManager.getPreferencesHelper().getAuth();
-		//mDataManager.logIn(rga, password, DataManager.LOGIN_MOODLE);
 	}
 
 	void doLogIn(String rga, char[] password) {

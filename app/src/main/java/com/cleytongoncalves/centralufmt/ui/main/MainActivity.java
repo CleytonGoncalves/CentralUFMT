@@ -13,10 +13,10 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cleytongoncalves.centralufmt.R;
 import com.cleytongoncalves.centralufmt.data.DataManager;
@@ -24,6 +24,7 @@ import com.cleytongoncalves.centralufmt.data.model.Student;
 import com.cleytongoncalves.centralufmt.ui.base.BaseActivity;
 import com.cleytongoncalves.centralufmt.ui.map.MapFragment;
 import com.cleytongoncalves.centralufmt.ui.moodle.MoodleFragment;
+import com.cleytongoncalves.centralufmt.util.NetworkUtil;
 
 import javax.inject.Inject;
 
@@ -90,20 +91,14 @@ public class MainActivity extends BaseActivity
 			mNavigationView.getMenu().setGroupEnabled(R.id.nav_group_logged_only, false);
 		}
 
+		if (! NetworkUtil.isNetworkConnected(this)) {
+			mNavigationView.getMenu().findItem(R.id.nav_moodle).setEnabled(false);
+			Toast.makeText(this, getString(R.string.error_not_connected), Toast.LENGTH_LONG)
+			     .show();
+		}
+
 		mNavigationView.setNavigationItemSelectedListener(this);
 		//mNavigationView.getMenu().getItem(0).setChecked(true);
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.activity_main, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		//TODO: IMPLEMENT STUDENT UPDATE
-		return super.onOptionsItemSelected(item);
 	}
 
 	@Override

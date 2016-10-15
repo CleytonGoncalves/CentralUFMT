@@ -23,7 +23,7 @@ public class DataManager {
 	public static final int LOGIN_SIGA = 0;
 	public static final int LOGIN_MOODLE = - 1;
 	private static final String TAG = "DataManager";
-	public final NetworkService mNetworkService;
+	private final NetworkService mNetworkService;
 	private final PreferencesHelper mPreferencesHelper;
 	private LogInTask mLogInTask;
 	private Student mStudent;
@@ -64,19 +64,6 @@ public class DataManager {
 		}).start();
 	}
 
-	/* ----- LogIn Methods ----- */
-	public void logIn(String rga, char[] password, int platform) {
-		EventBus.getDefault().register(this);
-
-		if (platform == LOGIN_MOODLE) {
-			mLogInTask = new MoodleLogInTask(rga, password, mNetworkService);
-		} else {
-			mPreferencesHelper.putCredentials(rga, password);
-			mLogInTask = new SigaLogInTask(rga, password, mNetworkService);
-		}
-		mLogInTask.start();
-	}
-
 	public void cancelLogIn() {
 		if (mLogInTask != null) {
 			//TODO: SEARCH ABOUT ASYNCTASK CANCEL
@@ -96,7 +83,7 @@ public class DataManager {
 		return mMoodleCookie != null;
 	}
 
-	@Subscribe
+	@Subscribe(priority = 1)
 	public void onLogInCompleted(LogInEvent event) {
 		mLogInTask = null;
 		if (event.isSuccessful()) {
@@ -105,6 +92,7 @@ public class DataManager {
 			if (obj.getClass() == Student.class) {
 				mStudent = (Student) obj;
 				mPreferencesHelper.putLoggedInStudent(mStudent);
+				triggerMoodleLogIn();
 			} else if (obj.getClass() == Cookie.class) {
 				mMoodleCookie = (Cookie) obj;
 			} else {
@@ -116,4 +104,24 @@ public class DataManager {
 
 		EventBus.getDefault().unregister(this);
 	}
+
+	public void triggerMoodleLogIn() {
+		final String rga = mPreferencesHelper.getRga();
+		final char[] password = mPreferencesHelper.getAuth();
+		logIn(rga, password, DataManager.LOGIN_MOODLE);
+	}
+
+	/* ----- LogIn Methods ----- */
+	public void logIn(String rga, char[] password, int platform) {
+		EventBus.getDefault().register(this);
+
+		if (platform == LOGIN_MOODLE) {
+			mLogInTask = new MoodleLogInTask(rga, password, mNetworkService);
+		} else {
+			mPreferencesHelper.putCredentials(rga, password);
+			mLogInTask = new SigaLogInTask(rga, password, mNetworkService);
+		}
+		mLogInTask.start();
+	}
+
 }

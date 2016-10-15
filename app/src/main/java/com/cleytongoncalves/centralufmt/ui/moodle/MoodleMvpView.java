@@ -9,5 +9,11 @@ interface MoodleMvpView extends MvpView {
 
 	void showWebView(boolean enabled);
 
+	void showLoadingTitle();
+
+	void showDefaultTitle();
+
+	void showDownloadStart();
+
 	void showGeneralLogInError();
 }

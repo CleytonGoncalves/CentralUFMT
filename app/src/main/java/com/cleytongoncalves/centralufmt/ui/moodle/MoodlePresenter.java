@@ -1,5 +1,7 @@
 package com.cleytongoncalves.centralufmt.ui.moodle;
 
+import android.support.annotation.Nullable;
+
 import com.cleytongoncalves.centralufmt.data.DataManager;
 import com.cleytongoncalves.centralufmt.data.events.LogInEvent;
 import com.cleytongoncalves.centralufmt.ui.base.Presenter;
@@ -13,7 +15,7 @@ import okhttp3.Cookie;
 
 public final class MoodlePresenter implements Presenter<MoodleMvpView> {
 	private final DataManager mDataManager;
-	private MoodleMvpView mMoodleMvpView;
+	@Nullable private MoodleMvpView mMoodleMvpView;
 
 	@Inject
 	MoodlePresenter(DataManager dataManager) {
@@ -24,8 +26,14 @@ public final class MoodlePresenter implements Presenter<MoodleMvpView> {
 	public void attachView(MoodleMvpView mvpView) {
 		mMoodleMvpView = mvpView;
 		if (mDataManager.isLoggedInMoodle()) {
+			//Already logged in before by self, or after the app login screen.
 			onLogInSuccessful(mDataManager.getMoodleCookie());
+		} else if (mDataManager.isLogInHappening()) {
+			//The app login screen fired the Moodle LogIn,
+			//but this got instantiated before its conclusion.
+			EventBus.getDefault().register(this);
 		} else {
+			//First time instantiating this
 			doLogIn();
 		}
 	}
@@ -36,20 +44,22 @@ public final class MoodlePresenter implements Presenter<MoodleMvpView> {
 	}
 
 	private void onLogInSuccessful(Cookie cookie) {
-		mMoodleMvpView.onLogInSuccessful(getCookieString(cookie));
-		mMoodleMvpView.showWebView(true);
-		mMoodleMvpView.showProgressBar(false);
+		if (mMoodleMvpView != null) {
+			mMoodleMvpView.onLogInSuccessful(getCookieString(cookie));
+			mMoodleMvpView.showWebView(true);
+			mMoodleMvpView.showProgressBar(false);
+		}
 	}
 
 	private void doLogIn() {
-		final String rga = mDataManager.getPreferencesHelper().getRga();
-		final char[] password = mDataManager.getPreferencesHelper().getAuth();
+		mDataManager.triggerMoodleLogIn();
 
 		EventBus.getDefault().register(this);
-		mDataManager.logIn(rga, password, DataManager.LOGIN_MOODLE);
 
-		mMoodleMvpView.showProgressBar(true);
-		mMoodleMvpView.showWebView(false);
+		if (mMoodleMvpView != null) {
+			mMoodleMvpView.showProgressBar(true);
+			mMoodleMvpView.showWebView(false);
+		}
 	}
 
 	private String getCookieString(Cookie cookie) {
@@ -67,8 +77,29 @@ public final class MoodlePresenter implements Presenter<MoodleMvpView> {
 		EventBus.getDefault().unregister(this);
 	}
 
+	@SuppressWarnings("UnusedParameters")
 	private void onLogInFailure(String reason) {
-		mMoodleMvpView.showGeneralLogInError();
-		mMoodleMvpView.showProgressBar(false);
+		if (mMoodleMvpView != null) {
+			mMoodleMvpView.showGeneralLogInError();
+			mMoodleMvpView.showProgressBar(false);
+		}
+	}
+
+	void onDownloadStart() {
+		if (mMoodleMvpView != null) {
+			mMoodleMvpView.showDownloadStart();
+		}
+	}
+
+	void onLoadingPage() {
+		if (mMoodleMvpView != null) {
+			mMoodleMvpView.showLoadingTitle();
+		}
+	}
+
+	void onLoadComplete() {
+		if (mMoodleMvpView != null) {
+			mMoodleMvpView.showDefaultTitle();
+		}
 	}
 }
