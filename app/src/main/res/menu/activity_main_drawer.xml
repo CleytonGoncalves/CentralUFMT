@@ -39,6 +39,7 @@
         android:checkableBehavior="none">
         <item
             android:id="@+id/nav_share"
+            android:actionProviderClass="android.widget.ShareActionProvider"
             android:icon="@drawable/ic_menu_share"
             android:title="@string/action_share_app"/>
     </group>
