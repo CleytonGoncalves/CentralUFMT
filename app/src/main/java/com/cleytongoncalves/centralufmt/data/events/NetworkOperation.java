@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 public final class NetworkOperation {
-	public final static int NETWORK_FAILURE = - 1;
-	public final static int IO_ERROR = - 2;
+	public static final int NETWORK_FAILURE = - 1;
+	public static final int IO_ERROR = - 2;
 
 	private String mResponseBody;
 	private Map<String, List<String>> mResponseHeaders;

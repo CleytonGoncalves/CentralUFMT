@@ -23,7 +23,7 @@ public final class LogInPresenter implements Presenter<LogInMvpView> {
 		mMvpView = mvpView;
 		if (mDataManager.isLoggedInSiga()) {
 			//Check if it isn't already logged in when attaching the view
-			OnLogInSuccess(false);
+			onLogInSuccess(false);
 		}
 	}
 
@@ -32,7 +32,7 @@ public final class LogInPresenter implements Presenter<LogInMvpView> {
 		mMvpView = null;
 	}
 
-	private void OnLogInSuccess(boolean anonymous) {
+	private void onLogInSuccess(boolean anonymous) {
 		mDataManager.getPreferencesHelper().setAnonymousLogIn(anonymous);
 		mMvpView.showProgress(false);
 		mMvpView.onLogInSuccessful();
@@ -48,7 +48,7 @@ public final class LogInPresenter implements Presenter<LogInMvpView> {
 	}
 
 	void doAnonymousLogIn() {
-		OnLogInSuccess(true); //Goes directly to the result
+		onLogInSuccess(true); //Goes directly to the result
 		mMvpView.setLogInButtonEnabled(false);
 		mMvpView.setAnonymousLogInEnabled(false);
 		mMvpView.showProgress(true);
@@ -65,7 +65,7 @@ public final class LogInPresenter implements Presenter<LogInMvpView> {
 	@Subscribe
 	public void onLogInEvent(LogInEvent event) {
 		if (event.isSuccessful()) {
-			OnLogInSuccess(false);
+			onLogInSuccess(false);
 		} else {
 			onLogInFailure(event.getFailureReason());
 		}

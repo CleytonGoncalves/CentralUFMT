@@ -26,10 +26,10 @@ public class HtmlHelper {
 	public static Map<String, String> createFormParams(String html) {
 		Map<String, String> map = new HashMap<>();
 
-		final String submit_button = "Submit2";
-		final String login_field = "txt_login";
-		final String password_field = "txt_senha";
-		final String verification_field = "valorcontrole";
+		final String submitButton = "Submit2";
+		final String loginField = "txt_login";
+		final String passwordField = "txt_senha";
+		final String verificationField = "valorcontrole";
 
 		Document doc = Jsoup.parse(html);
 
@@ -48,13 +48,13 @@ public class HtmlHelper {
 			String value = inputElement.attr("value");
 
 			switch (key) {
-				case submit_button:
+				case submitButton:
 					continue;
-				case login_field:
+				case loginField:
 					continue;
-				case password_field:
+				case passwordField:
 					continue;
-				case verification_field:
+				case verificationField:
 					value = verifNumber;
 					break;
 				default:

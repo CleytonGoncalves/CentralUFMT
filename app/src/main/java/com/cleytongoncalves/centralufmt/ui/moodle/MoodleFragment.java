@@ -40,9 +40,9 @@ import butterknife.Unbinder;
 
 @SuppressWarnings({"deprecation", "FieldCanBeLocal"})
 public final class MoodleFragment extends Fragment implements MoodleMvpView {
-	private static String FRONT_PAGE_URL = "http://www.ava.ufmt.br/index.php?pag=ambientevirtual";
-	private static String AVA_BASE_URL = "www.ava.ufmt.br";
-	private static String ALT_AVA_BASE_URL = "200.129.241.132";
+	private static final String FRONT_PAGE_URL = "http://www.ava.ufmt.br/index.php?pag=ambientevirtual";
+	private static final String AVA_BASE_URL = "www.ava.ufmt.br";
+	private static final String ALT_AVA_BASE_URL = "200.129.241.132";
 
 	@Inject MoodlePresenter mMoodlePresenter;
 
