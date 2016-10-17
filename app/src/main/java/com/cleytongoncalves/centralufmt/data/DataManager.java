@@ -64,9 +64,27 @@ public class DataManager {
 		}).start();
 	}
 
+	/* ----- LogIn Methods ----- */
+	public void logIn(String rga, char[] password, int platform) {
+		EventBus.getDefault().register(this);
+
+		if (platform == LOGIN_MOODLE) {
+			mLogInTask = new MoodleLogInTask(rga, password, mNetworkService);
+		} else {
+			mPreferencesHelper.putCredentials(rga, password);
+			mLogInTask = new SigaLogInTask(rga, password, mNetworkService);
+		}
+		mLogInTask.start();
+	}
+
+	public void triggerMoodleLogIn() {
+		final String rga = mPreferencesHelper.getRga();
+		final char[] password = mPreferencesHelper.getAuth();
+		logIn(rga, password, DataManager.LOGIN_MOODLE);
+	}
+
 	public void cancelLogIn() {
 		if (mLogInTask != null) {
-			//TODO: SEARCH ABOUT ASYNCTASK CANCEL
 			mLogInTask.cancelTask();
 		}
 	}
@@ -103,25 +121,6 @@ public class DataManager {
 		}
 
 		EventBus.getDefault().unregister(this);
-	}
-
-	public void triggerMoodleLogIn() {
-		final String rga = mPreferencesHelper.getRga();
-		final char[] password = mPreferencesHelper.getAuth();
-		logIn(rga, password, DataManager.LOGIN_MOODLE);
-	}
-
-	/* ----- LogIn Methods ----- */
-	public void logIn(String rga, char[] password, int platform) {
-		EventBus.getDefault().register(this);
-
-		if (platform == LOGIN_MOODLE) {
-			mLogInTask = new MoodleLogInTask(rga, password, mNetworkService);
-		} else {
-			mPreferencesHelper.putCredentials(rga, password);
-			mLogInTask = new SigaLogInTask(rga, password, mNetworkService);
-		}
-		mLogInTask.start();
 	}
 
 }

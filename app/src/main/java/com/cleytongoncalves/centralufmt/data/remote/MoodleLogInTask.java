@@ -36,11 +36,11 @@ public final class MoodleLogInTask extends AsyncTask<Void, Void, LogInEvent> imp
 
 	@Override
 	public void cancelTask() {
-		return;
+		this.cancel(true);
 	}
 
 	@Override
-	protected LogInEvent doInBackground(Void... Void) {
+	protected LogInEvent doInBackground(Void... voids) {
 		FormBody params = createAvaFormParams();
 		NetworkOperation logInPost = mNetworkService.post(BASE_AVA_URL + POST_AVA_URL, params);
 

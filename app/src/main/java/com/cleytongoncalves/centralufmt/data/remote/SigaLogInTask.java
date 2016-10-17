@@ -28,13 +28,11 @@ public final class SigaLogInTask extends AsyncTask<Void, Void, LogInEvent> imple
 	private final String mRga;
 	private final NetworkService mNetworkService;
 	private char[] mPassword;
-	private boolean mCancelTask;
 
 	public SigaLogInTask(String rga, char[] password, NetworkService networkService) {
 		mRga = rga;
 		mPassword = password;
 		mNetworkService = networkService;
-		mCancelTask = false;
 	}
 
 	@Override
@@ -44,14 +42,14 @@ public final class SigaLogInTask extends AsyncTask<Void, Void, LogInEvent> imple
 	}
 
 	public void cancelTask() {
-		mCancelTask = true;
+		this.cancel(true);
 	}
 
 	@Override
-	protected LogInEvent doInBackground(Void... Void) {
+	protected LogInEvent doInBackground(Void... voids) {
 		NetworkOperation logInPageGet = mNetworkService.get(BASE_SIGA_URL + GET_SIGA_URL);
 
-		if (mCancelTask) {
+		if (isCancelled()) {
 			return userCanceled();
 		} else if (logInPageGet.hasFailed()) {
 			return generalFailure();
@@ -60,7 +58,7 @@ public final class SigaLogInTask extends AsyncTask<Void, Void, LogInEvent> imple
 		FormBody params = createFormParams(logInPageGet.getResponseBody());
 		NetworkOperation logInPost = mNetworkService.post(BASE_SIGA_URL + POST_SIGA_URL, params);
 
-		if (mCancelTask) {
+		if (isCancelled()) {
 			return userCanceled();
 		} else if (logInPost.hasFailed()) {
 			return generalFailure();
@@ -70,7 +68,7 @@ public final class SigaLogInTask extends AsyncTask<Void, Void, LogInEvent> imple
 
 		NetworkOperation infoPageGet = mNetworkService.get(BASE_SIGA_URL + EXACAO_SIGA_URL);
 
-		if (mCancelTask) {
+		if (isCancelled()) {
 			return userCanceled();
 		} else if (infoPageGet.hasFailed()) {
 			return generalFailure();
@@ -86,21 +84,13 @@ public final class SigaLogInTask extends AsyncTask<Void, Void, LogInEvent> imple
 		EventBus.getDefault().post(result);
 	}
 
-	private LogInEvent userCanceled() {
-		return new LogInEvent(LogInEvent.USER_CANCELED);
-	}
-
-	private LogInEvent generalFailure() {
-		return new LogInEvent(LogInEvent.GENERAL_ERROR);
-	}
-
 	private FormBody createFormParams(String html) {
-		final String login_field = "txt_login";
-		final String password_field = "txt_senha";
+		final String loginField = "txt_login";
+		final String passwordField = "txt_senha";
 
 		Map<String, String> paramsMap = HtmlHelper.createFormParams(html);
-		paramsMap.put(login_field, mRga);
-		paramsMap.put(password_field, String.valueOf(mPassword));
+		paramsMap.put(loginField, mRga);
+		paramsMap.put(passwordField, String.valueOf(mPassword));
 
 		FormBody.Builder formBody = new FormBody.Builder();
 		for (Map.Entry<String, String> entry : paramsMap.entrySet()) {
@@ -128,5 +118,13 @@ public final class SigaLogInTask extends AsyncTask<Void, Void, LogInEvent> imple
 
 	private LogInEvent accessDenied() {
 		return new LogInEvent(LogInEvent.ACCESS_DENIED);
+	}
+
+	private LogInEvent userCanceled() {
+		return new LogInEvent(LogInEvent.USER_CANCELED);
+	}
+
+	private LogInEvent generalFailure() {
+		return new LogInEvent(LogInEvent.GENERAL_ERROR);
 	}
 }
