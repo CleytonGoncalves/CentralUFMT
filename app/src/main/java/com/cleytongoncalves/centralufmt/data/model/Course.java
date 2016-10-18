@@ -11,25 +11,26 @@ import lombok.Value;
 import lombok.experimental.NonFinal;
 
 @Value @RequiredArgsConstructor
-public class Curso implements Parcelable {
-	public static final Parcelable.Creator<Curso> CREATOR = new Parcelable.Creator<Curso>() {
+public class Course implements Parcelable {
+	public static final Parcelable.Creator<Course> CREATOR = new Parcelable.Creator<Course>() {
 		@Override
-		public Curso createFromParcel(Parcel source) {
-			return new Curso(source);
+		public Course createFromParcel(Parcel source) {
+			return new Course(source);
 		}
 
 		@Override
-		public Curso[] newArray(int size) {
-			return new Curso[size];
+		public Course[] newArray(int size) {
+			return new Course[size];
 		}
 	};
-	String mName;
+	String mTitle;
 	String mCode;
 	String mType;
-	@NonFinal @Setter String mCurrentSemesterCode;
+	@NonFinal @Setter String mCurrentTermCode;
 	@NonFinal @Setter String mAvgFinishYears;
 	@NonFinal @Setter String mMaxFinishYears;
 	@NonFinal @Setter String mFinishedYears;
+
 	/* COURSE LOAD IS GIVEN IN HOURS */
 	@NonFinal @Setter String mEnrolledCourseLoad;
 	@NonFinal @Setter String mObligatoryCourseLoad;
@@ -42,11 +43,11 @@ public class Curso implements Parcelable {
 	@NonFinal List<String> mEnrolledCourses;
 
 	@SuppressWarnings("WeakerAccess")
-	protected Curso(Parcel in) {
-		this.mName = in.readString();
+	protected Course(Parcel in) {
+		this.mTitle = in.readString();
 		this.mCode = in.readString();
 		this.mType = in.readString();
-		this.mCurrentSemesterCode = in.readString();
+		this.mCurrentTermCode = in.readString();
 		this.mAvgFinishYears = in.readString();
 		this.mMaxFinishYears = in.readString();
 		this.mFinishedYears = in.readString();
@@ -68,10 +69,10 @@ public class Curso implements Parcelable {
 
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
-		dest.writeString(this.mName);
+		dest.writeString(this.mTitle);
 		dest.writeString(this.mCode);
 		dest.writeString(this.mType);
-		dest.writeString(this.mCurrentSemesterCode);
+		dest.writeString(this.mCurrentTermCode);
 		dest.writeString(this.mAvgFinishYears);
 		dest.writeString(this.mMaxFinishYears);
 		dest.writeString(this.mFinishedYears);

@@ -84,7 +84,7 @@ public class MainActivity extends BaseActivity
 			Student student = mDataManager.getStudent();
 			mainText.setText(student.getFirstName() + " " + student.getLastName());
 			secondaryText.setText(student.getRga());
-			tertiaryText.setText(student.getCurso().getName());
+			tertiaryText.setText(student.getCourse().getTitle());
 		} else {
 			mainText.setText(getString(R.string.not_logged_in));
 			secondaryText.setVisibility(View.GONE);

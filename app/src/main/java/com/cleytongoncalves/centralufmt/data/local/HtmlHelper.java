@@ -1,6 +1,6 @@
 package com.cleytongoncalves.centralufmt.data.local;
 
-import com.cleytongoncalves.centralufmt.data.model.Curso;
+import com.cleytongoncalves.centralufmt.data.model.Course;
 import com.cleytongoncalves.centralufmt.data.model.Student;
 
 import org.jsoup.Jsoup;
@@ -17,7 +17,7 @@ public class HtmlHelper {
 	private static final String NBSP_CODE = "\u00a0";
 
 	private final Element mBodyHtml;
-	private Curso mCurso;
+	private Course mCourse;
 
 	public HtmlHelper(String html) {
 		this.mBodyHtml = Jsoup.parse(html).body();
@@ -77,11 +77,11 @@ public class HtmlHelper {
 	public Student parseBasicStudent() {
 		List<TextNode> alunoInfoNodes = mBodyHtml.getElementsByTag("div").get(0).textNodes();
 
-		mCurso = extractCurso(alunoInfoNodes);
+		mCourse = extractCurso(alunoInfoNodes);
 		return extractStudent(alunoInfoNodes);
 	}
 
-	private Curso extractCurso(List<TextNode> alunoInfoNodes) {
+	private Course extractCurso(List<TextNode> alunoInfoNodes) {
 		String infoCursoRaw = alunoInfoNodes.get(0).text();
 		String[] infoCurso = infoCursoRaw.split(":")[1].split("-");
 
@@ -89,7 +89,7 @@ public class HtmlHelper {
 		String name = capitalizeFirstLetter(infoCurso[1].trim());
 		String type = capitalizeFirstLetter(infoCurso[2].trim());
 
-		return new Curso(name, id, type);
+		return new Course(name, id, type);
 	}
 
 	private Student extractStudent(List<TextNode> alunoInfoNodes) {
@@ -105,8 +105,8 @@ public class HtmlHelper {
 		String currPeriodo = infoStatus[0].trim();
 		boolean matriculado = infoStatus[1].trim().equalsIgnoreCase("Matriculado no Período");
 
-		Student student = new Student(nomeCompleto, rga, mCurso);
-		mCurso.setCurrentSemesterCode(currPeriodo);
+		Student student = new Student(nomeCompleto, rga, mCourse);
+		mCourse.setCurrentTermCode(currPeriodo);
 
 		return student;
 	}
@@ -154,12 +154,12 @@ public class HtmlHelper {
 		String cargaHorOpt = tds.get(8).text();
 		String cargaHorComplem = tds.get(9).text();
 
-		mCurso.setAvgFinishYears(tempoMedioIntegralizar);
-		mCurso.setMaxFinishYears(tempoMaxIntegralizar);
+		mCourse.setAvgFinishYears(tempoMedioIntegralizar);
+		mCourse.setMaxFinishYears(tempoMaxIntegralizar);
 
-		mCurso.setObligatoryCourseLoad(cargaHorObg);
-		mCurso.setOptionalCourseLoad(cargaHorOpt);
-		mCurso.setComplementaryCourseLoad(cargaHorComplem);
+		mCourse.setObligatoryCourseLoad(cargaHorObg);
+		mCourse.setOptionalCourseLoad(cargaHorOpt);
+		mCourse.setComplementaryCourseLoad(cargaHorComplem);
 	}
 
 	private void parseTakenCourseLoad(Element table) {
@@ -176,11 +176,11 @@ public class HtmlHelper {
 		String cargaHorElet = tds.get(13).text();
 		String cargaHorMatric = tds.get(14).text();
 
-		mCurso.setFinishedYears(tempoIntegralizado);
-		mCurso.setTakenObligatoryCourseLoad(cargaHorObg);
-		mCurso.setTakenOptionalCourseLoad(cargaHorOpt);
-		mCurso.setTakenComplementaryCourseLoad(cargaHorCompl);
-		mCurso.setTakenElectiveCourseLoad(cargaHorElet);
-		mCurso.setEnrolledCourseLoad(cargaHorMatric);
+		mCourse.setFinishedYears(tempoIntegralizado);
+		mCourse.setTakenObligatoryCourseLoad(cargaHorObg);
+		mCourse.setTakenOptionalCourseLoad(cargaHorOpt);
+		mCourse.setTakenComplementaryCourseLoad(cargaHorCompl);
+		mCourse.setTakenElectiveCourseLoad(cargaHorElet);
+		mCourse.setEnrolledCourseLoad(cargaHorMatric);
 	}
 }

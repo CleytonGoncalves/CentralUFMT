@@ -21,17 +21,17 @@ public class Student implements Parcelable {
 	};
 	String mFullName;
 	String mRga;
-	Curso mCurso;
+	Course mCourse;
 
 	@SuppressWarnings("WeakerAccess")
 	protected Student(Parcel in) {
 		this.mFullName = in.readString();
 		this.mRga = in.readString();
-		this.mCurso = in.readParcelable(Curso.class.getClassLoader());
+		this.mCourse = in.readParcelable(Course.class.getClassLoader());
 	}
 
 	public static Student createStub() {
-		return new Student("Não Logado", "", new Curso("", "", ""));
+		return new Student("Não Logado", "", new Course("", "", ""));
 	}
 
 	public String getFirstName() {
@@ -52,6 +52,6 @@ public class Student implements Parcelable {
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeString(this.mFullName);
 		dest.writeString(this.mRga);
-		dest.writeParcelable(this.mCurso, flags);
+		dest.writeParcelable(this.mCourse, flags);
 	}
 }
