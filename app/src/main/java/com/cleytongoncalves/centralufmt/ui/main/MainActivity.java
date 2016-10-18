@@ -35,9 +35,11 @@ public class MainActivity extends BaseActivity
 		implements NavigationView.OnNavigationItemSelectedListener, FragmentManager
 				                                                            .OnBackStackChangedListener {
 	private static final String TAG = MainActivity.class.getSimpleName();
+
 	@Inject DataManager mDataManager;
 	@BindView(R.id.drawer_layout) DrawerLayout mDrawer;
 	@BindView(R.id.nav_view) NavigationView mNavigationView;
+
 	private FragmentManager mFragmentManager;
 
 	public static Intent getStartIntent(Context context, boolean clearPreviousActivites) {
