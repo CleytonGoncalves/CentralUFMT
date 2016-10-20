@@ -12,17 +12,6 @@ import lombok.experimental.NonFinal;
 
 @Value @RequiredArgsConstructor
 public class Course implements Parcelable {
-	public static final Parcelable.Creator<Course> CREATOR = new Parcelable.Creator<Course>() {
-		@Override
-		public Course createFromParcel(Parcel source) {
-			return new Course(source);
-		}
-
-		@Override
-		public Course[] newArray(int size) {
-			return new Course[size];
-		}
-	};
 	String mTitle;
 	String mCode;
 	String mType;
@@ -61,6 +50,18 @@ public class Course implements Parcelable {
 		this.mTakenElectiveCourseLoad = in.readString();
 		this.mEnrolledCourses = in.createStringArrayList();
 	}
+
+	public static final Parcelable.Creator<Course> CREATOR = new Parcelable.Creator<Course>() {
+		@Override
+		public Course createFromParcel(Parcel source) {
+			return new Course(source);
+		}
+
+		@Override
+		public Course[] newArray(int size) {
+			return new Course[size];
+		}
+	};
 
 	@Override
 	public int describeContents() {

@@ -8,6 +8,26 @@ import lombok.Value;
 
 @Value @AllArgsConstructor
 public class Student implements Parcelable {
+	String mFullName;
+	String mRga;
+	Course mCourse;
+
+	public String getFirstName() {
+		return mFullName.split(" ")[0];
+	}
+
+	public String getLastName() {
+		String[] names = mFullName.split(" ");
+		return names.length > 1 ? names[names.length - 1] : "";
+	}
+
+	@SuppressWarnings("WeakerAccess")
+	protected Student(Parcel in) {
+		this.mFullName = in.readString();
+		this.mRga = in.readString();
+		this.mCourse = in.readParcelable(Course.class.getClassLoader());
+	}
+
 	public static final Parcelable.Creator<Student> CREATOR = new Parcelable.Creator<Student>() {
 		@Override
 		public Student createFromParcel(Parcel source) {
@@ -19,29 +39,6 @@ public class Student implements Parcelable {
 			return new Student[size];
 		}
 	};
-	String mFullName;
-	String mRga;
-	Course mCourse;
-
-	@SuppressWarnings("WeakerAccess")
-	protected Student(Parcel in) {
-		this.mFullName = in.readString();
-		this.mRga = in.readString();
-		this.mCourse = in.readParcelable(Course.class.getClassLoader());
-	}
-
-	public static Student createStub() {
-		return new Student("Não Logado", "", new Course("", "", ""));
-	}
-
-	public String getFirstName() {
-		return mFullName.split(" ")[0];
-	}
-
-	public String getLastName() {
-		String[] names = mFullName.split(" ");
-		return names.length > 1 ? names[names.length - 1] : "";
-	}
 
 	@Override
 	public int describeContents() {
