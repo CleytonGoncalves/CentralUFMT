@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:id="@+id/class_parent"
+    android:background="#3370ff"
+    android:padding="2dp"
+    android:layout_marginRight="1dp"
+    android:layout_marginBottom="1dp"
+    >
+
+    <TextView
+        android:id="@+id/class_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textAppearance="@style/ClassItemLargeTextInverse"
+        android:textStyle="bold"
+        android:maxLines="2"
+        tools:text="Cálculo I"/>
+
+    <android.support.v4.widget.Space
+        android:layout_width="match_parent"
+        android:layout_height="5dp"/>
+
+    <TextView
+        android:id="@+id/class_teacher"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textAppearance="@style/ClassItemLargeTextInverse"
+        android:maxLines="1"
+        tools:text="Dornellas"/>
+
+    <android.support.v4.widget.Space
+        android:layout_width="match_parent"
+        android:layout_height="5dp"/>
+
+    <TextView
+        android:id="@+id/class_room"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textAppearance="@style/ClassItemMediumTextInverse"
+        android:maxLines="1"
+        tools:text="CB03"/>
+
+</LinearLayout>

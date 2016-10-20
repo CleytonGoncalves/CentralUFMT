@@ -55,6 +55,7 @@ dependencies {
     compile "com.android.support:appcompat-v7:$SUPPORT_LIBRARY_VERSION"
     compile "com.android.support:support-v4:$SUPPORT_LIBRARY_VERSION"
     compile "com.android.support:design:$SUPPORT_LIBRARY_VERSION"
+    compile "com.android.support:gridlayout-v7:$SUPPORT_LIBRARY_VERSION"
 
     compile "com.jakewharton:butterknife:$BUTTERKNIFE_VERSION"
     apt "com.jakewharton:butterknife-compiler:$BUTTERKNIFE_VERSION"
@@ -64,7 +65,6 @@ dependencies {
 
     compile "com.google.dagger:dagger:$DAGGER_VERSION"
     apt "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
-    provided 'org.glassfish:javax.annotation:10.0-b28' //Required by Dagger2
 
     compile files('libs/jsoup-1.9.2.jar')
 
@@ -77,5 +77,6 @@ dependencies {
     compile "org.projectlombok:lombok:$LOMBOK_VERSION"
 //    provided 'pl.mg6.hrisey:hrisey:0.3.1' //Lombok with Parcelable
 
+    provided 'org.glassfish:javax.annotation:10.0-b28' //Required by Dagger2
 }
 
