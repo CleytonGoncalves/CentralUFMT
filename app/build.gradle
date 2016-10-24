@@ -36,6 +36,8 @@ android {
     buildTypes.each {
         it.buildConfigField 'String', 'SHARED_PREFERENCES_KEY', SharedPreferencesKey
         it.resValue 'string', 'MAPS_API_KEY', MapsApiKey
+        it.buildConfigField 'String', 'DEFAULT_LOGIN_RGA', LoginRga
+        it.buildConfigField 'String', 'DEFAULT_LOGIN_PASS', LoginPassword
     }
 }
 
@@ -50,6 +52,7 @@ dependencies {
     final GMAPS_VERSION = '9.6.1'
     final GMAPS_UTILS_VERSION = '0.4.4'
     final LOMBOK_VERSION = '1.16.10'
+    final JODA_TIME_VERSION = '2.9.4.3'
 
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile "com.android.support:appcompat-v7:$SUPPORT_LIBRARY_VERSION"
@@ -78,5 +81,7 @@ dependencies {
 //    provided 'pl.mg6.hrisey:hrisey:0.3.1' //Lombok with Parcelable
 
     provided 'org.glassfish:javax.annotation:10.0-b28' //Required by Dagger2
+
+    compile "net.danlew:android.joda:$JODA_TIME_VERSION"
 }
 
