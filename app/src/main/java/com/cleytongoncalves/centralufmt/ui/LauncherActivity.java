@@ -12,7 +12,7 @@ import com.cleytongoncalves.centralufmt.util.NetworkUtil;
 import javax.inject.Inject;
 
 public class LauncherActivity extends BaseActivity {
-	private static final boolean FORCE_LOGIN = false; //For debug purposes
+	private static final boolean FORCE_LOGIN = true; //For debug purposes
 
 	@Inject DataManager mDataManager;
 
