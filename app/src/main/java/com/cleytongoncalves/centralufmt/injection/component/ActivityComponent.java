@@ -7,6 +7,7 @@ import com.cleytongoncalves.centralufmt.ui.login.LogInActivity;
 import com.cleytongoncalves.centralufmt.ui.main.MainActivity;
 import com.cleytongoncalves.centralufmt.ui.map.MapFragment;
 import com.cleytongoncalves.centralufmt.ui.moodle.MoodleFragment;
+import com.cleytongoncalves.centralufmt.ui.schedule.ScheduleFragment;
 
 import dagger.Component;
 
@@ -24,4 +25,7 @@ public interface ActivityComponent {
 	void inject(MapFragment mapFragment);
 
 	void inject(MoodleFragment moodleFragment);
+
+	void inject(ScheduleFragment scheduleFragment);
+
 }
