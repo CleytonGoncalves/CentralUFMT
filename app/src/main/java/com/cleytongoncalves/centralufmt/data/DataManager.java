@@ -58,7 +58,6 @@ public class DataManager {
 			public void run() {
 				android.os.Process.setThreadPriority(android.os.Process
 						                                     .THREAD_PRIORITY_BACKGROUND);
-				//mHtmlHelper.parseCompleteCourse();
 				mPreferencesHelper.putLoggedInStudent(student);
 			}
 		}).start();

@@ -66,16 +66,15 @@ public final class SigaLogInTask extends AsyncTask<Void, Void, LogInEvent> imple
 			return accessDenied();
 		}
 
-		NetworkOperation infoPageGet = mNetworkService.get(BASE_SIGA_URL + EXACAO_SIGA_URL);
+		NetworkOperation exacaoPageGet = mNetworkService.get(BASE_SIGA_URL + EXACAO_SIGA_URL);
 
 		if (isCancelled()) {
 			return userCanceled();
-		} else if (infoPageGet.hasFailed()) {
+		} else if (exacaoPageGet.hasFailed()) {
 			return generalFailure();
 		}
 
-		HtmlHelper htmlHelper = new HtmlHelper(infoPageGet.getResponseBody());
-		Student student = htmlHelper.parseBasicStudent();
+		Student student = HtmlHelper.parseBasicStudent(exacaoPageGet.getResponseBody());
 		return new LogInEvent(student);
 	}
 

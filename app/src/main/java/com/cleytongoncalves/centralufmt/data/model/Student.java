@@ -28,18 +28,6 @@ public class Student implements Parcelable {
 		this.mCourse = in.readParcelable(Course.class.getClassLoader());
 	}
 
-	public static final Parcelable.Creator<Student> CREATOR = new Parcelable.Creator<Student>() {
-		@Override
-		public Student createFromParcel(Parcel source) {
-			return new Student(source);
-		}
-
-		@Override
-		public Student[] newArray(int size) {
-			return new Student[size];
-		}
-	};
-
 	@Override
 	public int describeContents() {
 		return 0;
@@ -51,4 +39,16 @@ public class Student implements Parcelable {
 		dest.writeString(this.mRga);
 		dest.writeParcelable(this.mCourse, flags);
 	}
+
+	public static final Parcelable.Creator<Student> CREATOR = new Parcelable.Creator<Student>() {
+		@Override
+		public Student createFromParcel(Parcel source) {
+			return new Student(source);
+		}
+
+		@Override
+		public Student[] newArray(int size) {
+			return new Student[size];
+		}
+	};
 }
