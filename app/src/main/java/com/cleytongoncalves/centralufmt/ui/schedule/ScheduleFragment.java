@@ -11,11 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.cleytongoncalves.centralufmt.R;
-import com.cleytongoncalves.centralufmt.data.local.HtmlHelper;
-import com.cleytongoncalves.centralufmt.data.model.Discipline;
 import com.cleytongoncalves.centralufmt.ui.base.BaseActivity;
-
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -36,14 +32,18 @@ public final class ScheduleFragment extends Fragment {
 		View rootView = inflater.inflate(R.layout.fragment_schedule, container, false);
 
 		RecyclerView rcView = (RecyclerView) rootView.findViewById(R.id.grid_schedule);
-		rcView.setHasFixedSize(true);
-		rcView.setLayoutManager(new GridLayoutManager(getActivity(), 5));
-
-		List<Discipline> classes = HtmlHelper.parseSchedule(HtmlHelper.getScheduleHtml());
-
-		rcView.setAdapter(new ClassAdapter());
+		setUpRecyclerView(rcView);
 
 		return rootView;
+	}
+
+	private void setUpRecyclerView(RecyclerView rcView) {
+		DisciplineSchedulePresenter discPresenter =
+				new DisciplineSchedulePresenter(mSchedulePresenter.getDisciplineList());
+
+		int gridSpan = discPresenter.getDaysOfWeekAmount();
+		rcView.setLayoutManager(new GridLayoutManager(getActivity(), gridSpan));
+		rcView.setAdapter(new DisciplineScheduleAdapter(discPresenter));
 	}
 
 }
