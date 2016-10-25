@@ -170,7 +170,7 @@ public final class LogInActivity extends BaseActivity implements LogInMvpView {
 	 *****/
 	@Override
 	public void onLogInSuccessful() {
-		Intent intent = MainActivity.getStartIntent(this, false);
+		Intent intent = MainActivity.getStartIntent(this, true);
 		startActivity(intent);
 
 		// We need this flag because if we call finish() here, the activity transition won't work

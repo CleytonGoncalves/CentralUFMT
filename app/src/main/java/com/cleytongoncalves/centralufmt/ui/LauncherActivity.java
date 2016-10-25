@@ -23,14 +23,14 @@ public class LauncherActivity extends BaseActivity {
 		Intent intent;
 
 		if (mDataManager.isLoggedInSiga() && ! FORCE_LOGIN) {
-			intent = MainActivity.getStartIntent(this, false);
+			intent = MainActivity.getStartIntent(this, true);
 			if (NetworkUtil.isNetworkConnected(this)) {
 				mDataManager.triggerMoodleLogIn();
 			}
 		} else if (mDataManager.getPreferencesHelper().getAnonymousLogIn() && ! FORCE_LOGIN) {
-			intent = MainActivity.getStartIntent(this, false);
+			intent = MainActivity.getStartIntent(this, true);
 		} else {
-			intent = LogInActivity.getStartIntent(this, false);
+			intent = LogInActivity.getStartIntent(this, true);
 		}
 		startActivity(intent);
 	}
