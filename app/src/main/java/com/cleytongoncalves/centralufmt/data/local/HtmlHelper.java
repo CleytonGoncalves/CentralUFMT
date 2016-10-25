@@ -15,13 +15,10 @@ import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 public final class HtmlHelper {
 	private static final String TAG = HtmlHelper.class.getSimpleName();
@@ -109,18 +106,7 @@ public final class HtmlHelper {
 			}
 
 			DateTimeFormatter fmt = DateTimeFormat.forPattern("EEEEHH:mm").withLocale(LOCALE_PTBR);
-			SortedSet<Interval> aulas = new TreeSet<>(new Comparator<Interval>() {
-				@Override
-				public int compare(Interval o1, Interval o2) {
-					long o1Start = o1.getStartMillis();
-					long o2Start = o1.getStartMillis();
-					long o1End = o1.getStartMillis();
-					long o2End = o1.getStartMillis();
-
-					return (int) ((o1Start != o2Start ? o1Start - o2Start : o1End - o2End)
-							              % Integer.MAX_VALUE);
-				}
-			});
+			List<Interval> aulas = new ArrayList<>();
 			boolean keepGoing = true;
 			for (int index = i; keepGoing; index++) {
 				String dia = content.get(2).ownText();

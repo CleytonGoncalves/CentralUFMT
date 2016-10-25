@@ -2,7 +2,7 @@ package com.cleytongoncalves.centralufmt.data.model;
 
 import org.joda.time.Interval;
 
-import java.util.SortedSet;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -17,5 +17,5 @@ public final class Discipline {
 	String mCourseLoad;
 	String mType;
 	String mTerm;
-	SortedSet<Interval> mClassTimes;
+	List<Interval> mClassTimes;
 }
