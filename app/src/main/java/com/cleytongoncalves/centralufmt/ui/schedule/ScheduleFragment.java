@@ -19,6 +19,7 @@ public final class ScheduleFragment extends Fragment {
 	private static final String TAG = ScheduleFragment.class.getSimpleName();
 
 	@Inject SchedulePresenter mSchedulePresenter;
+	@Inject ScheduleGridAdapter mAdapter;
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -32,18 +33,16 @@ public final class ScheduleFragment extends Fragment {
 		View rootView = inflater.inflate(R.layout.fragment_schedule, container, false);
 
 		RecyclerView rcView = (RecyclerView) rootView.findViewById(R.id.grid_schedule);
+
 		setUpRecyclerView(rcView);
 
 		return rootView;
 	}
 
 	private void setUpRecyclerView(RecyclerView rcView) {
-		DisciplineSchedulePresenter discPresenter =
-				new DisciplineSchedulePresenter(mSchedulePresenter.getDisciplineList());
-
-		int gridSpan = discPresenter.getDaysOfWeekAmount();
+		int gridSpan = mAdapter.getAmountOfDays();
 		rcView.setLayoutManager(new GridLayoutManager(getActivity(), gridSpan));
-		rcView.setAdapter(new DisciplineScheduleAdapter(discPresenter));
+		rcView.setAdapter(mAdapter);
 	}
 
 }
