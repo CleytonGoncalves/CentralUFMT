@@ -20,7 +20,7 @@
         android:textAlignment="center"
         android:textAppearance="@style/ClassItemLargeTextInverse"
         android:textStyle="bold"
-        android:maxLines="2"
+        android:lines="2"
         tools:text="Cálculo I"/>
 
     <android.support.v4.widget.Space
@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:textAlignment="center"
         android:textAppearance="@style/ClassItemMediumTextInverse"
-        android:maxLines="1"
+        android:lines="2"
         tools:text="13:30 - 15:30"/>
 
     <android.support.v4.widget.Space
@@ -46,7 +46,7 @@
         android:layout_height="wrap_content"
         android:textAlignment="center"
         android:textAppearance="@style/ClassItemMediumTextInverse"
-        android:maxLines="1"
+        android:lines="1"
         tools:text="CB03"/>
 
 </LinearLayout>
