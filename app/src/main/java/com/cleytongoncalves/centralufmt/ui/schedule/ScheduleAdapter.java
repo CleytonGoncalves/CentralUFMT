@@ -15,18 +15,18 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-final class ScheduleGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-	private final static String TAG = ScheduleGridAdapter.class.getSimpleName();
+final class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+	private final static String TAG = ScheduleAdapter.class.getSimpleName();
 	private static final int TYPE_HEADER = 0;
 	private static final int TYPE_ITEM = 1;
 	private static final String[] shortDayName = {"seg", "ter", "qua", "qui", "sex", "sáb",
 	                                              "dom"};
 
-	private final ScheduleGridPresenter mPresenter;
+	private final SchedulePresenter mSchedulePresenter;
 
 	@Inject
-	ScheduleGridAdapter(ScheduleGridPresenter presenter) {
-		mPresenter = presenter;
+	ScheduleAdapter(SchedulePresenter schedulePresenter) {
+		mSchedulePresenter = schedulePresenter;
 		setHasStableIds(true);
 	}
 
@@ -43,13 +43,12 @@ final class ScheduleGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
 	@Override
 	public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-		if (mPresenter.isHeader(position)) {
+		if (mSchedulePresenter.isHeader(position)) {
 			((HeaderViewHolder) holder).header.setText(shortDayName[position]);
 			return;
 		}
 
-		position = mPresenter.getItemPosition(position);
-		ScheduleItemData data = mPresenter.getDataForPosition(position);
+		ScheduleItemData data = mSchedulePresenter.getDataForPosition(position);
 		ClassViewHolder classViewHolder = (ClassViewHolder) holder;
 
 		if (data.getTitle().isEmpty()) {
@@ -70,7 +69,7 @@ final class ScheduleGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
 	@Override
 	public int getItemViewType(int position) {
-		if (mPresenter.isHeader(position)) {
+		if (mSchedulePresenter.isHeader(position)) {
 			return TYPE_HEADER;
 		}
 
@@ -79,16 +78,12 @@ final class ScheduleGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
 	@Override
 	public long getItemId(int position) {
-		return mPresenter.getItemId(position);
+		return mSchedulePresenter.getItemId(position);
 	}
 
 	@Override
 	public int getItemCount() {
-		return mPresenter.getItemCount();
-	}
-
-	int getAmountOfDays() {
-		return mPresenter.getAmountOfDays();
+		return mSchedulePresenter.getItemCount();
 	}
 
 	static class ClassViewHolder extends RecyclerView.ViewHolder {
