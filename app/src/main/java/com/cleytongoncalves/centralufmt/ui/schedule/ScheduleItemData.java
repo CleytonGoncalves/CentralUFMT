@@ -6,10 +6,10 @@ import lombok.Value;
 /* Must be public to be written on shared preferences */
 @Value @AllArgsConstructor
 public final class ScheduleItemData implements Comparable<ScheduleItemData> {
-	int mColumn;
-	String mTitle;
-	String mSchedule;
-	String mRoom;
+	final private int mColumn;
+	final private String mTitle;
+	final private String mSchedule;
+	final private String mRoom;
 
 	@Override
 	public int compareTo(ScheduleItemData o) {

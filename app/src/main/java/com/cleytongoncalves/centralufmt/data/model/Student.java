@@ -8,9 +8,9 @@ import lombok.Value;
 
 @Value @AllArgsConstructor
 public class Student implements Parcelable {
-	String mFullName;
-	String mRga;
-	Course mCourse;
+	final private String mFullName;
+	final private String mRga;
+	final private Course mCourse;
 
 	public String getFirstName() {
 		return mFullName.split(" ")[0];

@@ -13,10 +13,10 @@ import lombok.experimental.NonFinal;
 
 @Value @RequiredArgsConstructor
 public class Course implements Parcelable {
-	String mTitle;
-	String mCode;
-	String mType;
-	String mCurrentTerm;
+	final private String mTitle;
+	final private String mCode;
+	final private String mType;
+	final private String mCurrentTerm;
 	@NonFinal @Setter List<Discipline> mEnrolledDisciplines;
 
 	@Override
