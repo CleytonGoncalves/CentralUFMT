@@ -2,6 +2,7 @@ package com.cleytongoncalves.centralufmt.ui.schedule;
 
 import com.cleytongoncalves.centralufmt.data.DataManager;
 import com.cleytongoncalves.centralufmt.data.local.HtmlHelper;
+import com.cleytongoncalves.centralufmt.data.local.PreferencesHelper;
 import com.cleytongoncalves.centralufmt.data.model.Discipline;
 
 import org.joda.time.DateTime;
@@ -34,15 +35,21 @@ final class ScheduleGridPresenter {
 	}
 
 	private void init() {
-		List<Discipline> disciplineList = mDataManager.getStudent()
-		                                              .getCourse().getEnrolledDisciplines();
-		if (disciplineList == null) {
-			//TODO: SCHEDULE NETWORK GET, MAYBE INTEGRATE THIS WITH THE FRAGMENT PRESENTER?
-			disciplineList = HtmlHelper.parseSchedule(HtmlHelper.getScheduleHtml());
-		}
+		PreferencesHelper prefHelper = mDataManager.getPreferencesHelper();
+		List<ScheduleItemData> schedule = prefHelper.getSchedule();
 
-		Map<Integer, SortedSet<ScheduleItemData>> hourlySchedule = parseSchedule(disciplineList);
-		mScheduleData = createAdapterReadySchedule(hourlySchedule);
+		if (schedule == null) {
+			//TODO: SCHEDULE NETWORK GET, MAYBE INTEGRATE THIS WITH THE FRAGMENT PRESENTER?
+			//List<Discipline> disciplineList = mDataManager.getStudent().getCourse()
+			// .getEnrolledDisciplines();
+			List<Discipline> disciplineList = HtmlHelper.parseSchedule(HtmlHelper.getScheduleHtml
+					                                                                      ());
+			Map<Integer, SortedSet<ScheduleItemData>> hourlySchedule = parseSchedule
+					                                                           (disciplineList);
+			schedule = createAdapterReadySchedule(hourlySchedule);
+			prefHelper.putSchedule(schedule);
+		}
+		mScheduleData = schedule;
 	}
 
 	ScheduleItemData getDataForPosition(int position) {
@@ -129,9 +136,7 @@ final class ScheduleGridPresenter {
 		}
 
 		position = getItemPosition(position);
-		ScheduleItemData data = mScheduleData.get(position);
-		return data.getTitle().hashCode() * 5 + data.getColumn() * 3
-				       + data.getSchedule().hashCode() + data.getRoom().hashCode();
+		return mScheduleData.get(position).hashCode();
 	}
 
 	int getItemCount() {
@@ -139,7 +144,7 @@ final class ScheduleGridPresenter {
 	}
 
 	int getItemPosition(int position) {
-		return position -= mDaysOfWeekAmount; //Removes the header from the count;
+		return position - mDaysOfWeekAmount; //Removes the header from the count;
 	}
 
 }
