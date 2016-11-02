@@ -3,6 +3,7 @@ package com.cleytongoncalves.centralufmt.data.local;
 import com.cleytongoncalves.centralufmt.data.model.Course;
 import com.cleytongoncalves.centralufmt.data.model.Discipline;
 import com.cleytongoncalves.centralufmt.data.model.Student;
+import com.cleytongoncalves.centralufmt.util.TextUtil;
 
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
@@ -39,8 +40,8 @@ public final class HtmlHelper {
 		String[] infoCurso = infoCursoRaw.split(":")[1].split("-");
 
 		String code = infoCurso[0].trim();
-		String title = capitalizeFirstLetterOnSentence(infoCurso[1].trim());
-		String type = capitalizeFirstLetterOnSentence(infoCurso[2].trim());
+		String title = TextUtil.capsMeaningfulWords(infoCurso[1].trim());
+		String type = TextUtil.capsMeaningfulWords(infoCurso[2].trim());
 
 		String infoTerm = alunoInfoNodes.get(2).text();
 		String[] infoTermSplit = infoTerm.split(":")[1].split(" ");
@@ -54,11 +55,9 @@ public final class HtmlHelper {
 		String[] infoAluno = infoAlunoRaw.split(":")[1].split("-");
 
 		String rga = infoAluno[0].trim();
-		String nomeCompleto = capitalizeFirstLetterOnSentence(infoAluno[1].trim());
+		String nomeCompleto = TextUtil.capsMeaningfulWords(infoAluno[1].trim());
 
-		Student student = new Student(nomeCompleto, rga, course);
-
-		return student;
+		return new Student(nomeCompleto, rga, course);
 	}
 	
 	public static List<Discipline> parseSchedule(String html) {
@@ -81,7 +80,7 @@ public final class HtmlHelper {
 			Element currRow = rows.get(i);
 			Elements content = currRow.getElementsByTag("div");
 
-			String nome = capitalizeFirstLetterOnSentence(content.get(1).ownText());
+			String nome = TextUtil.capsMeaningfulWords(content.get(1).ownText());
 			String cod = content.get(0).ownText();
 			String turma = content.get(4).ownText();
 			String sala = content.get(5).ownText();
@@ -143,24 +142,6 @@ public final class HtmlHelper {
 	}
 
 	/* ----- Static Helper Methods ----- */
-
-	private static String capitalizeFirstLetterOnSentence(String text) {
-		char[] newText = text.toUpperCase().toCharArray();
-
-		boolean makeLowerCase = false;
-		for (int i = 0; i < newText.length; i++) {
-			char currChar = newText[i];
-			if (currChar == ' ') {
-				makeLowerCase = i < newText.length - 3 &&
-						                ((newText[i + 3] == ' ') || (newText[i + 2] == ' '));
-			} else if (makeLowerCase) {
-				newText[i] = Character.toLowerCase(currChar);
-			} else {
-				makeLowerCase = true;
-			}
-		}
-		return String.valueOf(newText);
-	}
 
 	public static Map<String, String> createFormParams(String html) {
 		Map<String, String> map = new HashMap<>();
@@ -241,34 +222,39 @@ public final class HtmlHelper {
 				       "./HorarioAluno_files/Ufmt.gif\" align=\"left\" width=\"50\" " +
 				       "height=\"60\">\n" +
 				       "                        <div align=\"left\">\n" +
-				       "                            <table width=\"86%\" style=\"border-collapse:" +
+				       "                            <table width=\"86%\" " +
+				       "style=\"border-collapse:" +
 				       " " +
 				       "collapse\" bordercolor=\"#111111\" cellpadding=\"0\" " +
 				       "cellspacing=\"0\">\n" +
 				       "                                <tbody>\n" +
 				       "                                    <tr>\n" +
-				       "                                        <td class=\"CAMPO\" width=\"400\"" +
+				       "                                        <td class=\"CAMPO\" " +
+				       "width=\"400\"" +
 				       " " +
 				       "align=\"left\"><font size=\"1\">FUNDAÇÃO\n" +
 				       "                    UNIVERSIDADE FEDERAL DE MATO GROSSO </font>\n" +
 				       "                                        </td>\n" +
 				       "                                    </tr>\n" +
 				       "                                    <tr>\n" +
-				       "                                        <td class=\"CAMPO\" width=\"400\"" +
+				       "                                        <td class=\"CAMPO\" " +
+				       "width=\"400\"" +
 				       " " +
 				       "align=\"left\"><font size=\"1\">SISTEMA\n" +
 				       "                    DE INFORMAÇÕES GERENCIAIS ACADÊMICAS </font>\n" +
 				       "                                        </td>\n" +
 				       "                                    </tr>\n" +
 				       "                                    <tr>\n" +
-				       "                                        <td class=\"CAMPO\" width=\"400\"" +
+				       "                                        <td class=\"CAMPO\" " +
+				       "width=\"400\"" +
 				       " " +
 				       "align=\"left\"><font size=\"1\">COORDENAÇÃO\n" +
 				       "                    DE PROCESSAMENTO DE DADOS - PROPLAN </font>\n" +
 				       "                                        </td>\n" +
 				       "                                    </tr>\n" +
 				       "                                    <tr>\n" +
-				       "                                        <td class=\"CAMPO\" width=\"400\"" +
+				       "                                        <td class=\"CAMPO\" " +
+				       "width=\"400\"" +
 				       " " +
 				       "align=\"left\"><font size=\"1\">COORDENAÇÃO \n" +
 				       "                    DE ADMINISTRAÇÃO ESCOLAR - PROEG </font>\n" +
@@ -454,7 +440,8 @@ public final class HtmlHelper {
 				       "\n" +
 				       "                                </tr>\n" +
 				       "\n" +
-				       "                                <tr style=\"font-family: &#39;Arial&#39;;" +
+				       "                                <tr style=\"font-family: &#39;Arial&#39;" +
+				       ";" +
 				       " " +
 				       "font-size: 8pt;  color:#000000;\">\n" +
 				       "\n" +
@@ -514,7 +501,8 @@ public final class HtmlHelper {
 				       "\n" +
 				       "                                </tr>\n" +
 				       "\n" +
-				       "                                <tr style=\"font-family: &#39;Arial&#39;;" +
+				       "                                <tr style=\"font-family: &#39;Arial&#39;" +
+				       ";" +
 				       " " +
 				       "font-size: 8pt;  color:#000000;\">\n" +
 				       "\n" +
@@ -574,7 +562,8 @@ public final class HtmlHelper {
 				       "\n" +
 				       "                                </tr>\n" +
 				       "\n" +
-				       "                                <tr style=\"font-family: &#39;Arial&#39;;" +
+				       "                                <tr style=\"font-family: &#39;Arial&#39;" +
+				       ";" +
 				       " " +
 				       "font-size: 8pt;  color:#000000;\">\n" +
 				       "\n" +
@@ -633,7 +622,8 @@ public final class HtmlHelper {
 				       "\n" +
 				       "                                </tr>\n" +
 				       "\n" +
-				       "                                <tr style=\"font-family: &#39;Arial&#39;;" +
+				       "                                <tr style=\"font-family: &#39;Arial&#39;" +
+				       ";" +
 				       " " +
 				       "font-size: 8pt;  color:#000000;\">\n" +
 				       "\n" +
@@ -693,7 +683,8 @@ public final class HtmlHelper {
 				       "\n" +
 				       "                                </tr>\n" +
 				       "\n" +
-				       "                                <tr style=\"font-family: &#39;Arial&#39;;" +
+				       "                                <tr style=\"font-family: &#39;Arial&#39;" +
+				       ";" +
 				       " " +
 				       "font-size: 8pt;  color:#000000;\">\n" +
 				       "\n" +
@@ -753,7 +744,8 @@ public final class HtmlHelper {
 				       "\n" +
 				       "                                </tr>\n" +
 				       "\n" +
-				       "                                <tr style=\"font-family: &#39;Arial&#39;;" +
+				       "                                <tr style=\"font-family: &#39;Arial&#39;" +
+				       ";" +
 				       " " +
 				       "font-size: 8pt;  color:#000000;\">\n" +
 				       "\n" +
@@ -813,7 +805,8 @@ public final class HtmlHelper {
 				       "\n" +
 				       "                                </tr>\n" +
 				       "\n" +
-				       "                                <tr style=\"font-family: &#39;Arial&#39;;" +
+				       "                                <tr style=\"font-family: &#39;Arial&#39;" +
+				       ";" +
 				       " " +
 				       "font-size: 8pt;  color:#000000;\">\n" +
 				       "\n" +
@@ -873,7 +866,8 @@ public final class HtmlHelper {
 				       "\n" +
 				       "                                </tr>\n" +
 				       "\n" +
-				       "                                <tr style=\"font-family: &#39;Arial&#39;;" +
+				       "                                <tr style=\"font-family: &#39;Arial&#39;" +
+				       ";" +
 				       " " +
 				       "font-size: 8pt;  color:#000000;\">\n" +
 				       "\n" +
@@ -933,7 +927,8 @@ public final class HtmlHelper {
 				       "\n" +
 				       "                                </tr>\n" +
 				       "\n" +
-				       "                                <tr style=\"font-family: &#39;Arial&#39;;" +
+				       "                                <tr style=\"font-family: &#39;Arial&#39;" +
+				       ";" +
 				       " " +
 				       "font-size: 8pt;  color:#000000;\">\n" +
 				       "\n" +
@@ -993,7 +988,8 @@ public final class HtmlHelper {
 				       "\n" +
 				       "                                </tr>\n" +
 				       "\n" +
-				       "                                <tr style=\"font-family: &#39;Arial&#39;;" +
+				       "                                <tr style=\"font-family: &#39;Arial&#39;" +
+				       ";" +
 				       " " +
 				       "font-size: 8pt;  color:#000000;\">\n" +
 				       "\n" +
@@ -1052,7 +1048,8 @@ public final class HtmlHelper {
 				       "\n" +
 				       "                                </tr>\n" +
 				       "\n" +
-				       "                                <tr style=\"font-family: &#39;Arial&#39;;" +
+				       "                                <tr style=\"font-family: &#39;Arial&#39;" +
+				       ";" +
 				       " " +
 				       "font-size: 8pt;  color:#000000;\">\n" +
 				       "\n" +
@@ -1149,7 +1146,8 @@ public final class HtmlHelper {
 				       "                    <br>\n" +
 				       "                    <font face=\"Courier New, Arial, Helvetica, " +
 				       "sans-serif\" color=\"#003399\" size=\"1\">\n" +
-				       " <b>PERÍODO OFERTA  (1 = 1º SEMESTRE 1) (2 = 2ºSEMESTRE ) (3 = ANUAL) (4 " +
+				       " <b>PERÍODO OFERTA  (1 = 1º SEMESTRE 1) (2 = 2ºSEMESTRE ) (3 = ANUAL) (4" +
+				       " " +
 				       "=" +
 				       " MODULAR)  </b>\n" +
 				       " </font>\n" +
