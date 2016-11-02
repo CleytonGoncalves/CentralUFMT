@@ -28,7 +28,7 @@
 
     <android.support.v4.widget.Space
         android:layout_width="match_parent"
-        android:layout_height="5dp"/>
+        android:layout_height="3dp"/>
 
     <TextView
         android:id="@+id/class_schedule"
@@ -41,7 +41,7 @@
 
     <android.support.v4.widget.Space
         android:layout_width="match_parent"
-        android:layout_height="5dp"/>
+        android:layout_height="3dp"/>
 
     <me.grantland.widget.AutofitTextView
         android:id="@+id/class_room"
