@@ -1,6 +1,10 @@
 package com.cleytongoncalves.centralufmt.ui.schedule;
 
-interface ScheduleDataProvider {
+interface ScheduleDataPresenter {
+	void attachAdapter(ScheduleAdapter adapter);
+
+	void detachAdapter();
+
 	ScheduleItemData getDataForPosition(int position);
 
 	boolean isHeader(int position);

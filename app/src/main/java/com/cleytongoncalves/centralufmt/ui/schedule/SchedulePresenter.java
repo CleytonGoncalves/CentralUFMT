@@ -20,11 +20,14 @@ import java.util.TreeSet;
 
 import javax.inject.Inject;
 
-final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDataProvider {
+final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDataPresenter {
+	private final static String TAG = SchedulePresenter.class.getSimpleName();
 	private final static int MINIMUM_DAYS_AMOUNT = 5;
+	private final static int MAXIMUM_TITLE_LENGTH = 25;
 
 	private final DataManager mDataManager;
 	@Nullable private ScheduleMvpView mScheduleView;
+	@Nullable private ScheduleAdapter mScheduleAdapter;
 
 	private List<ScheduleItemData> mScheduleData;
 	private int mDaysOfWeekAmount;
@@ -35,14 +38,14 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 		mDataManager = dataManager;
 		mMaxDailyClass = 0;
 		mDaysOfWeekAmount = MINIMUM_DAYS_AMOUNT;
-		init();
+		init(false);
 	}
 
-	private void init() {
+	private void init(boolean forceUpdate) {
 		PreferencesHelper prefHelper = mDataManager.getPreferencesHelper();
 		List<ScheduleItemData> schedule = prefHelper.getSchedule();
 
-		if (schedule == null) {
+		if (schedule == null || forceUpdate) {
 			//TODO: SCHEDULE NETWORK GET
 			List<Discipline> disciplineList = HtmlHelper.parseSchedule(HtmlHelper.getScheduleHtml
 					                                                                      ());
@@ -66,7 +69,27 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 		mScheduleView = null;
 	}
 
+	void refreshSchedule() {
+		init(true);
+		if (mScheduleAdapter != null) {
+			mScheduleAdapter.notifyDataSetChanged();
+		}
+		if (mScheduleView != null) {
+			mScheduleView.OnItemsLoadComplete();
+		}
+	}
+
 	/* Adapter Methods */
+
+	@Override
+	public void attachAdapter(ScheduleAdapter adapter) {
+		mScheduleAdapter = adapter;
+	}
+
+	@Override
+	public void detachAdapter() {
+		mScheduleAdapter = null;
+	}
 
 	@Override
 	public ScheduleItemData getDataForPosition(int position) {
@@ -116,13 +139,14 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 					mDaysOfWeekAmount = dayOfWeek;
 				}
 
-				String classTime = start.hourOfDay().getAsText() + ":" +
+				String time = start.hourOfDay().getAsText() + ":" +
 						                   start.minuteOfHour().getAsText() + " - " +
 						                   end.hourOfDay().getAsText() + ":" +
 						                   end.minuteOfHour().getAsText();
 
-				ScheduleItemData discData = new ScheduleItemData(dayOfWeek - 1, disc.getTitle(),
-						                                                classTime, disc.getRoom());
+				String title = formatTitle(disc.getTitle());
+				ScheduleItemData discData = new ScheduleItemData(dayOfWeek - 1, title, time,
+						                                                disc.getRoom());
 
 				SortedSet<ScheduleItemData> viewSet = hourlySchedule.get(start.getHourOfDay());
 				if (viewSet == null) {
@@ -162,6 +186,15 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 		}
 
 		return list;
+	}
+
+	private String formatTitle(String title) {
+		if (title.length() > MAXIMUM_TITLE_LENGTH) {
+			final char ellipse = '\u2026'; //Even though it is only 1 char, it occupies ~2 spaces
+			title = title.substring(0, MAXIMUM_TITLE_LENGTH - 2) + ellipse;
+		}
+
+		return title;
 	}
 
 	private int getItemPosition(int position) {

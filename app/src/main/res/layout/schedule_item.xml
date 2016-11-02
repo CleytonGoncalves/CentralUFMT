@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:autofit="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -13,7 +14,7 @@
     tools:background="@color/primary_dark"
     >
 
-    <TextView
+    <me.grantland.widget.AutofitTextView
         android:id="@+id/class_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -21,6 +22,8 @@
         android:textAppearance="@style/ClassItemLargeTextInverse"
         android:textStyle="bold"
         android:lines="2"
+        android:maxLength="25"
+        autofit:minTextSize="9sp"
         tools:text="Cálculo I"/>
 
     <android.support.v4.widget.Space
@@ -40,7 +43,7 @@
         android:layout_width="match_parent"
         android:layout_height="5dp"/>
 
-    <TextView
+    <me.grantland.widget.AutofitTextView
         android:id="@+id/class_room"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

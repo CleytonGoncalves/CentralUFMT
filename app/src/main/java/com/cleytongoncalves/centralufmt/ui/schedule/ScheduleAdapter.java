@@ -23,12 +23,18 @@ final class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 	private static final String[] shortDayName = {"seg", "ter", "qua", "qui", "sex", "sáb",
 	                                              "dom"};
 
-	private final SchedulePresenter mSchedulePresenter;
+	private final ScheduleDataPresenter mSchedulePresenter;
 
 	@Inject
 	ScheduleAdapter(SchedulePresenter schedulePresenter) {
 		mSchedulePresenter = schedulePresenter;
 		setHasStableIds(true);
+	}
+
+	@Override
+	public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+		super.onAttachedToRecyclerView(recyclerView);
+		mSchedulePresenter.attachAdapter(this);
 	}
 
 	@Override
@@ -88,6 +94,12 @@ final class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 	@Override
 	public int getItemCount() {
 		return mSchedulePresenter.getItemCount();
+	}
+
+	@Override
+	public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+		super.onDetachedFromRecyclerView(recyclerView);
+
 	}
 
 	private boolean isEmpty(int position) {
