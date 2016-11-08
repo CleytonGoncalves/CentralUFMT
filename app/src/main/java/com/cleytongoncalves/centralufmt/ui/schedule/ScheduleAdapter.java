@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.cleytongoncalves.centralufmt.R;
+import com.cleytongoncalves.centralufmt.ui.schedule.ScheduleData.ScheduleItemData;
 
 import javax.inject.Inject;
 
@@ -16,12 +17,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 final class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-	private final static String TAG = ScheduleAdapter.class.getSimpleName();
+	private static final String TAG = ScheduleAdapter.class.getSimpleName();
 	private static final int TYPE_HEADER = 0;
 	private static final int TYPE_ITEM = 1;
 	private static final int TYPE_EMPTY = 2;
-	private static final String[] shortDayName = {"seg", "ter", "qua", "qui", "sex", "sáb",
-	                                              "dom"};
+	private static final String[] SHORT_DAY_NAME = {"seg", "ter", "qua", "qui", "sex", "sáb",
+	                                                "dom"};
 
 	private final ScheduleDataPresenter mSchedulePresenter;
 
@@ -53,7 +54,7 @@ final class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 	@Override
 	public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 		if (mSchedulePresenter.isHeader(position)) {
-			((HeaderViewHolder) holder).header.setText(shortDayName[position]);
+			((HeaderViewHolder) holder).header.setText(SHORT_DAY_NAME[position]);
 			return;
 		} else if (isEmpty(position)) {
 			((EmptyViewHolder) holder).view.setBackgroundColor(Color.parseColor("#f9f9f9"));
@@ -99,7 +100,7 @@ final class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 	@Override
 	public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
 		super.onDetachedFromRecyclerView(recyclerView);
-
+		mSchedulePresenter.detachAdapter();
 	}
 
 	private boolean isEmpty(int position) {

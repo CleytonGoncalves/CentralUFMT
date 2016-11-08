@@ -26,6 +26,7 @@ public final class ScheduleFragment extends Fragment implements ScheduleMvpView 
 	@Inject SchedulePresenter mSchedulePresenter;
 
 	@BindView(R.id.swipe_schedule) SwipeRefreshLayout mSwipeRefreshLayout;
+	@BindView(R.id.grid_schedule) RecyclerView mRecyclerView;
 	private Unbinder mUnbinder;
 
 	@Override
@@ -42,15 +43,20 @@ public final class ScheduleFragment extends Fragment implements ScheduleMvpView 
 		mSchedulePresenter.attachView(this);
 		mUnbinder = ButterKnife.bind(this, rootView);
 
+		//Sets an empty recycler view
+		mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 1));
+		mRecyclerView.setAdapter(new ScheduleAdapter(mSchedulePresenter));
+
 		mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 			@Override
 			public void onRefresh() {
-				mSchedulePresenter.refreshSchedule();
+				mSchedulePresenter.refreshSchedule(true);
 			}
 		});
 
-		RecyclerView rcView = (RecyclerView) rootView.findViewById(R.id.grid_schedule);
-		setUpRecyclerView(rcView);
+		//Loads schedule
+		mSwipeRefreshLayout.setRefreshing(true);
+		mSchedulePresenter.refreshSchedule(false);
 
 		return rootView;
 	}
@@ -67,23 +73,15 @@ public final class ScheduleFragment extends Fragment implements ScheduleMvpView 
 		mUnbinder.unbind();
 	}
 
-	private void setUpRecyclerView(RecyclerView rcView) {
-		int gridSpan = mSchedulePresenter.getAmountOfDays();
-		rcView.setLayoutManager(new GridLayoutManager(getActivity(), gridSpan));
-		rcView.setAdapter(new ScheduleAdapter(mSchedulePresenter));
+	/* MVP Methods */
+
+	@Override
+	public void setGridSpanCount(int amountOfDays) {
+		((GridLayoutManager) mRecyclerView.getLayoutManager()).setSpanCount(amountOfDays);
 	}
 
 	@Override
-	public void OnItemsLoadStarted() {
-		if (! mSwipeRefreshLayout.isRefreshing()) {
-			mSwipeRefreshLayout.setRefreshing(true);
-		}
-	}
-
-	@Override
-	public void OnItemsLoadComplete() {
-		if (mSwipeRefreshLayout.isRefreshing()) {
-			mSwipeRefreshLayout.setRefreshing(false);
-		}
+	public void stopProgressBar() {
+		mSwipeRefreshLayout.setRefreshing(false);
 	}
 }

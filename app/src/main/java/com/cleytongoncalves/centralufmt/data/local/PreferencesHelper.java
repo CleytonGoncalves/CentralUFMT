@@ -6,13 +6,10 @@ import android.support.annotation.Nullable;
 
 import com.cleytongoncalves.centralufmt.data.model.Student;
 import com.cleytongoncalves.centralufmt.injection.ApplicationContext;
-import com.cleytongoncalves.centralufmt.ui.schedule.ScheduleItemData;
+import com.cleytongoncalves.centralufmt.ui.schedule.ScheduleData;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.pddstudio.preferences.encrypted.EncryptedPreferences;
-
-import java.util.Arrays;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -87,20 +84,18 @@ public class PreferencesHelper {
 		return mSharedPref.getBoolean(PREF_KEY_ANONYMOUS_LOGIN, false);
 	}
 
-	public void putSchedule(List<ScheduleItemData> dataList) {
-		ScheduleItemData[] dataArr = new ScheduleItemData[dataList.size()];
-		dataList.toArray(dataArr);
-		mSharedPref.edit().putString(PREF_KEY_SCHEDULE_DATA, mGson.toJson(dataArr)).apply();
+	public void putSchedule(ScheduleData schedule) {
+		mSharedPref.edit().putString(PREF_KEY_SCHEDULE_DATA, mGson.toJson(schedule)).apply();
 	}
 
 	@Nullable
-	public List<ScheduleItemData> getSchedule() {
-		String scheduleArrJson = mSharedPref.getString(PREF_KEY_SCHEDULE_DATA, null);
+	public ScheduleData getSchedule() {
+		String scheduleJson = mSharedPref.getString(PREF_KEY_SCHEDULE_DATA, null);
 
-		if (scheduleArrJson == null) {
+		if (scheduleJson == null) {
 			return null;
 		}
-		return Arrays.asList(mGson.fromJson(scheduleArrJson, ScheduleItemData[].class));
+		return mGson.fromJson(scheduleJson, ScheduleData.class);
 	}
 
 	public void putMapRouteDisplayState(boolean enabled) {
