@@ -2,10 +2,10 @@ package com.cleytongoncalves.centralufmt.ui.schedule;
 
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.util.SparseArray;
 
 import com.cleytongoncalves.centralufmt.data.DataManager;
-import com.cleytongoncalves.centralufmt.data.local.HtmlHelper;
 import com.cleytongoncalves.centralufmt.data.model.Discipline;
 import com.cleytongoncalves.centralufmt.ui.base.Presenter;
 import com.cleytongoncalves.centralufmt.ui.schedule.ScheduleData.ScheduleItemData;
@@ -59,12 +59,13 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 	}
 
 	void refreshSchedule(boolean forceUpdate) {
-		ScheduleData schedule = mDataManager.getPreferencesHelper().getSchedule();
-		if (schedule == null || forceUpdate) {
+		ScheduleData schedule = null;
+		if (! forceUpdate) { schedule = mDataManager.getPreferencesHelper().getSchedule(); }
+
+		if (schedule == null) {
 			if (! isParseRunning()) {
 				EventBus.getDefault().register(this);
-				mParserTask = new DataParserTask();
-				mParserTask.execute();
+				mDataManager.fetchSchedule();
 			}
 		} else {
 			onDataChanged(schedule);
@@ -114,6 +115,16 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 		return position - mSchedule.getAmountOfDays(); //Removes the header from the count;
 	}
 
+	@Subscribe(threadMode = ThreadMode.ASYNC)
+	public void onScheduleFetched(List<Discipline> enrolled) {
+		//mParserTask = new DataParserTask(enrolled);
+		//mParserTask.execute();
+
+		Log.i(TAG, "INITIATING SCHEDULE PARSING");
+		ScheduleData schedule = parseToSchedule(enrolled);
+		EventBus.getDefault().post(schedule);
+	}
+
 	@Subscribe(threadMode = ThreadMode.MAIN)
 	public void onDataChanged(ScheduleData schedule) {
 		mSchedule = schedule;
@@ -126,98 +137,104 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 			EventBus.getDefault().unregister(this);
 			mDataManager.getPreferencesHelper().putSchedule(mSchedule);
 			mParserTask = null;
+			Log.i(TAG, "DATA CHANGED");
 		}
 	}
 
 	private boolean isParseRunning() {
-		return mParserTask != null;
+		//return mParserTask != null;
+		return EventBus.getDefault().isRegistered(this);
+	}
+
+	private static ScheduleData parseToSchedule(List<Discipline> discList) {
+		/* Parses the discipline list to a sorted *map* (dayOfWeek -> SortedSet(Starting Hour)) */
+		SparseArray<SortedSet<ScheduleItemData>> rawSchedule =
+				new SparseArray<>(discList.size()); //Max # of different hours
+
+		int amountOfDays = MINIMUM_DAYS_AMOUNT;
+		int maxDailyClasses = 0;
+		for (int i = 0, discListSize = discList.size(); i < discListSize; i++) {
+			Discipline disc = discList.get(i);
+			List<Interval> classTimes = disc.getClassTimes();
+
+			for (int j = 0, classTimesSize = classTimes.size(); j < classTimesSize; j++) {
+				Interval inter = classTimes.get(j);
+				DateTime start = inter.getStart();
+				DateTime end = inter.getEnd();
+
+				int dayOfWeek = start.getDayOfWeek();
+				if (dayOfWeek > MINIMUM_DAYS_AMOUNT) {
+					//Adds saturday and/or sunday
+					amountOfDays = dayOfWeek;
+				}
+
+				String title = TextUtil.capsMeaningfulWords(disc.getTitle());
+				title = TextUtil.ellipsizeString(title, MAXIMUM_TITLE_LENGTH);
+
+				String time = start.toString("HH:mm") + " - " + end.toString("HH:mm");
+
+				String room = TextUtil.ellipsizeString(disc.getRoom(), MAXIMUM_ROOM_LENGTH);
+
+				ScheduleItemData discData =
+						new ScheduleItemData(dayOfWeek - 1, title, time, room);
+
+				SortedSet<ScheduleItemData> viewSet = rawSchedule.get(start.getHourOfDay());
+				if (viewSet == null) {
+					viewSet = new TreeSet<>();
+					rawSchedule.put(start.getHourOfDay(), viewSet);
+					maxDailyClasses++;
+				}
+				viewSet.add(discData);
+			}
+		}
+
+		//if (isCancelled()) {
+		//	return null;
+		//}
+
+		/* Creates a list sorted by the necessary adapter order, with empty items on empty
+		classes */
+		List<ScheduleItemData> schedule = new ArrayList<>(amountOfDays * maxDailyClasses);
+
+		int scheduleSize = rawSchedule.size();
+		for (int i = 0, position = 0; i < scheduleSize; i++) {
+			SortedSet<ScheduleItemData> hourlyData = rawSchedule.valueAt(i);
+
+			for (ScheduleItemData data : hourlyData) {
+				int currDay = position % amountOfDays;
+				int nextDataDay = data.getColumn();
+				if (nextDataDay != currDay) {
+					for (; currDay < nextDataDay; currDay++) {
+						ScheduleItemData empty = new ScheduleItemData(currDay, "", "", "");
+						schedule.add(empty);
+						position++;
+					}
+				}
+
+				schedule.add(data);
+				position++;
+			}
+		}
+
+		return new ScheduleData(maxDailyClasses, amountOfDays, schedule);
 	}
 
 	private static class DataParserTask extends AsyncTask<Void, Void, Void> {
+		private final List<Discipline> mEnrolled;
+
+		DataParserTask(List<Discipline> enrolled) {
+			mEnrolled = enrolled;
+		}
+
 		@Override
 		protected Void doInBackground(Void... params) {
-			//TODO: SCHEDULE NETWORK GET
-			List<Discipline> disciplineList = HtmlHelper.parseSchedule(HtmlHelper.getScheduleHtml
-					                                                                      ());
-			//disciplineList = mDataManager.getStudent().getCourse().getEnrolledDisciplines();
+			//disciplineList = HtmlHelper.parseSchedule(HtmlHelper.getScheduleHtml());
 
+			List<Discipline> disciplineList = mEnrolled;
 			ScheduleData schedule = parseToSchedule(disciplineList);
 			if (schedule != null && ! isCancelled()) { EventBus.getDefault().post(schedule); }
 			return null;
 		}
 
-		private ScheduleData parseToSchedule(List<Discipline> discList) {
-		/* Parses the discipline list to a sorted *map* (dayOfWeek -> SortedSet(Starting Hour)) */
-
-			SparseArray<SortedSet<ScheduleItemData>> rawSchedule =
-					new SparseArray<>(discList.size()); //Max # of different hours
-
-			int amountOfDays = MINIMUM_DAYS_AMOUNT;
-			int maxDailyClasses = 0;
-			for (int i = 0, discListSize = discList.size(); i < discListSize; i++) {
-				Discipline disc = discList.get(i);
-				List<Interval> classTimes = disc.getClassTimes();
-
-				for (int j = 0, classTimesSize = classTimes.size(); j < classTimesSize; j++) {
-					Interval inter = classTimes.get(j);
-					DateTime start = inter.getStart();
-					DateTime end = inter.getEnd();
-
-					int dayOfWeek = start.getDayOfWeek();
-					if (dayOfWeek > MINIMUM_DAYS_AMOUNT) {
-						//Adds saturday and/or sunday
-						amountOfDays = dayOfWeek;
-					}
-
-					String title = TextUtil.capsMeaningfulWords(disc.getTitle());
-					title = TextUtil.ellipsizeString(title, MAXIMUM_TITLE_LENGTH);
-
-					String time = start.toString("HH:mm") + " - " + end.toString("HH:mm");
-
-					String room = TextUtil.ellipsizeString(disc.getRoom(), MAXIMUM_ROOM_LENGTH);
-
-					ScheduleItemData discData =
-							new ScheduleItemData(dayOfWeek - 1, title, time, room);
-
-					SortedSet<ScheduleItemData> viewSet = rawSchedule.get(start.getHourOfDay());
-					if (viewSet == null) {
-						viewSet = new TreeSet<>();
-						rawSchedule.put(start.getHourOfDay(), viewSet);
-						maxDailyClasses++;
-					}
-					viewSet.add(discData);
-				}
-			}
-
-			if (isCancelled()) {
-				return null;
-			}
-
-		/* Creates a list sorted by the necessary adapter order, with empty items on empty
-		classes */
-			List<ScheduleItemData> schedule = new ArrayList<>(amountOfDays * maxDailyClasses);
-
-			int scheduleSize = rawSchedule.size();
-			for (int i = 0, position = 0; i < scheduleSize; i++) {
-				SortedSet<ScheduleItemData> hourlyData = rawSchedule.valueAt(i);
-
-				for (ScheduleItemData data : hourlyData) {
-					int currDay = position % amountOfDays;
-					int nextDataDay = data.getColumn();
-					if (nextDataDay != currDay) {
-						for (; currDay < nextDataDay; currDay++) {
-							ScheduleItemData empty = new ScheduleItemData(currDay, "", "", "");
-							schedule.add(empty);
-							position++;
-						}
-					}
-
-					schedule.add(data);
-					position++;
-				}
-			}
-
-			return new ScheduleData(maxDailyClasses, amountOfDays, schedule);
-		}
 	}
 }
