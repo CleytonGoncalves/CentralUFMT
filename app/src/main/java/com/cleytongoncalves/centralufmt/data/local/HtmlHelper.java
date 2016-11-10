@@ -134,7 +134,7 @@ public final class HtmlHelper {
 			}
 
 			Discipline disc = new Discipline(nome, cod, turma, sala, crd,
-					                                carga, tipo, periodo, aulas);
+			                                 carga, tipo, periodo, aulas);
 			disciplinas.add(disc);
 		}
 		
