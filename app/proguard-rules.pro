@@ -16,6 +16,10 @@
 #   public *;
 #}
 
+# Jsoup rules
+-keep class com.cleytongoncalves.centralufmt.data.local.HtmlHelper.** { *; }
+-keeppackagenames org.jsoup.nodes
+
 # ButterKnife rules
 -keep class butterknife.** { *; }
 -dontwarn butterknife.internal.**

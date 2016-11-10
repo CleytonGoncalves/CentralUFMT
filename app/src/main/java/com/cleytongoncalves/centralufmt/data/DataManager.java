@@ -26,7 +26,7 @@ import okhttp3.Cookie;
 public class DataManager {
 	private static final String TAG = "DataManager";
 	public static final int LOGIN_SIGA = 0;
-	public static final int LOGIN_MOODLE = - 1;
+	private static final int LOGIN_MOODLE = - 1;
 
 	private final NetworkService mNetworkService;
 	private final PreferencesHelper mPreferencesHelper;
@@ -56,32 +56,17 @@ public class DataManager {
 		return mMoodleCookie;
 	}
 
-	/**
-	 * Parses recurse-intensive Student info on a background thread.
-	 */
-	public void doHeavyStudentParsing(final Student student) {
-		//TODO: MAYBE MAKE THE STUDENT PARSING A SERVICE
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				android.os.Process.setThreadPriority(android.os.Process
-						                                     .THREAD_PRIORITY_BACKGROUND);
-				mPreferencesHelper.putLoggedInStudent(student);
-			}
-		}).start();
-	}
-
 	/* ----- LogIn ----- */
 
 	public void logIn(String rga, char[] password, int platform) {
-		EventBus.getDefault().register(this);
-
 		if (platform == LOGIN_MOODLE) {
 			mLogInTask = new MoodleLogInTask(rga, password, mNetworkService);
 		} else {
 			mPreferencesHelper.putCredentials(rga, password);
 			mLogInTask = new SigaLogInTask(rga, password, mNetworkService);
 		}
+
+		EventBus.getDefault().register(this);
 		mLogInTask.start();
 	}
 
@@ -122,7 +107,9 @@ public class DataManager {
 
 	@Subscribe(priority = 1)
 	public void onLogInCompleted(LogInEvent event) {
+		EventBus.getDefault().unregister(this);
 		mLogInTask = null;
+
 		if (event.isSuccessful()) {
 			Object obj = event.getObjectResult();
 
@@ -138,8 +125,6 @@ public class DataManager {
 		} else {
 			Log.w(TAG, "LOGIN FAILED: " + event.getFailureReason());
 		}
-
-		EventBus.getDefault().unregister(this);
 	}
 
 	@Subscribe(priority = 1)
@@ -155,5 +140,4 @@ public class DataManager {
 			mStudent.getCourse().setEnrolledDisciplines(enrolled);
 		}
 	}
-
 }
