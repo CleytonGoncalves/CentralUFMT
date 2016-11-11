@@ -42,6 +42,7 @@ public class DataManager {
 		mPreferencesHelper = preferencesHelper;
 		mNetworkService = networkService;
 		mStudent = preferencesHelper.getLoggedInStudent();
+		EventBus.getDefault().register(this);
 	}
 
 	public PreferencesHelper getPreferencesHelper() {
@@ -66,7 +67,6 @@ public class DataManager {
 			mLogInTask = new SigaLogInTask(rga, password, mNetworkService);
 		}
 
-		EventBus.getDefault().register(this);
 		mLogInTask.start();
 	}
 
@@ -97,7 +97,6 @@ public class DataManager {
 	/* ----- Schedule ----- */
 
 	public void fetchSchedule() {
-		EventBus.getDefault().register(this);
 		Log.i(TAG, "STARTING SCHEDULE FETCH");
 		mScheduleTask = new ScheduleTask(mNetworkService);
 		mScheduleTask.execute();
@@ -107,7 +106,6 @@ public class DataManager {
 
 	@Subscribe(priority = 1)
 	public void onLogInCompleted(LogInEvent event) {
-		EventBus.getDefault().unregister(this);
 		mLogInTask = null;
 
 		if (event.isSuccessful()) {
@@ -129,7 +127,6 @@ public class DataManager {
 
 	@Subscribe(priority = 1)
 	public void onScheduleFetched(List<Discipline> enrolled) {
-		EventBus.getDefault().unregister(this);
 		mScheduleTask = null;
 
 		Log.i(TAG, "SCHEDULE FETCHED - SUCCESSFUL: " + ! enrolled.isEmpty());
