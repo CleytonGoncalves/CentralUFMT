@@ -36,6 +36,8 @@ android {
     buildTypes.each {
         it.buildConfigField 'String', 'SHARED_PREFERENCES_KEY', SharedPreferencesKey
         it.resValue 'string', 'MAPS_API_KEY', MapsApiKey
+        it.buildConfigField 'String', 'DEFAULT_LOGIN_RGA', LoginRga
+        it.buildConfigField 'String', 'DEFAULT_LOGIN_PASS', LoginPassword
     }
 }
 
