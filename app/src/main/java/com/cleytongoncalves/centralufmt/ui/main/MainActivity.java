@@ -140,8 +140,14 @@ public class MainActivity extends BaseActivity
 		Class fragmentClass;
 		switch (id) {
 			case R.id.nav_schedule:
+				fragmentClass = null;
+				break;
 			case R.id.nav_student:
+				fragmentClass = null;
+				break;
 			case R.id.nav_curriculum:
+				fragmentClass = null;
+				break;
 			case R.id.nav_moodle:
 				fragmentClass = MoodleFragment.class;
 				break;
@@ -149,7 +155,11 @@ public class MainActivity extends BaseActivity
 				fragmentClass = MapFragment.class;
 				break;
 			case R.id.nav_manage:
+				fragmentClass = null;
+				break;
 			case R.id.nav_share:
+				fragmentClass = null;
+				break;
 				//TODO: IMPLEMENT APP SHARE
 			default:
 				fragmentClass = null; //TODO: SET THE MAIN FRAGMENT AS DEFAULT
