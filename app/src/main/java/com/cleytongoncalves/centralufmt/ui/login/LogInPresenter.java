@@ -1,7 +1,5 @@
 package com.cleytongoncalves.centralufmt.ui.login;
 
-import android.support.annotation.Nullable;
-
 import com.cleytongoncalves.centralufmt.data.DataManager;
 import com.cleytongoncalves.centralufmt.data.events.LogInEvent;
 import com.cleytongoncalves.centralufmt.ui.base.Presenter;
@@ -13,7 +11,7 @@ import javax.inject.Inject;
 
 public final class LogInPresenter implements Presenter<LogInMvpView> {
 	private final DataManager mDataManager;
-	@Nullable private LogInMvpView mMvpView;
+	private LogInMvpView mMvpView;
 
 	@Inject
 	LogInPresenter(DataManager dataManager) {

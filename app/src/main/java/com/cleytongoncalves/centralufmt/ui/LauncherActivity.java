@@ -12,8 +12,6 @@ import com.cleytongoncalves.centralufmt.util.NetworkUtil;
 import javax.inject.Inject;
 
 public class LauncherActivity extends BaseActivity {
-	private static final boolean FORCE_LOGIN = true; //For debug purposes
-
 	@Inject DataManager mDataManager;
 
 	@Override
@@ -22,12 +20,12 @@ public class LauncherActivity extends BaseActivity {
 		activityComponent().inject(this);
 		Intent intent;
 
-		if (mDataManager.isLoggedInSiga() && ! FORCE_LOGIN) {
+		if (mDataManager.isLoggedInSiga()) {
 			intent = MainActivity.getStartIntent(this, true);
 			if (NetworkUtil.isNetworkConnected(this)) {
 				mDataManager.triggerMoodleLogIn();
 			}
-		} else if (mDataManager.getPreferencesHelper().getAnonymousLogIn() && ! FORCE_LOGIN) {
+		} else if (mDataManager.getPreferencesHelper().getAnonymousLogIn()) {
 			intent = MainActivity.getStartIntent(this, true);
 		} else {
 			intent = LogInActivity.getStartIntent(this, true);

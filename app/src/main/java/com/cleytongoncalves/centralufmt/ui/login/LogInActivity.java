@@ -24,6 +24,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnEditorAction;
 
+//TODO: FIX COPY/PASTE BUG ON LOGIN
 public final class LogInActivity extends BaseActivity implements LogInMvpView {
 	//TODO: FIND IF THIS MIN LENGTH IS REASONABLE
 	private static final int MIN_PASSWORD_LENGTH = 4;
