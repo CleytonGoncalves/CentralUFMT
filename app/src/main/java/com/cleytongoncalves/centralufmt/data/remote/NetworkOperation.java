@@ -1,24 +1,23 @@
-package com.cleytongoncalves.centralufmt.data.events;
+package com.cleytongoncalves.centralufmt.data.remote;
 
 import java.util.List;
 import java.util.Map;
 
 public final class NetworkOperation {
-	public static final int NETWORK_FAILURE = - 1;
-	public static final int IO_ERROR = - 2;
+	public static final String NETWORK_ERROR = "Network Error";
+	public static final String IO_ERROR = "I/O Error";
 
 	private String mResponseBody;
 	private Map<String, List<String>> mResponseHeaders;
 
-	private Integer mFailureReason;
+	private String mFailureReason;
 
-
-	public NetworkOperation(String responseBody, Map<String, List<String>> responseHeaders) {
+	NetworkOperation(String responseBody, Map<String, List<String>> responseHeaders) {
 		mResponseBody = responseBody;
 		mResponseHeaders = responseHeaders;
 	}
 
-	public NetworkOperation(int reason) {
+	NetworkOperation(String reason) {
 		this.mFailureReason = reason;
 	}
 
@@ -34,7 +33,7 @@ public final class NetworkOperation {
 		return mFailureReason != null;
 	}
 
-	public int getFailureReason() {
+	public String getFailureReason() {
 		return mFailureReason;
 	}
 }

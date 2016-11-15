@@ -3,19 +3,17 @@ package com.cleytongoncalves.centralufmt.data;
 import android.util.Log;
 
 import com.cleytongoncalves.centralufmt.data.events.LogInEvent;
+import com.cleytongoncalves.centralufmt.data.events.ScheduleFetchEvent;
 import com.cleytongoncalves.centralufmt.data.local.PreferencesHelper;
-import com.cleytongoncalves.centralufmt.data.model.Discipline;
 import com.cleytongoncalves.centralufmt.data.model.Student;
-import com.cleytongoncalves.centralufmt.data.remote.LogInTask;
-import com.cleytongoncalves.centralufmt.data.remote.MoodleLogInTask;
 import com.cleytongoncalves.centralufmt.data.remote.NetworkService;
-import com.cleytongoncalves.centralufmt.data.remote.ScheduleTask;
-import com.cleytongoncalves.centralufmt.data.remote.SigaLogInTask;
+import com.cleytongoncalves.centralufmt.data.remote.task.LogInTask;
+import com.cleytongoncalves.centralufmt.data.remote.task.MoodleLogInTask;
+import com.cleytongoncalves.centralufmt.data.remote.task.ScheduleTask;
+import com.cleytongoncalves.centralufmt.data.remote.task.SigaLogInTask;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -105,11 +103,11 @@ public class DataManager {
 	/* ----- EventBus Listeners ----- */
 
 	@Subscribe(priority = 1)
-	public void onLogInCompleted(LogInEvent event) {
+	public void onLogInCompleted(LogInEvent logInEvent) {
 		mLogInTask = null;
 
-		if (event.isSuccessful()) {
-			Object obj = event.getObjectResult();
+		if (logInEvent.isSuccessful()) {
+			Object obj = logInEvent.getObjectResult();
 
 			if (obj.getClass() == Student.class) {
 				mStudent = (Student) obj;
@@ -121,20 +119,16 @@ public class DataManager {
 				Log.e(TAG, "LOGIN EVENT OBJECT UNKNOWN: " + obj.getClass());
 			}
 		} else {
-			Log.w(TAG, "LOGIN FAILED: " + event.getFailureReason());
+			Log.w(TAG, "LOGIN FAILED: " + logInEvent.getFailureReason());
 		}
 	}
 
 	@Subscribe(priority = 1)
-	public void onScheduleFetched(List<Discipline> enrolled) {
+	public void onScheduleFetched(ScheduleFetchEvent scheduleEvent) {
 		mScheduleTask = null;
 
-		Log.i(TAG, "SCHEDULE FETCHED - SUCCESSFUL: " + ! enrolled.isEmpty());
-		if (enrolled.isEmpty()) {
-			//HANDLE EMPTY SCHEDULE / FAILURE
-			Log.w(TAG, "SCHEDULE FETCH FAILED: ");
-		} else {
-			mStudent.getCourse().setEnrolledDisciplines(enrolled);
+		if (scheduleEvent.isSuccessful()) {
+			mStudent.getCourse().setEnrolledDisciplines(scheduleEvent.getDisciplineList());
 		}
 	}
 }
