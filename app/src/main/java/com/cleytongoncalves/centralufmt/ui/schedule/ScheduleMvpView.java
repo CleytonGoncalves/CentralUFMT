@@ -5,5 +5,11 @@ import com.cleytongoncalves.centralufmt.ui.base.MvpView;
 interface ScheduleMvpView extends MvpView {
 	void setGridSpanCount(int gridSpan);
 
-	void stopProgressBar();
+	void showRecyclerView();
+
+	void hideRecyclerView();
+
+	void showProgressBar();
+
+	void hideProgressBar();
 }
