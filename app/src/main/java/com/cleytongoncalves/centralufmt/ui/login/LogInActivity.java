@@ -30,7 +30,7 @@ public final class LogInActivity extends BaseActivity implements LogInMvpView {
 	private static final int MIN_PASSWORD_LENGTH = 4;
 	private static final int MIN_RGA_LENGTH = 8;
 
-	@Inject LogInPresenter mLogInPresenter;
+	@Inject LogInPresenter mPresenter;
 	@BindView(R.id.rga_text_field) EditText mRgaView;
 	@BindView(R.id.pass_text_field) EditText mPasswordView;
 	@BindView(R.id.button_log_in) Button mLogInButton;
@@ -59,7 +59,7 @@ public final class LogInActivity extends BaseActivity implements LogInMvpView {
 
 		activityComponent().inject(this);
 		ButterKnife.bind(this);
-		mLogInPresenter.attachView(this);
+		mPresenter.attachView(this);
 
 		//TODO: REMOVE AUTO COMPLETE ON LOGIN
 		mRgaView.setText(BuildConfig.DEFAULT_LOGIN_RGA);
@@ -79,7 +79,7 @@ public final class LogInActivity extends BaseActivity implements LogInMvpView {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		mLogInPresenter.detachView();
+		mPresenter.detachView();
 	}
 
 	@OnEditorAction(R.id.pass_text_field)
@@ -93,7 +93,7 @@ public final class LogInActivity extends BaseActivity implements LogInMvpView {
 
 	private void triggerLogIn() {
 		//TODO: FIX ERROR MESSAGES/ICONS BUG
-		if (mLogInPresenter.isLogInHappening()) {
+		if (mPresenter.isLogInHappening()) {
 			return;
 		}
 
@@ -132,7 +132,7 @@ public final class LogInActivity extends BaseActivity implements LogInMvpView {
 			// form field with an error.
 			focusView.requestFocus();
 		} else {
-			mLogInPresenter.doLogIn(rga, password);
+			mPresenter.doLogIn(rga, password);
 		}
 	}
 
@@ -154,13 +154,13 @@ public final class LogInActivity extends BaseActivity implements LogInMvpView {
 
 	@OnClick(R.id.button_anonymous_log_in)
 	protected void onAnonymousLogInClick() {
-		mLogInPresenter.doAnonymousLogIn();
+		mPresenter.doAnonymousLogIn();
 	}
 
 	@Override
 	public void onBackPressed() {
-		if (mLogInPresenter.isLogInHappening()) {
-			mLogInPresenter.cancelLogin();
+		if (mPresenter.isLogInHappening()) {
+			mPresenter.cancelLogin();
 		} else {
 			super.onBackPressed();
 		}

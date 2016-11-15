@@ -11,7 +11,7 @@ import javax.inject.Inject;
 
 public final class LogInPresenter implements Presenter<LogInMvpView> {
 	private final DataManager mDataManager;
-	private LogInMvpView mMvpView;
+	private LogInMvpView mView;
 
 	@Inject
 	LogInPresenter(DataManager dataManager) {
@@ -20,7 +20,7 @@ public final class LogInPresenter implements Presenter<LogInMvpView> {
 
 	@Override
 	public void attachView(LogInMvpView mvpView) {
-		mMvpView = mvpView;
+		mView = mvpView;
 		if (mDataManager.isLoggedInSiga()) {
 			//Check if it isn't already logged in when attaching the view
 			onLogInSuccess(false);
@@ -29,63 +29,64 @@ public final class LogInPresenter implements Presenter<LogInMvpView> {
 
 	@Override
 	public void detachView() {
-		mMvpView = null;
-	}
-
-	private void onLogInSuccess(boolean anonymous) {
-		mDataManager.getPreferencesHelper().setAnonymousLogIn(anonymous);
-		mMvpView.showProgress(false);
-		mMvpView.onLogInSuccessful();
-	}
-
-	void doLogIn(String rga, char[] password) {
-		EventBus.getDefault().register(this);
-		mDataManager.logIn(rga, password, DataManager.LOGIN_SIGA);
-
-		mMvpView.setLogInButtonEnabled(false);
-		mMvpView.setAnonymousLogInEnabled(false);
-		mMvpView.showProgress(true);
+		mView = null;
 	}
 
 	void doAnonymousLogIn() {
 		onLogInSuccess(true); //Goes directly to the result
-		mMvpView.setLogInButtonEnabled(false);
-		mMvpView.setAnonymousLogInEnabled(false);
-		mMvpView.showProgress(true);
+		mView.setLogInButtonEnabled(false);
+		mView.setAnonymousLogInEnabled(false);
+		mView.showProgress(true);
+	}
+
+	void doLogIn(String rga, char[] password) {
+		mView.setLogInButtonEnabled(false);
+		mView.setAnonymousLogInEnabled(false);
+		mView.showProgress(true);
+
+		EventBus.getDefault().register(this);
+		mDataManager.logIn(rga, password, DataManager.LOGIN_SIGA);
 	}
 
 	void cancelLogin() {
 		mDataManager.cancelLogIn();
 	}
 
-	boolean isLogInHappening() {
-		return mDataManager.isLogInHappening();
-	}
-
 	@Subscribe
 	public void onLogInEvent(LogInEvent event) {
+		EventBus.getDefault().unregister(this);
+
 		if (event.isSuccessful()) {
 			onLogInSuccess(false);
 		} else {
 			onLogInFailure(event.getFailureReason());
 		}
-		EventBus.getDefault().unregister(this);
+	}
+
+	private void onLogInSuccess(boolean anonymous) {
+		mDataManager.getPreferencesHelper().setAnonymousLogIn(anonymous);
+		mView.showProgress(false);
+		mView.onLogInSuccessful();
 	}
 
 	private void onLogInFailure(String reason) {
-		mMvpView.showProgress(false);
-		mMvpView.setLogInButtonEnabled(true);
-		mMvpView.setAnonymousLogInEnabled(true);
+		mView.showProgress(false);
+		mView.setLogInButtonEnabled(true);
+		mView.setAnonymousLogInEnabled(true);
 
 		switch (reason) {
 			case LogInEvent.ACCESS_DENIED:
-				mMvpView.showAccessDenied();
+				mView.showAccessDenied();
 				break;
 			case LogInEvent.USER_CANCELED:
-				mMvpView.onUserCanceled();
+				mView.onUserCanceled();
 				break;
 			default:
-				mMvpView.showGeneralLogInError();
+				mView.showGeneralLogInError();
 		}
+	}
+
+	boolean isLogInHappening() {
+		return mDataManager.isLogInHappening();
 	}
 }
