@@ -6,6 +6,7 @@ import android.util.Log;
 import android.util.SparseArray;
 
 import com.cleytongoncalves.centralufmt.data.DataManager;
+import com.cleytongoncalves.centralufmt.data.events.ScheduleFetchEvent;
 import com.cleytongoncalves.centralufmt.data.model.Discipline;
 import com.cleytongoncalves.centralufmt.ui.base.Presenter;
 import com.cleytongoncalves.centralufmt.ui.schedule.ScheduleData.ScheduleItemData;
@@ -28,14 +29,15 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 	//TODO: FIX WRONG STUDENT SCHEDULE
 	private static final String TAG = SchedulePresenter.class.getSimpleName();
 
-	public static final int MINIMUM_AMOUNT_OF_DAYS = 5;
+	static final int MINIMUM_AMOUNT_OF_DAYS = 5;
 	private static final int MAXIMUM_TITLE_LENGTH = 25;
 	private static final int MAXIMUM_ROOM_LENGTH = 10;
 
 	private final DataManager mDataManager;
-	private ScheduleMvpView mScheduleView;
+	private ScheduleMvpView mView;
 	private ScheduleAdapter mScheduleAdapter;
 	private ScheduleData mSchedule;
+
 	@Nullable private DataParserTask mParserTask;
 
 	@Inject
@@ -45,12 +47,12 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 
 	@Override
 	public void attachView(ScheduleMvpView mvpView) {
-		mScheduleView = mvpView;
+		mView = mvpView;
 	}
 
 	@Override
 	public void detachView() {
-		mScheduleView = null;
+		mView = null;
 		detachAdapter();
 		if (EventBus.getDefault().isRegistered(this)) { EventBus.getDefault().unregister(this); }
 
@@ -64,11 +66,11 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 		ScheduleData schedule = null;
 		if (! forceUpdate) { schedule = mDataManager.getPreferencesHelper().getSchedule(); }
 
-		mScheduleView.hideRecyclerView();
-		mScheduleView.showProgressBar();
+		mView.hideRecyclerView();
+		mView.showProgressBar();
 
 		if (schedule == null) {
-			if (! isParseRunning()) {
+			if (! isLoading()) {
 				EventBus.getDefault().register(this);
 				mDataManager.fetchSchedule();
 			}
@@ -119,11 +121,32 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 		return mSchedule.getScheduleSize() + mSchedule.getAmountOfDays();
 	}
 
-	@Subscribe
-	public void onScheduleFetched(List<Discipline> enrolled) {
+	@Subscribe(threadMode = ThreadMode.MAIN)
+	public void onScheduleFetched(ScheduleFetchEvent scheduleEvent) {
+		if (scheduleEvent.isSuccessful()) {
+			onFetchSuccess(scheduleEvent.getDisciplineList());
+		} else {
+			onFetchFailure(scheduleEvent.getFailureReason());
+		}
+	}
+
+	private void onFetchSuccess(List<Discipline> disciplineList) {
 		Log.i(TAG, "INITIATING SCHEDULE PARSING");
-		mParserTask = new DataParserTask(enrolled);
+		mParserTask = new DataParserTask(disciplineList);
 		mParserTask.execute();
+	}
+
+	private void onFetchFailure(String reason) {
+		mView.hideRecyclerView();
+		mView.hideProgressBar();
+
+		switch (reason) {
+			case ScheduleFetchEvent.EMPTY_ERROR:
+				//TODO: HANDLE EMPTY SCHEDULE
+				break;
+			default:
+				mView.showGeneralErrorSnack();
+		}
 	}
 
 	@Subscribe(threadMode = ThreadMode.MAIN)
@@ -132,16 +155,18 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 
 		int gridSpan = mSchedule.getAmountOfDays();
 		if (gridSpan > MINIMUM_AMOUNT_OF_DAYS) {
-			mScheduleView.setGridSpanCount(gridSpan);
+			mView.setGridSpanCount(gridSpan);
 		}
 
 		mScheduleAdapter.notifyDataSetChanged();
 
-		mScheduleView.hideProgressBar();
-		mScheduleView.showRecyclerView();
+		mView.hideSnackIfShown();
+		mView.hideProgressBar();
+		mView.showRecyclerView();
 
-		if (isParseRunning()) {
+		if (isLoading()) {
 			EventBus.getDefault().unregister(this);
+
 			mDataManager.getPreferencesHelper().putSchedule(mSchedule);
 			mParserTask = null;
 			Log.i(TAG, "DATA CHANGED SUCCESSFULLY");
@@ -154,8 +179,8 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 		return position - mSchedule.getAmountOfDays(); //Removes the header from the count;
 	}
 
-	private boolean isParseRunning() {
-		return mParserTask != null;
+	private boolean isLoading() {
+		return EventBus.getDefault().isRegistered(this);
 	}
 
 	private static class DataParserTask extends AsyncTask<Void, Void, Void> {
@@ -174,7 +199,7 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 			return null;
 		}
 
-		private static ScheduleData parseToSchedule(List<Discipline> discList) {
+		private ScheduleData parseToSchedule(List<Discipline> discList) {
 		/* Parses the discipline list to a sorted *map* (dayOfWeek -> SortedSet(Starting Hour)) */
 			SparseArray<SortedSet<ScheduleItemData>> rawSchedule =
 					new SparseArray<>(discList.size()); //Max # of different hours
@@ -216,25 +241,35 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 				}
 			}
 
-			//if (isCancelled()) {
-			//	return null;
-			//}
+			if (isCancelled()) {
+				return null;
+			}
 
 		/* Creates a list sorted by the necessary adapter order, with empty items on empty
 		classes */
 			List<ScheduleItemData> schedule = new ArrayList<>(amountOfDays * maxDailyClasses);
 
+			int lastDay = 0;
 			int scheduleSize = rawSchedule.size();
 			for (int i = 0, position = 0; i < scheduleSize; i++) {
 				SortedSet<ScheduleItemData> hourlyData = rawSchedule.valueAt(i);
 
+				int currColumn = 0;
 				for (ScheduleItemData data : hourlyData) {
-					int currDay = position % amountOfDays;
-					int nextDataDay = data.getColumn();
-					if (nextDataDay != currDay) {
-						for (; currDay < nextDataDay; currDay++) {
-							ScheduleItemData empty = new ScheduleItemData(currDay, "", "", "");
-							schedule.add(empty);
+					currColumn = position % amountOfDays;
+					int nextDataColumn = data.getColumn();
+
+					//Creates fillers until it gets to the correct position
+					if (currColumn < nextDataColumn) {
+						for (; currColumn < nextDataColumn; currColumn++) {
+							schedule.add(ScheduleItemData.empty());
+							position++;
+						}
+					} else if (currColumn > nextDataColumn) {
+						int amountOfFillers = (amountOfDays - 1) - currColumn; //Finish the line
+						amountOfFillers += nextDataColumn; //plus the amount to get to the next
+						for (int j = 0; j < amountOfFillers; j++) {
+							schedule.add(ScheduleItemData.empty());
 							position++;
 						}
 					}
@@ -242,6 +277,13 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 					schedule.add(data);
 					position++;
 				}
+
+				lastDay = currColumn;
+			}
+
+			//fills the last line
+			for (; lastDay < amountOfDays; ++ lastDay) {
+				schedule.add(ScheduleItemData.empty());
 			}
 
 			return new ScheduleData(maxDailyClasses, amountOfDays, schedule);

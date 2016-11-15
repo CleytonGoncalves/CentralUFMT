@@ -56,7 +56,7 @@ final class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 		if (mSchedulePresenter.isHeader(position)) {
 			((HeaderViewHolder) holder).header.setText(SHORT_DAY_NAME[position]);
 			return;
-		} else if (isEmpty(position)) {
+		} else if (isFiller(position)) {
 			((EmptyViewHolder) holder).view.setBackgroundColor(Color.parseColor("#f9f9f9"));
 			return;
 		}
@@ -80,7 +80,7 @@ final class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 	public int getItemViewType(int position) {
 		if (mSchedulePresenter.isHeader(position)) {
 			return TYPE_HEADER;
-		} else if (isEmpty(position)) {
+		} else if (isFiller(position)) {
 			return TYPE_EMPTY;
 		}
 
@@ -103,8 +103,8 @@ final class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 		mSchedulePresenter.detachAdapter();
 	}
 
-	private boolean isEmpty(int position) {
-		return mSchedulePresenter.getDataForPosition(position).getTitle().isEmpty();
+	private boolean isFiller(int position) {
+		return mSchedulePresenter.getDataForPosition(position).getColumn() == - 1;
 	}
 
 	static class ClassViewHolder extends RecyclerView.ViewHolder {

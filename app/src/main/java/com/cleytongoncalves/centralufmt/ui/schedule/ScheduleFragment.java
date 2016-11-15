@@ -3,6 +3,7 @@ package com.cleytongoncalves.centralufmt.ui.schedule;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,11 +27,13 @@ import butterknife.Unbinder;
 public final class ScheduleFragment extends Fragment implements ScheduleMvpView {
 	private static final String TAG = ScheduleFragment.class.getSimpleName();
 
-	@Inject SchedulePresenter mSchedulePresenter;
+	@Inject SchedulePresenter mPresenter;
 
 	@BindView(R.id.schedule_progress_bar) ProgressBar mProgressBar;
 	@BindView(R.id.schedule_grid) RecyclerView mRecyclerView;
 	private Unbinder mUnbinder;
+
+	private Snackbar mSnackbar;
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -44,15 +47,15 @@ public final class ScheduleFragment extends Fragment implements ScheduleMvpView 
 	                         Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_schedule, container, false);
 
-		mSchedulePresenter.attachView(this);
+		mPresenter.attachView(this);
 		mUnbinder = ButterKnife.bind(this, rootView);
 
 		//Sets an empty recycler view
 		mRecyclerView.setLayoutManager(
 				new GridLayoutManager(getActivity(), SchedulePresenter.MINIMUM_AMOUNT_OF_DAYS));
-		mRecyclerView.setAdapter(new ScheduleAdapter(mSchedulePresenter));
+		mRecyclerView.setAdapter(new ScheduleAdapter(mPresenter));
 
-		mSchedulePresenter.loadSchedule(false);
+		mPresenter.loadSchedule(false);
 
 		return rootView;
 	}
@@ -67,7 +70,7 @@ public final class ScheduleFragment extends Fragment implements ScheduleMvpView 
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.schedule_menu_refresh:
-				mSchedulePresenter.loadSchedule(true);
+				mPresenter.loadSchedule(true);
 				return true;
 		}
 
@@ -77,7 +80,7 @@ public final class ScheduleFragment extends Fragment implements ScheduleMvpView 
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
-		mSchedulePresenter.detachView();
+		mPresenter.detachView();
 	}
 
 	@Override
@@ -111,5 +114,30 @@ public final class ScheduleFragment extends Fragment implements ScheduleMvpView 
 	@Override
 	public void hideProgressBar() {
 		mProgressBar.setVisibility(View.GONE);
+	}
+
+	@Override
+	public void showGeneralErrorSnack() {
+		View rootView = getView();
+		if (rootView != null) {
+			mSnackbar = Snackbar.make(rootView, getString(R.string.snack_error_schedule),
+			                          Snackbar.LENGTH_INDEFINITE)
+			                    .setAction(getString(R.string.snack_reload_schedule),
+			                               new View.OnClickListener() {
+				                               @Override
+				                               public void onClick(View v) {
+					                               mPresenter.loadSchedule(true);
+				                               }
+			                               });
+
+			mSnackbar.show();
+		}
+	}
+
+	@Override
+	public void hideSnackIfShown() {
+		if (mSnackbar != null) {
+			mSnackbar.dismiss();
+		}
 	}
 }

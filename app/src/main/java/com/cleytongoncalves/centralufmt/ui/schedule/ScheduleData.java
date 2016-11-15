@@ -39,5 +39,9 @@ public final class ScheduleData {
 				return mTitle.compareTo(o.getTitle());
 			}
 		}
+
+		static ScheduleItemData empty() {
+			return new ScheduleItemData(- 1, null, null, null);
+		}
 	}
 }
