@@ -33,6 +33,7 @@ public final class ScheduleFragment extends Fragment implements ScheduleMvpView 
 	@BindView(R.id.schedule_grid) RecyclerView mRecyclerView;
 	private Unbinder mUnbinder;
 
+	private View mRootView;
 	private Snackbar mSnackbar;
 
 	@Override
@@ -45,19 +46,19 @@ public final class ScheduleFragment extends Fragment implements ScheduleMvpView 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
-		View rootView = inflater.inflate(R.layout.fragment_schedule, container, false);
+		mRootView = inflater.inflate(R.layout.fragment_schedule, container, false);
 
 		mPresenter.attachView(this);
-		mUnbinder = ButterKnife.bind(this, rootView);
+		mUnbinder = ButterKnife.bind(this, mRootView);
 
-		//Sets an empty recycler view
+		//Sets an emptyItem recycler view
 		mRecyclerView.setLayoutManager(
 				new GridLayoutManager(getActivity(), SchedulePresenter.MINIMUM_AMOUNT_OF_DAYS));
 		mRecyclerView.setAdapter(new ScheduleAdapter(mPresenter));
 
 		mPresenter.loadSchedule(false);
 
-		return rootView;
+		return mRootView;
 	}
 
 	@Override
@@ -117,26 +118,31 @@ public final class ScheduleFragment extends Fragment implements ScheduleMvpView 
 	}
 
 	@Override
-	public void showGeneralErrorSnack() {
-		View rootView = getView();
-		if (rootView != null) {
-			mSnackbar = Snackbar.make(rootView, getString(R.string.snack_error_schedule),
-			                          Snackbar.LENGTH_INDEFINITE)
-			                    .setAction(getString(R.string.snack_reload_schedule),
-			                               new View.OnClickListener() {
-				                               @Override
-				                               public void onClick(View v) {
-					                               mPresenter.loadSchedule(true);
-				                               }
-			                               });
+	public void showEmptyScheduleSnack() {
+		mSnackbar = Snackbar.make(mRootView, getString(R.string.snack_empty_schedule),
+		                          Snackbar.LENGTH_INDEFINITE);
 
-			mSnackbar.show();
-		}
+		mSnackbar.show();
+	}
+
+	@Override
+	public void showGeneralErrorSnack() {
+		mSnackbar = Snackbar.make(mRootView, getString(R.string.snack_error_schedule),
+		                          Snackbar.LENGTH_INDEFINITE)
+		                    .setAction(getString(R.string.snack_reload_schedule),
+		                               new View.OnClickListener() {
+			                               @Override
+			                               public void onClick(View v) {
+				                               mPresenter.loadSchedule(true);
+			                               }
+		                               });
+
+		mSnackbar.show();
 	}
 
 	@Override
 	public void hideSnackIfShown() {
-		if (mSnackbar != null) {
+		if (mSnackbar != null && mSnackbar.isShownOrQueued()) {
 			mSnackbar.dismiss();
 		}
 	}

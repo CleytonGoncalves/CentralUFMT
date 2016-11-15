@@ -26,7 +26,7 @@
     <!-- Schedule Fragment -->
     <string name="title_fragment_schedule">Horários</string>
     <string name="menu_refresh_schedule">Atualizar</string>
-    <string name="snack_error_schedule">Falha na conexão.</string>
+    <string name="snack_error_schedule">Falha ao carregar o horário.</string>
     <string name="snack_reload_schedule">Recarregar</string>
 
     <!-- Dialogs -->
@@ -57,5 +57,7 @@
     <string name="download_started">Baixando arquivo…</string>
     <string name="title_fragment_moodle_loading">Carregando…</string>
     <string name="error_not_connected">Modo Offline</string>
+    <string name="snack_empty_schedule">O horário está vazio.</string>
+    <string name="snack_dismiss_schedule">Ok</string>
 
 </resources>

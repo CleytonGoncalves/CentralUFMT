@@ -13,6 +13,8 @@ interface ScheduleMvpView extends MvpView {
 
 	void hideProgressBar();
 
+	void showEmptyScheduleSnack();
+
 	void showGeneralErrorSnack();
 
 	void hideSnackIfShown();

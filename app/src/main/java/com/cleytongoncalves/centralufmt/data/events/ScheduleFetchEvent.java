@@ -5,7 +5,6 @@ import com.cleytongoncalves.centralufmt.data.model.Discipline;
 import java.util.List;
 
 public final class ScheduleFetchEvent {
-	public static final String EMPTY_ERROR = "Empty";
 	public static final String GENERAL_ERROR = "Network/IO Error";
 
 	private List<Discipline> mDisciplineList;

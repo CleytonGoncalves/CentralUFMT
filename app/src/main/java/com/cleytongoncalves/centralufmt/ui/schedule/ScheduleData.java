@@ -1,5 +1,6 @@
 package com.cleytongoncalves.centralufmt.ui.schedule;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.AccessLevel;
@@ -14,6 +15,11 @@ public final class ScheduleData {
 	private final int mAmountOfDays;
 	@Getter(AccessLevel.NONE) private final List<ScheduleItemData> mSchedule;
 
+	static ScheduleData emptySchedule() {
+		return new ScheduleData(1, SchedulePresenter.MINIMUM_AMOUNT_OF_DAYS,
+		                        new ArrayList<ScheduleItemData>(0));
+	}
+
 	ScheduleItemData getItem(int position) {
 		return mSchedule.get(position);
 	}
@@ -22,12 +28,20 @@ public final class ScheduleData {
 		return mSchedule.size();
 	}
 
+	boolean containsData() {
+		return mSchedule.size() > mAmountOfDays;
+	}
+
 	@Value @AllArgsConstructor
 	static class ScheduleItemData implements Comparable<ScheduleItemData> {
 		private final int mColumn;
 		private final String mTitle;
 		private final String mSchedule;
 		private final String mRoom;
+
+		static ScheduleItemData emptyItem() {
+			return new ScheduleItemData(- 1, null, null, null);
+		}
 
 		@Override
 		public int compareTo(ScheduleItemData o) {
@@ -40,8 +54,8 @@ public final class ScheduleData {
 			}
 		}
 
-		static ScheduleItemData empty() {
-			return new ScheduleItemData(- 1, null, null, null);
+		boolean isFiller() {
+			return mColumn < 0;
 		}
 	}
 }

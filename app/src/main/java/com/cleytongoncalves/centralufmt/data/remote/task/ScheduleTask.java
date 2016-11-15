@@ -34,11 +34,8 @@ public final class ScheduleTask extends AsyncTask<Void, Void, Void> {
 		} else {
 			List<Discipline> disciplineList =
 					HtmlHelper.parseSchedule(scheduleGet.getResponseBody());
-			if (disciplineList.isEmpty()) {
-				event = new ScheduleFetchEvent(ScheduleFetchEvent.EMPTY_ERROR);
-			} else {
-				event = new ScheduleFetchEvent(disciplineList);
-			}
+
+			event = new ScheduleFetchEvent(disciplineList);
 		}
 
 		EventBus.getDefault().post(event);

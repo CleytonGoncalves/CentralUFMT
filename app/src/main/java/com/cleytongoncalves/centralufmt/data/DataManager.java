@@ -22,6 +22,7 @@ import okhttp3.Cookie;
 
 @Singleton
 public class DataManager {
+	//TODO: Login before other net operations when operating from cache
 	private static final String TAG = "DataManager";
 	public static final int LOGIN_SIGA = 0;
 	private static final int LOGIN_MOODLE = - 1;

@@ -104,7 +104,7 @@ final class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 	}
 
 	private boolean isFiller(int position) {
-		return mSchedulePresenter.getDataForPosition(position).getColumn() == - 1;
+		return mSchedulePresenter.getDataForPosition(position).isFiller();
 	}
 
 	static class ClassViewHolder extends RecyclerView.ViewHolder {
