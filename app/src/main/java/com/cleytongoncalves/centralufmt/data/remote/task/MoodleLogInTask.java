@@ -1,9 +1,10 @@
-package com.cleytongoncalves.centralufmt.data.remote;
+package com.cleytongoncalves.centralufmt.data.remote.task;
 
 import android.os.AsyncTask;
 
 import com.cleytongoncalves.centralufmt.data.events.LogInEvent;
-import com.cleytongoncalves.centralufmt.data.events.NetworkOperation;
+import com.cleytongoncalves.centralufmt.data.remote.NetworkOperation;
+import com.cleytongoncalves.centralufmt.data.remote.NetworkService;
 
 import org.greenrobot.eventbus.EventBus;
 

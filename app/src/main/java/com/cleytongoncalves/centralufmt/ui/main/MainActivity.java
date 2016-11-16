@@ -24,6 +24,7 @@ import com.cleytongoncalves.centralufmt.data.model.Student;
 import com.cleytongoncalves.centralufmt.ui.base.BaseActivity;
 import com.cleytongoncalves.centralufmt.ui.map.MapFragment;
 import com.cleytongoncalves.centralufmt.ui.moodle.MoodleFragment;
+import com.cleytongoncalves.centralufmt.ui.schedule.ScheduleFragment;
 import com.cleytongoncalves.centralufmt.util.NetworkUtil;
 
 import javax.inject.Inject;
@@ -140,7 +141,7 @@ public class MainActivity extends BaseActivity
 		Class fragmentClass;
 		switch (id) {
 			case R.id.nav_schedule:
-				fragmentClass = null;
+				fragmentClass = ScheduleFragment.class;
 				break;
 			case R.id.nav_student:
 				fragmentClass = null;

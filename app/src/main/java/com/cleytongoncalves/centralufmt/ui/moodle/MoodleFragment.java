@@ -44,7 +44,7 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 	private static final String AVA_BASE_URL = "www.ava.ufmt.br";
 	private static final String ALT_AVA_BASE_URL = "200.129.241.132";
 
-	@Inject MoodlePresenter mMoodlePresenter;
+	@Inject MoodlePresenter mPresenter;
 
 	@BindView(R.id.moodle_web_view) WebView mWebView;
 	@BindView(R.id.progress_moodle) ProgressBar mProgressBar;
@@ -63,7 +63,7 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 		View rootView = inflater.inflate(R.layout.fragment_moodle, container, false);
 
 		mUnbinder = ButterKnife.bind(this, rootView);
-		mMoodlePresenter.attachView(this);
+		mPresenter.attachView(this);
 
 		setUpWebViewDefaults();
 
@@ -74,7 +74,7 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 		cookieManager.setAcceptCookie(true);
 		//cookieManager.removeSessionCookie();
 
-		mMoodlePresenter.onLoadingPage();
+		mPresenter.onLoadingPage();
 		return rootView;
 	}
 
@@ -93,7 +93,7 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
-		mMoodlePresenter.detachView();
+		mPresenter.detachView();
 	}
 
 	@Override
@@ -210,10 +210,10 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 	private class MyWebChromeClient extends WebChromeClient {
 		@Override
 		public void onProgressChanged(WebView view, int newProgress) {
-			mMoodlePresenter.onLoadingPage();
+			mPresenter.onLoadingPage();
 
 			if (newProgress == 100) {
-				mMoodlePresenter.onLoadComplete();
+				mPresenter.onLoadComplete();
 			}
 		}
 	}
@@ -244,7 +244,7 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 							                                                         .DOWNLOAD_SERVICE);
 			dm.enqueue(request);
 
-			mMoodlePresenter.onDownloadStart();
+			mPresenter.onDownloadStart();
 		}
 	}
 

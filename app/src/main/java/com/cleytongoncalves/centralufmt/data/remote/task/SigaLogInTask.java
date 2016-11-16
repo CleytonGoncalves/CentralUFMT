@@ -1,12 +1,13 @@
-package com.cleytongoncalves.centralufmt.data.remote;
+package com.cleytongoncalves.centralufmt.data.remote.task;
 
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.cleytongoncalves.centralufmt.data.events.LogInEvent;
-import com.cleytongoncalves.centralufmt.data.events.NetworkOperation;
 import com.cleytongoncalves.centralufmt.data.local.HtmlHelper;
 import com.cleytongoncalves.centralufmt.data.model.Student;
+import com.cleytongoncalves.centralufmt.data.remote.NetworkOperation;
+import com.cleytongoncalves.centralufmt.data.remote.NetworkService;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -66,16 +67,15 @@ public final class SigaLogInTask extends AsyncTask<Void, Void, LogInEvent> imple
 			return accessDenied();
 		}
 
-		NetworkOperation infoPageGet = mNetworkService.get(BASE_SIGA_URL + EXACAO_SIGA_URL);
+		NetworkOperation exacaoPageGet = mNetworkService.get(BASE_SIGA_URL + EXACAO_SIGA_URL);
 
 		if (isCancelled()) {
 			return userCanceled();
-		} else if (infoPageGet.hasFailed()) {
+		} else if (exacaoPageGet.hasFailed()) {
 			return generalFailure();
 		}
 
-		HtmlHelper htmlHelper = new HtmlHelper(infoPageGet.getResponseBody());
-		Student student = htmlHelper.parseBasicStudent();
+		Student student = HtmlHelper.parseBasicStudent(exacaoPageGet.getResponseBody());
 		return new LogInEvent(student);
 	}
 
