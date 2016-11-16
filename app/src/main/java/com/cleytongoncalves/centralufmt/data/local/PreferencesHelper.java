@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 
 import com.cleytongoncalves.centralufmt.data.model.Student;
 import com.cleytongoncalves.centralufmt.injection.ApplicationContext;
+import com.cleytongoncalves.centralufmt.ui.schedule.ScheduleData;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.pddstudio.preferences.encrypted.EncryptedPreferences;
@@ -18,6 +19,7 @@ public class PreferencesHelper {
 	private static final String PREF_KEY_RGA = "PREF_KEY_RGA";
 	private static final String PREF_KEY_AUTH = "PREF_KEY_AUTH";
 	private static final String PREF_KEY_ANONYMOUS_LOGIN = "PREF_KEY_ANONYMOUS_LOGIN";
+	private static final String PREF_KEY_SCHEDULE_DATA = "PREF_KEY_SCHEDULE_DATA";
 	private static final String PREF_KEY_ROUTE_OPTION = "PREF_KEY_ROUTE_OPTION";
 	private static final String PREF_KEY_POI_OPTION = "PREF_KEY_POI_OPTION";
 
@@ -67,27 +69,45 @@ public class PreferencesHelper {
 	@Nullable
 	public Student getLoggedInStudent() {
 		String studentJson = mSharedPref.getString(PREF_KEY_LOGGED_IN, null);
-		return studentJson == null ? null : mGson.fromJson(studentJson, Student.class);
-	}
 
-	public boolean getAnonymousLogIn() {
-		return mSharedPref.getBoolean(PREF_KEY_ANONYMOUS_LOGIN, false);
+		if (studentJson == null) {
+			return null;
+		}
+		return mGson.fromJson(studentJson, Student.class);
 	}
 
 	public void setAnonymousLogIn(boolean enabled) {
 		mSharedPref.edit().putBoolean(PREF_KEY_ANONYMOUS_LOGIN, enabled).apply();
 	}
 
+	public boolean getAnonymousLogIn() {
+		return mSharedPref.getBoolean(PREF_KEY_ANONYMOUS_LOGIN, false);
+	}
+
+	public void putSchedule(ScheduleData schedule) {
+		mSharedPref.edit().putString(PREF_KEY_SCHEDULE_DATA, mGson.toJson(schedule)).apply();
+	}
+
+	@Nullable
+	public ScheduleData getSchedule() {
+		String scheduleJson = mSharedPref.getString(PREF_KEY_SCHEDULE_DATA, null);
+
+		if (scheduleJson == null) {
+			return null;
+		}
+		return mGson.fromJson(scheduleJson, ScheduleData.class);
+	}
+
 	public void putMapRouteDisplayState(boolean enabled) {
 		mSharedPref.edit().putBoolean(PREF_KEY_ROUTE_OPTION, enabled).apply();
 	}
 
-	public void putMapPoiDisplayState(boolean enabled) {
-		mSharedPref.edit().putBoolean(PREF_KEY_POI_OPTION, enabled).apply();
-	}
-
 	public boolean getMapRouteDisplayState() {
 		return mSharedPref.getBoolean(PREF_KEY_ROUTE_OPTION, true);
+	}
+
+	public void putMapPoiDisplayState(boolean enabled) {
+		mSharedPref.edit().putBoolean(PREF_KEY_POI_OPTION, enabled).apply();
 	}
 
 	public boolean getMapPoiDisplayState() {

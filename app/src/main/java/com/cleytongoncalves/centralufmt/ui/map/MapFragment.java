@@ -24,10 +24,11 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 public final class MapFragment extends Fragment implements MapMvpView {
-	@Inject MapPresenter mMapPresenter;
+	@Inject MapPresenter mPresenter;
 
 	@BindView(R.id.map_view) MapView mMapView;
 	private Unbinder mUnbinder;
+	
 	private Menu mOptionsMenu;
 
 	@Override
@@ -43,7 +44,7 @@ public final class MapFragment extends Fragment implements MapMvpView {
 		View rootView = inflater.inflate(R.layout.fragment_map, container, false);
 
 		mUnbinder = ButterKnife.bind(this, rootView);
-		mMapPresenter.attachView(this);
+		mPresenter.attachView(this);
 
 		mMapView.onCreate(savedInstanceState);
 		mMapView.onResume();
@@ -52,7 +53,7 @@ public final class MapFragment extends Fragment implements MapMvpView {
 		mMapView.getMapAsync(new OnMapReadyCallback() {
 			@Override
 			public void onMapReady(GoogleMap googleMap) {
-				mMapPresenter.onMapReady(googleMap, CentralUfmt.get(getActivity()));
+				mPresenter.onMapReady(googleMap, CentralUfmt.get(getActivity()));
 			}
 		});
 
@@ -98,7 +99,7 @@ public final class MapFragment extends Fragment implements MapMvpView {
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
-		mMapPresenter.detachView();
+		mPresenter.detachView();
 	}
 
 	@Override
@@ -119,10 +120,10 @@ public final class MapFragment extends Fragment implements MapMvpView {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case (R.id.menu_show_route):
-				mMapPresenter.toggleRoute();
+				mPresenter.toggleRoute();
 				return true;
 			case (R.id.menu_show_poi):
-				mMapPresenter.togglePointsOfInterest();
+				mPresenter.togglePointsOfInterest();
 				return true;
 			default:
 				return super.onOptionsItemSelected(item);

@@ -8,6 +8,8 @@ import com.cleytongoncalves.centralufmt.injection.component.ApplicationComponent
 import com.cleytongoncalves.centralufmt.injection.component.DaggerApplicationComponent;
 import com.cleytongoncalves.centralufmt.injection.module.ApplicationModule;
 
+import net.danlew.android.joda.JodaTimeAndroid;
+
 import javax.inject.Inject;
 
 public class CentralUfmt extends Application {
@@ -22,12 +24,12 @@ public class CentralUfmt extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-
 		mApplicationComponent = DaggerApplicationComponent.builder()
 		                                                  .applicationModule(new ApplicationModule
 				                                                                     (this))
 		                                                  .build();
 		mApplicationComponent.inject(this);
+		JodaTimeAndroid.init(this);
 	}
 
 	public ApplicationComponent getComponent() {

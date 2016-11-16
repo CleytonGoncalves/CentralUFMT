@@ -1,7 +1,6 @@
 package com.cleytongoncalves.centralufmt.ui.map;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.cleytongoncalves.centralufmt.R;
@@ -25,7 +24,8 @@ public final class MapPresenter implements Presenter<MapMvpView> {
 	private static final int ROUTE_MARKERS_ID = R.raw.ufmt_route_markers;
 
 	private final DataManager mDataManager;
-	@Nullable private MapMvpView mMapMvpView;
+	private MapMvpView mView;
+
 	private GoogleMap mGoogleMap;
 	private KmlLayer mRouteLayer;
 	private KmlLayer mPoiLayer;
@@ -39,12 +39,12 @@ public final class MapPresenter implements Presenter<MapMvpView> {
 
 	@Override
 	public void attachView(MapMvpView mvpView) {
-		mMapMvpView = mvpView;
+		mView = mvpView;
 	}
 
 	@Override
 	public void detachView() {
-		mMapMvpView = null;
+		mView = null;
 		mGoogleMap = null;
 	}
 
@@ -102,9 +102,8 @@ public final class MapPresenter implements Presenter<MapMvpView> {
 				Log.e(TAG, "ERROR OVERLAYING ROUTE: " + e.getMessage());
 			}
 		}
-		if (mMapMvpView != null) {
-			mMapMvpView.setRouteMenuState(mIsRouteDisplayed);
-		}
+
+		mView.setRouteMenuState(mIsRouteDisplayed);
 	}
 
 	void togglePointsOfInterest() {
@@ -124,8 +123,7 @@ public final class MapPresenter implements Presenter<MapMvpView> {
 				Log.e(TAG, "ERROR OVERLAYING POINTS OF INTEREST: " + e.getMessage());
 			}
 		}
-		if (mMapMvpView != null) {
-			mMapMvpView.setPoiMenuState(mIsPoiDisplayed);
-		}
+
+		mView.setPoiMenuState(mIsPoiDisplayed);
 	}
 }

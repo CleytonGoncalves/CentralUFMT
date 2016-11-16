@@ -2,8 +2,6 @@ package com.cleytongoncalves.centralufmt.data.remote;
 
 import android.util.Log;
 
-import com.cleytongoncalves.centralufmt.data.events.NetworkOperation;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,7 +29,7 @@ public final class NetworkService {
 		this.mClient = client;
 	}
 
-	NetworkOperation get(String url) {
+	public NetworkOperation get(String url) {
 		Request request = new Request.Builder()
 				                  .url(url)
 				                  .build();
@@ -44,7 +42,7 @@ public final class NetworkService {
 				result = new NetworkOperation(new String(response.body().bytes(), CHARSET),
 						                             response.headers().toMultimap());
 			} else {
-				result = new NetworkOperation(NetworkOperation.NETWORK_FAILURE);
+				result = new NetworkOperation(NetworkOperation.NETWORK_ERROR);
 			}
 			response.close();
 		} catch (IOException e) {
@@ -55,7 +53,7 @@ public final class NetworkService {
 		return result;
 	}
 
-	NetworkOperation post(String url, FormBody params) {
+	public NetworkOperation post(String url, FormBody params) {
 		Request request = new Request.Builder()
 				                  .url(url)
 				                  .post(params)
@@ -69,7 +67,7 @@ public final class NetworkService {
 				result = new NetworkOperation(new String(response.body().bytes(), CHARSET),
 						                             response.headers().toMultimap());
 			} else {
-				result = new NetworkOperation(NetworkOperation.NETWORK_FAILURE);
+				result = new NetworkOperation(NetworkOperation.NETWORK_ERROR);
 			}
 			response.close();
 		} catch (IOException e) {
@@ -80,7 +78,7 @@ public final class NetworkService {
 		return result;
 	}
 
-	List<Cookie> getCookieFromJar(String baseUrl) {
+	public List<Cookie> getCookieFromJar(String baseUrl) {
 		return mClient.cookieJar().loadForRequest(HttpUrl.parse(baseUrl));
 	}
 
