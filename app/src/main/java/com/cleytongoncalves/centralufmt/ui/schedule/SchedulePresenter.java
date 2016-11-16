@@ -182,6 +182,8 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 
 	private static class DataParserTask extends AsyncTask<Void, Void, Void> {
 		private final List<Discipline> mEnrolled;
+		private int mAmountOfDays;
+		private int mMaxDailyClasses;
 
 		DataParserTask(List<Discipline> enrolled) {
 			mEnrolled = enrolled;
@@ -189,24 +191,30 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 
 		@Override
 		protected Void doInBackground(Void... params) {
-			ScheduleData schedule;
+			ScheduleData schedule = null;
+
 			if (mEnrolled.isEmpty()) {
 				schedule = ScheduleData.emptySchedule();
 			} else {
-				schedule = parseToSchedule();
+				SparseArray<SortedSet<ScheduleItemData>> rawSchedule = parseToRawSchedule();
+
+				if (! isCancelled()) {
+					List<ScheduleItemData> scheduleList = createListForDisplay(rawSchedule);
+					schedule = new ScheduleData(mMaxDailyClasses, mAmountOfDays, scheduleList);
+				}
 			}
 
 			if (schedule != null && ! isCancelled()) { EventBus.getDefault().post(schedule); }
 			return null;
 		}
 
-		private ScheduleData parseToSchedule() {
+		private SparseArray<SortedSet<ScheduleItemData>> parseToRawSchedule() {
 		/* Parses the discipline list to a sorted *map* (dayOfWeek -> SortedSet(Starting Hour)) */
 			SparseArray<SortedSet<ScheduleItemData>> rawSchedule =
 					new SparseArray<>(mEnrolled.size()); //Max # of different hours
 
-			int amountOfDays = MINIMUM_AMOUNT_OF_DAYS;
-			int maxDailyClasses = 0;
+			mAmountOfDays = MINIMUM_AMOUNT_OF_DAYS;
+			mMaxDailyClasses = 0;
 			for (int i = 0, discListSize = mEnrolled.size(); i < discListSize; i++) {
 				Discipline disc = mEnrolled.get(i);
 				List<Interval> classTimes = disc.getClassTimes();
@@ -219,7 +227,7 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 					int dayOfWeek = start.getDayOfWeek();
 					if (dayOfWeek > MINIMUM_AMOUNT_OF_DAYS) {
 						//Adds saturday and/or sunday
-						amountOfDays = dayOfWeek;
+						mAmountOfDays = dayOfWeek;
 					}
 
 					String title = TextUtil.capsMeaningfulWords(disc.getTitle());
@@ -236,19 +244,20 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 					if (viewSet == null) {
 						viewSet = new TreeSet<>();
 						rawSchedule.put(start.getHourOfDay(), viewSet);
-						maxDailyClasses++;
+						mMaxDailyClasses++;
 					}
 					viewSet.add(discData);
 				}
 			}
 
-			if (isCancelled()) {
-				return null;
-			}
+			return rawSchedule;
+		}
 
-		/* Creates a list sorted by the necessary adapter order, with emptyItem items on emptyItem
+		private List<ScheduleItemData> createListForDisplay
+				(SparseArray<SortedSet<ScheduleItemData>> rawSchedule) {
+			/* Creates a list sorted by the necessary adapter order, with emptyItem items on emptyItem
 		classes */
-			List<ScheduleItemData> schedule = new ArrayList<>(amountOfDays * maxDailyClasses);
+			List<ScheduleItemData> scheduleList = new ArrayList<>(mAmountOfDays * mMaxDailyClasses);
 
 			int lastDay = 0;
 			int scheduleSize = rawSchedule.size();
@@ -257,25 +266,25 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 
 				int currColumn = 0;
 				for (ScheduleItemData data : hourlyData) {
-					currColumn = position % amountOfDays;
+					currColumn = position % mAmountOfDays;
 					int nextDataColumn = data.getColumn();
 
 					//Creates fillers until it gets to the correct position
 					if (currColumn < nextDataColumn) {
 						for (; currColumn < nextDataColumn; currColumn++) {
-							schedule.add(ScheduleItemData.emptyItem());
+							scheduleList.add(ScheduleItemData.emptyItem());
 							position++;
 						}
 					} else if (currColumn > nextDataColumn) {
-						int amountOfFillers = (amountOfDays - 1) - currColumn; //Finish the line
+						int amountOfFillers = (mAmountOfDays - 1) - currColumn; //Finish the line
 						amountOfFillers += nextDataColumn; //plus the amount to get to the next
 						for (int j = 0; j < amountOfFillers; j++) {
-							schedule.add(ScheduleItemData.emptyItem());
+							scheduleList.add(ScheduleItemData.emptyItem());
 							position++;
 						}
 					}
 
-					schedule.add(data);
+					scheduleList.add(data);
 					position++;
 				}
 
@@ -283,11 +292,11 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 			}
 
 			//fills the last line
-			for (; lastDay < amountOfDays; ++ lastDay) {
-				schedule.add(ScheduleItemData.emptyItem());
+			for (; lastDay < mAmountOfDays; ++ lastDay) {
+				scheduleList.add(ScheduleItemData.emptyItem());
 			}
 
-			return new ScheduleData(maxDailyClasses, amountOfDays, schedule);
+			return scheduleList;
 		}
 	}
 }
