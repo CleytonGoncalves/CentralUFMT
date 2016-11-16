@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 public final class NetworkOperation {
-	public static final String NETWORK_ERROR = "Network Error";
-	public static final String IO_ERROR = "I/O Error";
+	static final String NETWORK_ERROR = "Network Error";
+	static final String IO_ERROR = "I/O Error";
 
 	private String mResponseBody;
 	private Map<String, List<String>> mResponseHeaders;
@@ -17,8 +17,8 @@ public final class NetworkOperation {
 		mResponseHeaders = responseHeaders;
 	}
 
-	NetworkOperation(String reason) {
-		this.mFailureReason = reason;
+	NetworkOperation(String failureReason) {
+		this.mFailureReason = failureReason;
 	}
 
 	public String getResponseBody() {
@@ -30,7 +30,7 @@ public final class NetworkOperation {
 	}
 
 	public boolean hasFailed() {
-		return mFailureReason != null;
+		return mResponseBody == null;
 	}
 
 	public String getFailureReason() {

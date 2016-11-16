@@ -17,7 +17,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 final class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-	private static final String TAG = ScheduleAdapter.class.getSimpleName();
 	private static final int TYPE_HEADER = 0;
 	private static final int TYPE_ITEM = 1;
 	private static final int TYPE_EMPTY = 2;

@@ -3,10 +3,8 @@ package com.cleytongoncalves.centralufmt.util;
 import java.util.StringTokenizer;
 
 public final class TextUtil {
-	private static final String TAG = TextUtil.class.getSimpleName();
-
 	private TextUtil() {
-		throw new RuntimeException("TextUtil is not instantiable");
+		throw new AssertionError("TextUtil is not instantiable");
 	}
 
 	public static String capsMeaningfulWords(String text) {

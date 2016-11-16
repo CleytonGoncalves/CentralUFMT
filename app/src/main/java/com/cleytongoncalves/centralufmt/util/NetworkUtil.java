@@ -5,8 +5,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 public final class NetworkUtil {
-
 	private NetworkUtil() {
+		throw new AssertionError("NetworkUtil is not instantiable");
 	}
 
 	public static boolean isNetworkConnected(Context context) {

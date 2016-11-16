@@ -12,7 +12,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -31,11 +30,11 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 public class MainActivity extends BaseActivity
 		implements NavigationView.OnNavigationItemSelectedListener, FragmentManager
 				                                                            .OnBackStackChangedListener {
-	private static final String TAG = MainActivity.class.getSimpleName();
 
 	@Inject DataManager mDataManager;
 	@BindView(R.id.drawer_layout) DrawerLayout mDrawer;
@@ -133,7 +132,6 @@ public class MainActivity extends BaseActivity
 		}
 	}
 
-	@SuppressWarnings("StatementWithEmptyBody")
 	@Override
 	public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 		int id = item.getItemId();
@@ -171,7 +169,7 @@ public class MainActivity extends BaseActivity
 				Fragment fragment = (Fragment) fragmentClass.newInstance();
 				goToFragment(fragment);
 			} catch (Exception e) {
-				Log.e(TAG, "ERROR ON FRAGMENT INSTANTIATION: " + e.getMessage());
+				Timber.e(e, "Error on fragment instantiation");
 			}
 		}
 

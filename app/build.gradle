@@ -54,6 +54,7 @@ dependencies {
     final LOMBOK_VERSION = '1.16.10'
     final JODA_TIME_VERSION = '2.9.4.3'
     final AUTOFITTEXTVIEW_VERSION = '0.2.1'
+    final TIMBER_VERSION = '4.3.1'
 
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile "com.android.support:appcompat-v7:$SUPPORT_LIBRARY_VERSION"
@@ -86,5 +87,7 @@ dependencies {
     compile "net.danlew:android.joda:$JODA_TIME_VERSION"
 
     compile "me.grantland:autofittextview:$AUTOFITTEXTVIEW_VERSION"
+
+    compile "com.jakewharton.timber:timber:$TIMBER_VERSION"
 }
 

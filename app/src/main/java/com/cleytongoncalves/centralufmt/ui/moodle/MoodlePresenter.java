@@ -10,6 +10,7 @@ import org.greenrobot.eventbus.Subscribe;
 import javax.inject.Inject;
 
 import okhttp3.Cookie;
+import timber.log.Timber;
 
 public final class MoodlePresenter implements Presenter<MoodleMvpView> {
 	private final DataManager mDataManager;
@@ -78,6 +79,7 @@ public final class MoodlePresenter implements Presenter<MoodleMvpView> {
 	}
 
 	void onDownloadStart() {
+		Timber.d("Downloading file");
 		mView.showDownloadStart();
 	}
 

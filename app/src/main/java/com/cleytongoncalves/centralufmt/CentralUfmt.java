@@ -12,6 +12,8 @@ import net.danlew.android.joda.JodaTimeAndroid;
 
 import javax.inject.Inject;
 
+import timber.log.Timber;
+
 public class CentralUfmt extends Application {
 	@Inject DataManager mDataManager;
 
@@ -30,6 +32,8 @@ public class CentralUfmt extends Application {
 		                                                  .build();
 		mApplicationComponent.inject(this);
 		JodaTimeAndroid.init(this);
+
+		if (BuildConfig.DEBUG) { Timber.plant(new Timber.DebugTree()); }
 	}
 
 	public ApplicationComponent getComponent() {

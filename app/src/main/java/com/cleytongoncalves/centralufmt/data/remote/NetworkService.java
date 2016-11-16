@@ -1,7 +1,5 @@
 package com.cleytongoncalves.centralufmt.data.remote;
 
-import android.util.Log;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,10 +13,9 @@ import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import timber.log.Timber;
 
 public final class NetworkService {
-
-	private static final String TAG = "NetworkService";
 	private static final String CHARSET = "ISO-8859-1";
 	private final OkHttpClient mClient;
 
@@ -46,10 +43,11 @@ public final class NetworkService {
 			}
 			response.close();
 		} catch (IOException e) {
-			Log.e(TAG, "HTTP \'GET\' OPERATION ERROR: " + e.getMessage());
+			Timber.e(e, "Get operation failed on %s failed.", url);
 			result = new NetworkOperation(NetworkOperation.IO_ERROR);
 		}
 
+		Timber.d("Get Operation on %s - Successful: %s", url, ! result.hasFailed());
 		return result;
 	}
 
@@ -71,10 +69,11 @@ public final class NetworkService {
 			}
 			response.close();
 		} catch (IOException e) {
-			Log.e(TAG, "HTTP \'POST\' OPERATION ERROR: " + e.getMessage());
+			Timber.e(e, "Post operation failed on %s failed.", url);
 			result = new NetworkOperation(NetworkOperation.IO_ERROR);
 		}
 
+		Timber.d("Post Operation on %s - Successful: %s", url, ! result.hasFailed());
 		return result;
 	}
 

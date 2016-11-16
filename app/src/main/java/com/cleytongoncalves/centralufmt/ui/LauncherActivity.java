@@ -30,6 +30,7 @@ public class LauncherActivity extends BaseActivity {
 		} else {
 			intent = LogInActivity.getStartIntent(this, true);
 		}
+
 		startActivity(intent);
 	}
 

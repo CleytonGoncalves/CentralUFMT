@@ -9,6 +9,8 @@ import org.greenrobot.eventbus.Subscribe;
 
 import javax.inject.Inject;
 
+import timber.log.Timber;
+
 public final class LogInPresenter implements Presenter<LogInMvpView> {
 	private final DataManager mDataManager;
 	private LogInMvpView mView;
@@ -30,13 +32,15 @@ public final class LogInPresenter implements Presenter<LogInMvpView> {
 	@Override
 	public void detachView() {
 		mView = null;
+		if (EventBus.getDefault().isRegistered(this)) { EventBus.getDefault().unregister(this); }
 	}
 
 	void doAnonymousLogIn() {
-		onLogInSuccess(true); //Goes directly to the result
 		mView.setLogInButtonEnabled(false);
 		mView.setAnonymousLogInEnabled(false);
 		mView.showProgress(true);
+		onLogInSuccess(true); //Goes directly to the result
+		Timber.d("Anonymous LogIn");
 	}
 
 	void doLogIn(String rga, char[] password) {

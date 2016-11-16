@@ -65,10 +65,6 @@ public final class LogInActivity extends BaseActivity implements LogInMvpView {
 		mRgaView.setText(BuildConfig.DEFAULT_LOGIN_RGA);
 		mPasswordView.setText(BuildConfig.DEFAULT_LOGIN_PASS);
 
-		//TODO: REMOVE AUTO COMPLETE ON LOGIN
-		mRgaView.setText(BuildConfig.DEFAULT_LOGIN_RGA);
-		mPasswordView.setText(BuildConfig.DEFAULT_LOGIN_PASS);
-
 		mShouldFinishOnStop = false;
 	}
 
@@ -86,13 +82,27 @@ public final class LogInActivity extends BaseActivity implements LogInMvpView {
 		mPresenter.detachView();
 	}
 
+	@Override
+	public void onBackPressed() {
+		if (mPresenter.isLogInHappening()) {
+			mPresenter.cancelLogin();
+		} else {
+			super.onBackPressed();
+		}
+	}
+
 	@OnEditorAction(R.id.pass_text_field)
-	protected boolean onPasswordAction(int id) {
+	boolean onPasswordAction(int id) {
 		if (id == R.id.action_login || id == EditorInfo.IME_NULL) {
 			triggerLogIn();
 			return true;
 		}
 		return false;
+	}
+
+	@OnClick(R.id.button_log_in)
+	protected void onLogInClick() {
+		triggerLogIn();
 	}
 
 	private void triggerLogIn() {
@@ -140,39 +150,13 @@ public final class LogInActivity extends BaseActivity implements LogInMvpView {
 		}
 	}
 
-	/*****
-	 * Private helper methods
-	 *****/
-	private boolean isPasswordValid(char[] password) {
-		return password.length >= MIN_PASSWORD_LENGTH;
-	}
-
-	private boolean isRgaValid(String rga) {
-		return TextUtils.isDigitsOnly(rga) && rga.length() >= MIN_RGA_LENGTH;
-	}
-
-	@OnClick(R.id.button_log_in)
-	protected void onLogInClick() {
-		triggerLogIn();
-	}
-
 	@OnClick(R.id.button_anonymous_log_in)
 	protected void onAnonymousLogInClick() {
 		mPresenter.doAnonymousLogIn();
 	}
 
-	@Override
-	public void onBackPressed() {
-		if (mPresenter.isLogInHappening()) {
-			mPresenter.cancelLogin();
-		} else {
-			super.onBackPressed();
-		}
-	}
+	/* MVP Methods */
 
-	/*****
-	 * MVP View methods implementation
-	 *****/
 	@Override
 	public void onLogInSuccessful() {
 		Intent intent = MainActivity.getStartIntent(this, true);
@@ -210,5 +194,15 @@ public final class LogInActivity extends BaseActivity implements LogInMvpView {
 	@Override
 	public void showGeneralLogInError() {
 		Toast.makeText(this, R.string.error_generic_log_in, Toast.LENGTH_SHORT).show();
+	}
+
+	/* Private Helper Methods */
+
+	private boolean isPasswordValid(char[] password) {
+		return password.length >= MIN_PASSWORD_LENGTH;
+	}
+
+	private boolean isRgaValid(String rga) {
+		return TextUtils.isDigitsOnly(rga) && rga.length() >= MIN_RGA_LENGTH;
 	}
 }

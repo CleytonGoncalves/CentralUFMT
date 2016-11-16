@@ -2,7 +2,6 @@ package com.cleytongoncalves.centralufmt.ui.schedule;
 
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.util.SparseArray;
 
 import com.cleytongoncalves.centralufmt.data.DataManager;
@@ -19,15 +18,16 @@ import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.inject.Inject;
 
-final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDataPresenter {
-	private static final String TAG = SchedulePresenter.class.getSimpleName();
+import timber.log.Timber;
 
+final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDataPresenter {
 	static final int MINIMUM_AMOUNT_OF_DAYS = 5;
 	private static final int MAXIMUM_TITLE_LENGTH = 25;
 	private static final int MAXIMUM_ROOM_LENGTH = 10;
@@ -130,13 +130,11 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 	}
 
 	private void onFetchSuccess(List<Discipline> disciplineList) {
-		Log.i(TAG, "INITIATING SCHEDULE PARSING");
 		mParserTask = new DataParserTask(disciplineList);
 		mParserTask.execute();
 	}
 
 	private void onFetchFailure(String reason) {
-		Log.i(TAG, "ON FETCH FAILURE: " + reason);
 		EventBus.getDefault().unregister(this);
 
 		mView.hideProgressBar();
@@ -162,7 +160,7 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 			EventBus.getDefault().unregister(this);
 			mDataManager.getPreferencesHelper().putSchedule(mSchedule);
 			mParserTask = null;
-			Log.i(TAG, "DATA CHANGED SUCCESSFULLY");
+			Timber.d("Schedule updated successfully");
 		}
 
 		if (! schedule.containsData()) {
@@ -204,6 +202,7 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 				}
 			}
 
+			Timber.d("Schedule parsed - Canceled: %s", schedule == null);
 			if (schedule != null && ! isCancelled()) { EventBus.getDefault().post(schedule); }
 			return null;
 		}
@@ -298,7 +297,7 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 				scheduleList.add(ScheduleItemData.emptyItem());
 			}
 
-			return scheduleList;
+			return Collections.unmodifiableList(scheduleList);
 		}
 	}
 }

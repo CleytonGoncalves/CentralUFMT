@@ -1,5 +1,7 @@
 package com.cleytongoncalves.centralufmt.ui.schedule;
 
+import android.support.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +11,7 @@ import lombok.Getter;
 import lombok.Value;
 
 
+@SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
 @Value @AllArgsConstructor
 public final class ScheduleData {
 	private final int mMaxDailyClasses;
@@ -44,7 +47,7 @@ public final class ScheduleData {
 		}
 
 		@Override
-		public int compareTo(ScheduleItemData o) {
+		public int compareTo(@NonNull ScheduleItemData o) {
 			if (mColumn != o.getColumn()) {
 				return mColumn - o.getColumn();
 			} else if (! mSchedule.equals(o.getSchedule())) {

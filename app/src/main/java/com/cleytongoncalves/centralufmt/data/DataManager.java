@@ -1,7 +1,5 @@
 package com.cleytongoncalves.centralufmt.data;
 
-import android.util.Log;
-
 import com.cleytongoncalves.centralufmt.data.events.LogInEvent;
 import com.cleytongoncalves.centralufmt.data.events.ScheduleFetchEvent;
 import com.cleytongoncalves.centralufmt.data.local.PreferencesHelper;
@@ -19,11 +17,11 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import okhttp3.Cookie;
+import timber.log.Timber;
 
 @Singleton
 public class DataManager {
 	//TODO: Login before other net operations when operating from cache
-	private static final String TAG = "DataManager";
 	public static final int LOGIN_SIGA = 0;
 	private static final int LOGIN_MOODLE = - 1;
 
@@ -66,6 +64,7 @@ public class DataManager {
 			mLogInTask = new SigaLogInTask(rga, password, mNetworkService);
 		}
 
+		Timber.d("LogIn - %s", platform == LOGIN_MOODLE ? "Moodle" : "Siga");
 		mLogInTask.start();
 	}
 
@@ -76,6 +75,7 @@ public class DataManager {
 	}
 
 	public void cancelLogIn() {
+		Timber.d("Cancel LogIn");
 		if (mLogInTask != null) {
 			mLogInTask.cancelTask();
 		}
@@ -96,7 +96,7 @@ public class DataManager {
 	/* ----- Schedule ----- */
 
 	public void fetchSchedule() {
-		Log.i(TAG, "STARTING SCHEDULE FETCH");
+		Timber.d("Fetching Schedule");
 		mScheduleTask = new ScheduleTask(mNetworkService);
 		mScheduleTask.execute();
 	}
@@ -113,14 +113,14 @@ public class DataManager {
 			if (obj.getClass() == Student.class) {
 				mStudent = (Student) obj;
 				mPreferencesHelper.putLoggedInStudent(mStudent);
+				Timber.d("Student saved successfully");
 				triggerMoodleLogIn();
 			} else if (obj.getClass() == Cookie.class) {
 				mMoodleCookie = (Cookie) obj;
+				Timber.d("Cookie saved successfully");
 			} else {
-				Log.e(TAG, "LOGIN EVENT OBJECT UNKNOWN: " + obj.getClass());
+				Timber.e("LogInEvent object unknown: %s", obj.getClass());
 			}
-		} else {
-			Log.w(TAG, "LOGIN FAILED: " + logInEvent.getFailureReason());
 		}
 	}
 
@@ -130,6 +130,7 @@ public class DataManager {
 
 		if (scheduleEvent.isSuccessful()) {
 			mStudent.getCourse().setEnrolledDisciplines(scheduleEvent.getDisciplineList());
+			Timber.d("Enrolled disciplines saved successfully");
 		}
 	}
 }

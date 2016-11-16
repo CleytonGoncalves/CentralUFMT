@@ -13,9 +13,9 @@ import java.util.List;
 
 import okhttp3.Cookie;
 import okhttp3.FormBody;
+import timber.log.Timber;
 
 public final class MoodleLogInTask extends AsyncTask<Void, Void, LogInEvent> implements LogInTask {
-	private static final String TAG = MoodleLogInTask.class.getSimpleName();
 	private static final String BASE_AVA_URL = "http://www.ava.ufmt.br";
 	private static final String POST_AVA_URL = "/index.php?pag=login";
 
@@ -62,8 +62,10 @@ public final class MoodleLogInTask extends AsyncTask<Void, Void, LogInEvent> imp
 	}
 
 	@Override
-	protected void onPostExecute(LogInEvent logInEvent) {
-		EventBus.getDefault().post(logInEvent);
+	protected void onPostExecute(LogInEvent event) {
+		Timber.d("LogIn on Moodle - Successful: %s, Error: %s", event.isSuccessful(),
+		         event.getFailureReason());
+		EventBus.getDefault().post(event);
 	}
 
 	private FormBody createAvaFormParams() {

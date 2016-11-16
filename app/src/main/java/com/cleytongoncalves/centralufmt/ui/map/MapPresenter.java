@@ -1,7 +1,6 @@
 package com.cleytongoncalves.centralufmt.ui.map;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.cleytongoncalves.centralufmt.R;
 import com.cleytongoncalves.centralufmt.data.DataManager;
@@ -14,8 +13,9 @@ import com.google.maps.android.kml.KmlLayer;
 
 import javax.inject.Inject;
 
+import timber.log.Timber;
+
 public final class MapPresenter implements Presenter<MapMvpView> {
-	private static final String TAG = MapPresenter.class.getSimpleName();
 	private static final double UFMT_LAT = - 15.611124;
 	private static final double UFMT_LNG = - 56.066220;
 	private static final float ZOOM_LVL = (float) 15.6;
@@ -81,7 +81,7 @@ public final class MapPresenter implements Presenter<MapMvpView> {
 			mRouteLayer = new KmlLayer(mGoogleMap, ROUTE_MARKERS_ID, context);
 			mPoiLayer = new KmlLayer(mGoogleMap, POI_MARKERS_ID, context);
 		} catch (Exception e) {
-			Log.e(TAG, "ERROR CREATING LAYER: " + e.getMessage());
+			Timber.e(e, "Error on creating KmlLayer");
 		}
 	}
 
@@ -99,7 +99,7 @@ public final class MapPresenter implements Presenter<MapMvpView> {
 				mRouteLayer.addLayerToMap();
 				mIsRouteDisplayed = true;
 			} catch (Exception e) {
-				Log.e(TAG, "ERROR OVERLAYING ROUTE: " + e.getMessage());
+				Timber.e(e, "Error overlaying route.");
 			}
 		}
 
@@ -120,7 +120,7 @@ public final class MapPresenter implements Presenter<MapMvpView> {
 				mPoiLayer.addLayerToMap();
 				mIsPoiDisplayed = true;
 			} catch (Exception e) {
-				Log.e(TAG, "ERROR OVERLAYING POINTS OF INTEREST: " + e.getMessage());
+				Timber.e(e, "Error overlaying points of interest");
 			}
 		}
 

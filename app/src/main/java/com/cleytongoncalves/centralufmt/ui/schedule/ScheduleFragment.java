@@ -25,8 +25,6 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 public final class ScheduleFragment extends Fragment implements ScheduleMvpView {
-	private static final String TAG = ScheduleFragment.class.getSimpleName();
-
 	@Inject SchedulePresenter mPresenter;
 
 	@BindView(R.id.schedule_progress_bar) ProgressBar mProgressBar;

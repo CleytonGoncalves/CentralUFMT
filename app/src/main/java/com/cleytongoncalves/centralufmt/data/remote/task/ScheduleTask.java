@@ -12,8 +12,9 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
+import timber.log.Timber;
+
 public final class ScheduleTask extends AsyncTask<Void, Void, Void> {
-	private static final String TAG = ScheduleTask.class.getSimpleName();
 	private static final String URL =
 			"http://sia.ufmt.br/www-siga/WebSnap/C_PlanilhaHorario/planilhaHorariodoAluno" +
 					".dll/HorarioAluno";
@@ -38,6 +39,8 @@ public final class ScheduleTask extends AsyncTask<Void, Void, Void> {
 			event = new ScheduleFetchEvent(disciplineList);
 		}
 
+		Timber.d("Schedule Fetch - Successful: %s, Error: %s", event.isSuccessful(),
+		         event.getFailureReason());
 		EventBus.getDefault().post(event);
 		return null;
 	}

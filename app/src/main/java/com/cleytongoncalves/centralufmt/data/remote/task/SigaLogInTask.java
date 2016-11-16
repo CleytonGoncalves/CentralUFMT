@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 import okhttp3.FormBody;
+import timber.log.Timber;
 
 public final class SigaLogInTask extends AsyncTask<Void, Void, LogInEvent> implements LogInTask {
 	private static final String TAG = SigaLogInTask.class.getSimpleName();
@@ -80,8 +81,10 @@ public final class SigaLogInTask extends AsyncTask<Void, Void, LogInEvent> imple
 	}
 
 	@Override
-	protected void onPostExecute(LogInEvent result) {
-		EventBus.getDefault().post(result);
+	protected void onPostExecute(LogInEvent event) {
+		Timber.d("LogIn on Siga - Successful: %s, Error: %s", event.isSuccessful(),
+		         event.getFailureReason());
+		EventBus.getDefault().post(event);
 	}
 
 	private FormBody createFormParams(String html) {
