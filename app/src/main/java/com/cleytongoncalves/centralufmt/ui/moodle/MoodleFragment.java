@@ -29,6 +29,7 @@ import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.cleytongoncalves.centralufmt.CentralUfmt;
 import com.cleytongoncalves.centralufmt.R;
 import com.cleytongoncalves.centralufmt.ui.base.BaseActivity;
 
@@ -100,6 +101,7 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 	public void onDestroy() {
 		super.onDestroy();
 		mUnbinder.unbind();
+		CentralUfmt.getRefWatcher(getActivity()).watch(this);
 	}
 
 	@Override
@@ -131,15 +133,12 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 		mWebView.setWebViewClient(new MyBrowser());
 		mWebView.setWebChromeClient(new MyWebChromeClient());
 		mWebView.setDownloadListener(new MyDownloadListener());
-		mWebView.setOnKeyListener(new View.OnKeyListener() {
-			@Override
-			public boolean onKey(View v, int keyCode, KeyEvent event) {
-				if (keyCode == KeyEvent.KEYCODE_BACK && mWebView.canGoBack()) {
-					mWebView.goBack();
-					return true;
-				}
-				return false;
+		mWebView.setOnKeyListener((v, keyCode, event) -> {
+			if (keyCode == KeyEvent.KEYCODE_BACK && mWebView.canGoBack()) {
+				mWebView.goBack();
+				return true;
 			}
+			return false;
 		});
 	}
 

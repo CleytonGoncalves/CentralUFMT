@@ -12,10 +12,8 @@ import android.view.ViewGroup;
 import com.cleytongoncalves.centralufmt.CentralUfmt;
 import com.cleytongoncalves.centralufmt.R;
 import com.cleytongoncalves.centralufmt.ui.base.BaseActivity;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
-import com.google.android.gms.maps.OnMapReadyCallback;
 
 import javax.inject.Inject;
 
@@ -50,12 +48,7 @@ public final class MapFragment extends Fragment implements MapMvpView {
 		mMapView.onResume();
 		MapsInitializer.initialize(CentralUfmt.get(getActivity()));
 
-		mMapView.getMapAsync(new OnMapReadyCallback() {
-			@Override
-			public void onMapReady(GoogleMap googleMap) {
-				mPresenter.onMapReady(googleMap, CentralUfmt.get(getActivity()));
-			}
-		});
+		mMapView.getMapAsync(gMap -> mPresenter.onMapReady(gMap, CentralUfmt.get(getActivity())));
 
 		return rootView;
 	}
@@ -107,6 +100,7 @@ public final class MapFragment extends Fragment implements MapMvpView {
 		super.onDestroy();
 		mMapView.onDestroy();
 		mUnbinder.unbind();
+		CentralUfmt.getRefWatcher(getActivity()).watch(this);
 	}
 
 	@Override

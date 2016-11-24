@@ -58,6 +58,6 @@
     <string name="title_fragment_moodle_loading">Carregando…</string>
     <string name="error_not_connected">Modo Offline</string>
     <string name="snack_empty_schedule">O horário está vazio.</string>
-    <string name="snack_dismiss_schedule">Ok</string>
+    <string name="snack_dismiss_schedule">@android:string/ok</string>
 
 </resources>

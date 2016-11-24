@@ -16,11 +16,11 @@
 #   public *;
 #}
 
-# Jsoup rules
+# Jsoup
 -keep class com.cleytongoncalves.centralufmt.data.local.HtmlHelper.** { *; }
 -keeppackagenames org.jsoup.nodes
 
-# ButterKnife rules
+# ButterKnife
 -keep class butterknife.** { *; }
 -dontwarn butterknife.internal.**
 -keep class **$$ViewBinder { *; }
@@ -33,17 +33,20 @@
     @butterknife.* <methods>;
 }
 
-# OkHttp rules
+# OkHttp
 -dontwarn okio.**
 -dontwarn com.squareup.okhttp.**
 
-# Gson rules
+# Gson
 -keepattributes Signature
 -keep class sun.misc.Unsafe { *; }
 # Keep non static or private fields of models so Gson can find their names
 -keepclassmembers class centralufmt.data.model.** {
     !static !private <fields>;
 }
+
+# RetroLambda
+-dontwarn java.lang.invoke.*
 
 # Produces useful obfuscated stack traces
 # http://proguard.sourceforge.net/manual/examples.html#stacktrace

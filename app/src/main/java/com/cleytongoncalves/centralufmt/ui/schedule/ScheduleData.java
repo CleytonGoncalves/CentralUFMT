@@ -16,14 +16,14 @@ import lombok.Value;
 public final class ScheduleData {
 	private final int mMaxDailyClasses;
 	private final int mAmountOfDays;
-	@Getter(AccessLevel.NONE) private final List<ScheduleItemData> mSchedule;
+	@Getter(AccessLevel.NONE) private final List<DisciplineModelView> mSchedule;
 
 	static ScheduleData emptySchedule() {
 		return new ScheduleData(1, SchedulePresenter.MINIMUM_AMOUNT_OF_DAYS,
-		                        new ArrayList<ScheduleItemData>(0));
+		                        new ArrayList<>(0));
 	}
 
-	ScheduleItemData getItem(int position) {
+	DisciplineModelView getItem(int position) {
 		return mSchedule.get(position);
 	}
 
@@ -36,18 +36,18 @@ public final class ScheduleData {
 	}
 
 	@Value @AllArgsConstructor
-	static class ScheduleItemData implements Comparable<ScheduleItemData> {
+	static class DisciplineModelView implements Comparable<DisciplineModelView> {
 		private final int mColumn;
 		private final String mTitle;
 		private final String mSchedule;
 		private final String mRoom;
 
-		static ScheduleItemData emptyItem() {
-			return new ScheduleItemData(- 1, null, null, null);
+		static DisciplineModelView emptyItem() {
+			return new DisciplineModelView(- 1, null, null, null);
 		}
 
 		@Override
-		public int compareTo(@NonNull ScheduleItemData o) {
+		public int compareTo(@NonNull DisciplineModelView o) {
 			if (mColumn != o.getColumn()) {
 				return mColumn - o.getColumn();
 			} else if (! mSchedule.equals(o.getSchedule())) {

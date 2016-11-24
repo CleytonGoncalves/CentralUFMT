@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt' //Dager2
 apply plugin: 'android-apt' //ButterKnife
+apply plugin: 'me.tatarka.retrolambda'
 
 android {
     compileSdkVersion 24
@@ -36,8 +37,13 @@ android {
     buildTypes.each {
         it.buildConfigField 'String', 'SHARED_PREFERENCES_KEY', SharedPreferencesKey
         it.resValue 'string', 'MAPS_API_KEY', MapsApiKey
-        it.buildConfigField 'String', 'DEFAULT_LOGIN_RGA', LoginRga
-        it.buildConfigField 'String', 'DEFAULT_LOGIN_PASS', LoginPassword
+        it.buildConfigField 'String', 'DEFAULT_LOGIN_RGA', LoginRga //TODO: Remove on release
+        it.buildConfigField 'String', 'DEFAULT_LOGIN_PASS', LoginPassword //TODO: Remove on release
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
@@ -55,6 +61,7 @@ dependencies {
     final JODA_TIME_VERSION = '2.9.4.3'
     final AUTOFITTEXTVIEW_VERSION = '0.2.1'
     final TIMBER_VERSION = '4.3.1'
+    final LEAKCANARY_VERSION = '1.5'
 
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile "com.android.support:appcompat-v7:$SUPPORT_LIBRARY_VERSION"
@@ -70,6 +77,7 @@ dependencies {
 
     compile "com.google.dagger:dagger:$DAGGER_VERSION"
     apt "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
+    provided 'org.glassfish:javax.annotation:10.0-b28' //Required by Dagger2
 
     compile files('libs/jsoup-1.9.2.jar')
 
@@ -80,14 +88,15 @@ dependencies {
     compile "com.google.maps.android:android-maps-utils:$GMAPS_UTILS_VERSION"
 
     compile "org.projectlombok:lombok:$LOMBOK_VERSION"
-//    provided 'pl.mg6.hrisey:hrisey:0.3.1' //Lombok with Parcelable
-
-    provided 'org.glassfish:javax.annotation:10.0-b28' //Required by Dagger2
 
     compile "net.danlew:android.joda:$JODA_TIME_VERSION"
 
     compile "me.grantland:autofittextview:$AUTOFITTEXTVIEW_VERSION"
 
     compile "com.jakewharton.timber:timber:$TIMBER_VERSION"
+
+    debugCompile "com.squareup.leakcanary:leakcanary-android:$LEAKCANARY_VERSION"
+    releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:$LEAKCANARY_VERSION"
+    testCompile "com.squareup.leakcanary:leakcanary-android-no-op:$LEAKCANARY_VERSION"
 }
 

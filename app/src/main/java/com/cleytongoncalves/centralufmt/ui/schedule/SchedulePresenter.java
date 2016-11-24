@@ -8,7 +8,7 @@ import com.cleytongoncalves.centralufmt.data.DataManager;
 import com.cleytongoncalves.centralufmt.data.events.ScheduleFetchEvent;
 import com.cleytongoncalves.centralufmt.data.model.Discipline;
 import com.cleytongoncalves.centralufmt.ui.base.Presenter;
-import com.cleytongoncalves.centralufmt.ui.schedule.ScheduleData.ScheduleItemData;
+import com.cleytongoncalves.centralufmt.ui.schedule.ScheduleData.DisciplineModelView;
 import com.cleytongoncalves.centralufmt.util.TextUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -91,7 +91,7 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 	}
 
 	@Override
-	public ScheduleItemData getDataForPosition(int pos) {
+	public DisciplineModelView getDataForPosition(int pos) {
 		//Not called on header positions
 		return mSchedule.getItem(getTrueItemPosition(pos));
 	}
@@ -194,10 +194,10 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 			if (mEnrolled.isEmpty()) {
 				schedule = ScheduleData.emptySchedule();
 			} else {
-				SparseArray<SortedSet<ScheduleItemData>> rawSchedule = parseToRawSchedule();
+				SparseArray<SortedSet<DisciplineModelView>> rawSchedule = parseToRawSchedule();
 
 				if (! isCancelled()) {
-					List<ScheduleItemData> scheduleList = createListForDisplay(rawSchedule);
+					List<DisciplineModelView> scheduleList = createListForDisplay(rawSchedule);
 					schedule = new ScheduleData(mMaxDailyClasses, mAmountOfDays, scheduleList);
 				}
 			}
@@ -207,9 +207,9 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 			return null;
 		}
 
-		private SparseArray<SortedSet<ScheduleItemData>> parseToRawSchedule() {
+		private SparseArray<SortedSet<DisciplineModelView>> parseToRawSchedule() {
 		/* Parses the discipline list to a sorted *map* (dayOfWeek -> SortedSet(Starting Hour)) */
-			SparseArray<SortedSet<ScheduleItemData>> rawSchedule =
+			SparseArray<SortedSet<DisciplineModelView>> rawSchedule =
 					new SparseArray<>(mEnrolled.size()); //Max # of different hours
 
 			mAmountOfDays = MINIMUM_AMOUNT_OF_DAYS;
@@ -236,10 +236,10 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 
 					String room = TextUtil.ellipsizeString(disc.getRoom(), MAXIMUM_ROOM_LENGTH);
 
-					ScheduleItemData discData =
-							new ScheduleItemData(dayOfWeek - 1, title, time, room);
+					DisciplineModelView discData =
+							new DisciplineModelView(dayOfWeek - 1, title, time, room);
 
-					SortedSet<ScheduleItemData> viewSet = rawSchedule.get(start.getHourOfDay());
+					SortedSet<DisciplineModelView> viewSet = rawSchedule.get(start.getHourOfDay());
 					if (viewSet == null) {
 						viewSet = new TreeSet<>();
 						rawSchedule.put(start.getHourOfDay(), viewSet);
@@ -252,35 +252,35 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 			return rawSchedule;
 		}
 
-		private List<ScheduleItemData> createListForDisplay
-				(SparseArray<SortedSet<ScheduleItemData>> rawSchedule) {
+		private List<DisciplineModelView> createListForDisplay
+				(SparseArray<SortedSet<DisciplineModelView>> rawSchedule) {
 			/* Creates a list sorted by the necessary adapter order, with emptyItem items on
 			emptyItem
 		classes */
-			List<ScheduleItemData> scheduleList = new ArrayList<>(mAmountOfDays *
+			List<DisciplineModelView> scheduleList = new ArrayList<>(mAmountOfDays *
 					                                                      mMaxDailyClasses);
 
 			int lastDay = 0;
 			int scheduleSize = rawSchedule.size();
 			for (int i = 0, position = 0; i < scheduleSize; i++) {
-				SortedSet<ScheduleItemData> hourlyData = rawSchedule.valueAt(i);
+				SortedSet<DisciplineModelView> hourlyData = rawSchedule.valueAt(i);
 
 				int currColumn = 0;
-				for (ScheduleItemData data : hourlyData) {
+				for (DisciplineModelView data : hourlyData) {
 					currColumn = position % mAmountOfDays;
 					int nextDataColumn = data.getColumn();
 
 					//Creates fillers until it gets to the correct position
 					if (currColumn < nextDataColumn) {
 						for (; currColumn < nextDataColumn; currColumn++) {
-							scheduleList.add(ScheduleItemData.emptyItem());
+							scheduleList.add(DisciplineModelView.emptyItem());
 							position++;
 						}
 					} else if (currColumn > nextDataColumn) {
 						int amountOfFillers = (mAmountOfDays - 1) - currColumn; //Finish the line
 						amountOfFillers += nextDataColumn; //plus the amount to get to the next
 						for (int j = 0; j < amountOfFillers; j++) {
-							scheduleList.add(ScheduleItemData.emptyItem());
+							scheduleList.add(DisciplineModelView.emptyItem());
 							position++;
 						}
 					}
@@ -294,7 +294,7 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 
 			//fills the last line
 			for (; lastDay < mAmountOfDays; ++ lastDay) {
-				scheduleList.add(ScheduleItemData.emptyItem());
+				scheduleList.add(DisciplineModelView.emptyItem());
 			}
 
 			return Collections.unmodifiableList(scheduleList);

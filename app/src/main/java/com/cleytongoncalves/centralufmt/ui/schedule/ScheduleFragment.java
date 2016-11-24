@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import com.cleytongoncalves.centralufmt.CentralUfmt;
 import com.cleytongoncalves.centralufmt.R;
 import com.cleytongoncalves.centralufmt.ui.base.BaseActivity;
 
@@ -49,7 +50,7 @@ public final class ScheduleFragment extends Fragment implements ScheduleMvpView 
 		mPresenter.attachView(this);
 		mUnbinder = ButterKnife.bind(this, mRootView);
 
-		//Sets an emptyItem recycler view
+		//Sets an recycler view containing header only
 		mRecyclerView.setLayoutManager(
 				new GridLayoutManager(getActivity(), SchedulePresenter.MINIMUM_AMOUNT_OF_DAYS));
 		mRecyclerView.setAdapter(new ScheduleAdapter(mPresenter));
@@ -86,6 +87,7 @@ public final class ScheduleFragment extends Fragment implements ScheduleMvpView 
 	public void onDestroy() {
 		super.onDestroy();
 		mUnbinder.unbind();
+		CentralUfmt.getRefWatcher(getActivity()).watch(this);
 	}
 
 	/* MVP Methods */
@@ -127,14 +129,7 @@ public final class ScheduleFragment extends Fragment implements ScheduleMvpView 
 	public void showGeneralErrorSnack() {
 		mSnackbar = Snackbar.make(mRootView, getString(R.string.snack_error_schedule),
 		                          Snackbar.LENGTH_INDEFINITE)
-		                    .setAction(getString(R.string.snack_reload_schedule),
-		                               new View.OnClickListener() {
-			                               @Override
-			                               public void onClick(View v) {
-				                               mPresenter.loadSchedule(true);
-			                               }
-		                               });
-
+		                    .setAction(getString(R.string.snack_reload_schedule), v -> mPresenter.loadSchedule(true));
 		mSnackbar.show();
 	}
 

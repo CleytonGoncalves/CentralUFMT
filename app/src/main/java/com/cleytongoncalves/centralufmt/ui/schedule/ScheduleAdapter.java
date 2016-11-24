@@ -9,7 +9,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.cleytongoncalves.centralufmt.R;
-import com.cleytongoncalves.centralufmt.ui.schedule.ScheduleData.ScheduleItemData;
+import com.cleytongoncalves.centralufmt.ui.schedule.ScheduleData.DisciplineModelView;
 
 import javax.inject.Inject;
 
@@ -60,7 +60,7 @@ final class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 			return;
 		}
 
-		ScheduleItemData data = mSchedulePresenter.getDataForPosition(position);
+		DisciplineModelView data = mSchedulePresenter.getDataForPosition(position);
 		ClassViewHolder classViewHolder = (ClassViewHolder) holder;
 
 		classViewHolder.classLayout.setBackgroundColor(Color.parseColor("#3370ff"));
