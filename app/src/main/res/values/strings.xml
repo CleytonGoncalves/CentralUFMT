@@ -17,17 +17,29 @@
     <string name="menu_update_student">Forçar atualização dos dados</string>
     <string name="action_share_app">Compartilhar</string>
     <string name="action_settings">Configurações</string>
+    <string name="toast_offline_main">Modo Offline</string>
 
     <!-- Map Fragment -->
     <string name="title_fragment_map">Mapa</string>
-    <string name="menu_show_route">Mostrar rota do Ligeirinho</string>
-    <string name="menu_show_poi">Mostrar pontos de interesse</string>
+    <string name="title_route_map">rota do Ligeirinho</string>
+    <string name="title_poi_map">pontos de interesse</string>
+    <string name="menu_show_route">Mostrar @string/title_route_map</string>
+    <string name="menu_show_poi">Mostrar @string/title_poi_map</string>
+    <string name="toast_layer_error_map">Erro ao colocar %s.</string>
+
+    <!-- Moodle Fragment -->
+    <string name="title_fragment_moodle">AVA</string>
+    <string name="title_fragment_moodle_loading">Carregando…</string>
+    <string name="menu_refresh_moodle">Atualizar Página</string>
+    <string name="toast_download_moodle">Baixando arquivo…</string>
 
     <!-- Schedule Fragment -->
     <string name="title_fragment_schedule">Horários</string>
     <string name="menu_refresh_schedule">Atualizar</string>
     <string name="snack_error_schedule">Falha ao carregar o horário.</string>
     <string name="snack_reload_schedule">Recarregar</string>
+    <string name="snack_empty_schedule">O horário está vazio.</string>
+    <string name="snack_dismiss_schedule">@android:string/ok</string>
 
     <!-- Dialogs -->
     <string name="dialog_action_ok">OK</string>
@@ -52,12 +64,5 @@
     <!-- Uncategorized-->
     <string name="title_fragment_student">Aluno</string>
     <string name="title_fragment_curriculum">Grade do Curso</string>
-    <string name="title_fragment_moodle">AVA</string>
-    <string name="menu_refresh_page">Atualizar Página</string>
-    <string name="download_started">Baixando arquivo…</string>
-    <string name="title_fragment_moodle_loading">Carregando…</string>
-    <string name="error_not_connected">Modo Offline</string>
-    <string name="snack_empty_schedule">O horário está vazio.</string>
-    <string name="snack_dismiss_schedule">@android:string/ok</string>
 
 </resources>

@@ -95,7 +95,7 @@ public class MainActivity extends BaseActivity
 
 		if (! NetworkUtil.isNetworkConnected(this)) {
 			mNavigationView.getMenu().findItem(R.id.nav_moodle).setEnabled(false);
-			Toast.makeText(this, getString(R.string.error_not_connected), Toast.LENGTH_LONG)
+			Toast.makeText(this, getString(R.string.toast_offline_main), Toast.LENGTH_LONG)
 			     .show();
 		}
 

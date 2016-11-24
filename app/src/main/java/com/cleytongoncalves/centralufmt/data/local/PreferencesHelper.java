@@ -98,7 +98,7 @@ public class PreferencesHelper {
 		return mGson.fromJson(scheduleJson, ScheduleData.class);
 	}
 
-	public void putMapRouteDisplayState(boolean enabled) {
+	public void putMapBusRouteDisplayState(boolean enabled) {
 		mSharedPref.edit().putBoolean(PREF_KEY_ROUTE_OPTION, enabled).apply();
 	}
 

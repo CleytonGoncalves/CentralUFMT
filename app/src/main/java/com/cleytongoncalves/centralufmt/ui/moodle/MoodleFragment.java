@@ -172,7 +172,7 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 
 	@Override
 	public void showDownloadStart() {
-		Toast.makeText(getActivity(), getString(R.string.download_started), Toast.LENGTH_LONG)
+		Toast.makeText(getActivity(), getString(R.string.toast_download_moodle), Toast.LENGTH_LONG)
 		     .show();
 	}
 
