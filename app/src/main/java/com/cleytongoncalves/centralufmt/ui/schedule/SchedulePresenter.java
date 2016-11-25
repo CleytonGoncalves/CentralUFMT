@@ -120,6 +120,8 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 		return mSchedule.getScheduleSize() + mSchedule.getAmountOfDays();
 	}
 
+	/* Data Methods */
+
 	@Subscribe(threadMode = ThreadMode.MAIN)
 	public void onScheduleFetched(ScheduleFetchEvent scheduleEvent) {
 		if (scheduleEvent.isSuccessful()) {
