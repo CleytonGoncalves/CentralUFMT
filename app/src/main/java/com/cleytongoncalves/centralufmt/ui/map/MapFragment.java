@@ -8,12 +8,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.cleytongoncalves.centralufmt.CentralUfmt;
 import com.cleytongoncalves.centralufmt.R;
 import com.cleytongoncalves.centralufmt.ui.base.BaseActivity;
 import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.MapsInitializer;
 
 import javax.inject.Inject;
 
@@ -22,6 +22,8 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 public final class MapFragment extends Fragment implements MapMvpView {
+	private static final String MAPVIEW_BUNDLE_KEY = "MapViewBundleKey";
+
 	@Inject MapPresenter mPresenter;
 
 	@BindView(R.id.map_view) MapView mMapView;
@@ -44,11 +46,13 @@ public final class MapFragment extends Fragment implements MapMvpView {
 		mUnbinder = ButterKnife.bind(this, rootView);
 		mPresenter.attachView(this);
 
-		mMapView.onCreate(savedInstanceState);
-		mMapView.onResume();
-		MapsInitializer.initialize(CentralUfmt.get(getActivity()));
+		Bundle mapViewBundle = null;
+		if (savedInstanceState != null) {
+			mapViewBundle = savedInstanceState.getBundle(MAPVIEW_BUNDLE_KEY);
+		}
 
-		mMapView.getMapAsync(gMap -> mPresenter.onMapReady(gMap, CentralUfmt.get(getActivity())));
+		mMapView.onCreate(mapViewBundle);
+		mMapView.getMapAsync(gMap -> mPresenter.onMapReady(gMap, getActivity()));
 
 		return rootView;
 	}
@@ -68,7 +72,14 @@ public final class MapFragment extends Fragment implements MapMvpView {
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		mMapView.onSaveInstanceState(outState);
+
+		Bundle mapViewBundle = outState.getBundle(MAPVIEW_BUNDLE_KEY);
+		if (mapViewBundle == null) {
+			mapViewBundle = new Bundle();
+			outState.putBundle(MAPVIEW_BUNDLE_KEY, mapViewBundle);
+		}
+
+		mMapView.onSaveInstanceState(mapViewBundle);
 	}
 
 	@Override
@@ -114,15 +125,17 @@ public final class MapFragment extends Fragment implements MapMvpView {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case (R.id.menu_show_route):
-				mPresenter.toggleRoute();
+				mPresenter.toggleBusRoute();
 				return true;
 			case (R.id.menu_show_poi):
 				mPresenter.togglePointsOfInterest();
 				return true;
 			default:
-				return super.onOptionsItemSelected(item);
+				return false;
 		}
 	}
+
+	/* MVP Methods */
 
 	@Override
 	public void setPoiMenuState(boolean state) {
@@ -130,7 +143,26 @@ public final class MapFragment extends Fragment implements MapMvpView {
 	}
 
 	@Override
-	public void setRouteMenuState(boolean state) {
+	public void setBusRouteMenuState(boolean state) {
 		mOptionsMenu.findItem(R.id.menu_show_route).setChecked(state);
+	}
+
+	@Override
+	public void showBusRouteError() {
+		Toast.makeText(getActivity(),
+		               getString(R.string.toast_layer_error_map,
+		                         getString(R.string.title_route_map)),
+		               Toast.LENGTH_SHORT)
+		     .show();
+	}
+
+	@Override
+	public void showPoiError() {
+		Toast.makeText(getActivity(),
+		               getString(R.string.toast_layer_error_map, getString(R.string
+				                                                                   .title_poi_map)),
+
+		               Toast.LENGTH_SHORT)
+		     .show();
 	}
 }
