@@ -55,7 +55,7 @@ dependencies {
     final DAGGER_VERSION = '2.7'
     final GSON_VERSION = '2.7'
     final ENCRYPTEDPREFERENCES_VERSION = '1.2.0'
-    final GMAPS_VERSION = '9.6.1'
+    final GMAPS_VERSION = '10.0.0'
     final GMAPS_UTILS_VERSION = '0.4.4'
     final LOMBOK_VERSION = '1.16.10'
     final JODA_TIME_VERSION = '2.9.4.3'
@@ -98,5 +98,6 @@ dependencies {
     debugCompile "com.squareup.leakcanary:leakcanary-android:$LEAKCANARY_VERSION"
     releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:$LEAKCANARY_VERSION"
     testCompile "com.squareup.leakcanary:leakcanary-android-no-op:$LEAKCANARY_VERSION"
+
 }
 
