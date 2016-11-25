@@ -12,6 +12,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cleytongoncalves.centralufmt.BuildConfig;
 import com.cleytongoncalves.centralufmt.R;
 import com.cleytongoncalves.centralufmt.ui.base.BaseActivity;
 import com.cleytongoncalves.centralufmt.ui.main.MainActivity;
@@ -59,6 +60,10 @@ public final class LogInActivity extends BaseActivity implements LogInMvpView {
 		activityComponent().inject(this);
 		ButterKnife.bind(this);
 		mPresenter.attachView(this);
+
+		//TODO: REMOVE AUTO COMPLETE ON LOGIN
+		mRgaView.setText(BuildConfig.DEFAULT_LOGIN_RGA);
+		mPasswordView.setText(BuildConfig.DEFAULT_LOGIN_PASS);
 
 		mShouldFinishOnStop = false;
 	}
