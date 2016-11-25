@@ -69,8 +69,8 @@ public class MainActivity extends BaseActivity
 	private void setUpDrawer(Toolbar toolbar) {
 		ActionBarDrawerToggle toggle =
 				new ActionBarDrawerToggle(this, mDrawer, toolbar,
-						                         R.string.navigation_drawer_open, R.string
-								                                                          .navigation_drawer_close);
+				                          R.string.navigation_drawer_open, R.string
+						                                                           .navigation_drawer_close);
 
 		mDrawer.addDrawerListener(toggle);
 		toggle.syncState();
@@ -118,18 +118,27 @@ public class MainActivity extends BaseActivity
 		Fragment currFragment = mFragmentManager.findFragmentById(R.id.container_main);
 
 		//TODO: ADD REMAINING FRAGMENTS TO CHANGE TITLE/SELECTION
+		String title;
 		if (currFragment != null) {
-			if (currFragment instanceof MapFragment) {
-				setTitle(getString(R.string.title_fragment_map));
+			String fragTag = currFragment.getTag();
+
+			if (fragTag.equals(MapFragment.class.getName())) {
+				title = getString(R.string.title_fragment_map);
 				mNavigationView.getMenu().findItem(R.id.nav_map).setChecked(true);
-			} else if (currFragment instanceof MoodleFragment) {
-				setTitle(R.string.title_fragment_moodle);
+			} else if (fragTag.equals(MoodleFragment.class.getName())) {
+				title = getString(R.string.title_fragment_moodle);
 				mNavigationView.getMenu().findItem(R.id.nav_moodle).setChecked(true);
+			} else if (fragTag.equals(ScheduleFragment.class.getName())) {
+				title = getString(R.string.title_fragment_schedule);
+				mNavigationView.getMenu().findItem(R.id.nav_schedule).setChecked(true);
+			} else {
+				title = getString(R.string.title_activity_main);
 			}
 		} else {
-			setTitle(getString(R.string.title_activity_main));
-			mNavigationView.getMenu().findItem(R.id.nav_map).setChecked(false); //TODO: REMOVE THIS
+			title = getString(R.string.title_activity_main);
 		}
+
+		setTitle(title);
 	}
 
 	@Override
@@ -159,7 +168,7 @@ public class MainActivity extends BaseActivity
 			case R.id.nav_share:
 				fragmentClass = null;
 				break;
-				//TODO: IMPLEMENT APP SHARE
+			//TODO: IMPLEMENT APP SHARE
 			default:
 				fragmentClass = null; //TODO: SET THE MAIN FRAGMENT AS DEFAULT
 		}
