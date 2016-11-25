@@ -149,20 +149,13 @@ public final class MapFragment extends Fragment implements MapMvpView {
 
 	@Override
 	public void showBusRouteError() {
-		Toast.makeText(getActivity(),
-		               getString(R.string.toast_layer_error_map,
-		                         getString(R.string.title_route_map)),
-		               Toast.LENGTH_SHORT)
+		Toast.makeText(getActivity(), getString(R.string.toast_bus_error_map), Toast.LENGTH_SHORT)
 		     .show();
 	}
 
 	@Override
 	public void showPoiError() {
-		Toast.makeText(getActivity(),
-		               getString(R.string.toast_layer_error_map, getString(R.string
-				                                                                   .title_poi_map)),
-
-		               Toast.LENGTH_SHORT)
+		Toast.makeText(getActivity(), getString(R.string.toast_poi_error_map), Toast.LENGTH_SHORT)
 		     .show();
 	}
 }

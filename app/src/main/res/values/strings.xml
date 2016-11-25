@@ -23,9 +23,10 @@
     <string name="title_fragment_map">Mapa</string>
     <string name="title_route_map">rota do Ligeirinho</string>
     <string name="title_poi_map">pontos de interesse</string>
-    <string name="menu_show_route">Mostrar @string/title_route_map</string>
-    <string name="menu_show_poi">Mostrar @string/title_poi_map</string>
-    <string name="toast_layer_error_map">Erro ao colocar %s.</string>
+    <string name="menu_show_route">Mostrar rota do Ligeirinho</string>
+    <string name="menu_show_poi">Mostrar pontos de interesse</string>
+    <string name="toast_bus_error_map">Erro ao sobrepor a rota do Ligeirinho.</string>
+    <string name="toast_poi_error_map">Erro ao sobrepor os pontos de interesse.</string>
 
     <!-- Moodle Fragment -->
     <string name="title_fragment_moodle">AVA</string>
