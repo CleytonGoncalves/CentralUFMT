@@ -41,6 +41,12 @@
     <string name="snack_empty_schedule">O horário está vazio.</string>
     <string name="snack_dismiss_schedule">@android:string/ok</string>
 
+    <!-- Student Fragment -->
+    <string name="title_fragment_student">Aluno</string>
+
+    <!-- Curriculum Fragment -->
+    <string name="title_fragment_curriculum">Grade do Curso</string>
+
     <!-- Dialogs -->
     <string name="dialog_action_ok">OK</string>
     <string name="dialog_action_cancel">Cancelar</string>
@@ -62,7 +68,5 @@
     <string name="navigation_drawer_close">Fechar menu de navegação</string>
 
     <!-- Uncategorized-->
-    <string name="title_fragment_student">Aluno</string>
-    <string name="title_fragment_curriculum">Grade do Curso</string>
 
 </resources>
