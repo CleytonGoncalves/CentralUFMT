@@ -18,3 +18,5 @@ gradle
 *.ipr
 *~
 *.swp
+/fabric.properties
+/app-release.apk
