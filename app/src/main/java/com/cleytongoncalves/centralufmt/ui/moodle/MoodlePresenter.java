@@ -6,6 +6,7 @@ import com.cleytongoncalves.centralufmt.ui.base.Presenter;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import javax.inject.Inject;
 
@@ -40,17 +41,18 @@ public final class MoodlePresenter implements Presenter<MoodleMvpView> {
 	@Override
 	public void detachView() {
 		mView = null;
+		if (EventBus.getDefault().isRegistered(this)) { EventBus.getDefault().unregister(this); }
 	}
 
 	private void doLogIn() {
-		EventBus.getDefault().register(this);
-		mDataManager.triggerMoodleLogIn();
-
 		mView.showProgressBar(true);
 		mView.showWebView(false);
+
+		EventBus.getDefault().register(this);
+		mDataManager.triggerMoodleLogIn();
 	}
 
-	@Subscribe
+	@Subscribe(threadMode = ThreadMode.MAIN)
 	public void onLogInEvent(LogInEvent event) {
 		EventBus.getDefault().unregister(this);
 
