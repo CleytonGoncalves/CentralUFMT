@@ -52,6 +52,7 @@ android {
         debug {
             versionNameSuffix " Debug"
             debuggable true
+            ext.enableCrashlytics = false
         }
     }
 

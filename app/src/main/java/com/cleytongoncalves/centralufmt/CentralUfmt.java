@@ -10,6 +10,7 @@ import com.cleytongoncalves.centralufmt.injection.component.ApplicationComponent
 import com.cleytongoncalves.centralufmt.injection.component.DaggerApplicationComponent;
 import com.cleytongoncalves.centralufmt.injection.module.ApplicationModule;
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.core.CrashlyticsCore;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 
@@ -63,7 +64,9 @@ public class CentralUfmt extends Application {
 		mRefWatcher = LeakCanary.install(this);
 
 		JodaTimeAndroid.init(this);
-		Fabric.with(this, new Crashlytics());
+
+		CrashlyticsCore core = new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build();
+		Fabric.with(this, new Crashlytics.Builder().core(core).build());
 	}
 
 	private void plantTrees() {
@@ -74,9 +77,9 @@ public class CentralUfmt extends Application {
 					super.log(priority, "Timber_" + tag, message, t);
 				}
 			});
+		} else {
+			Timber.plant(new CrashlyticsTree());
 		}
-
-		Timber.plant(new CrashlyticsTree());
 	}
 
 	private static class CrashlyticsTree extends Timber.Tree {
