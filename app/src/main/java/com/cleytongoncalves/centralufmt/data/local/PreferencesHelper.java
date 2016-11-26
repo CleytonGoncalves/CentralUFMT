@@ -4,12 +4,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
 
+import com.cleytongoncalves.centralufmt.data.model.GsonAdaptersModel;
 import com.cleytongoncalves.centralufmt.data.model.Student;
 import com.cleytongoncalves.centralufmt.injection.ApplicationContext;
 import com.cleytongoncalves.centralufmt.ui.schedule.ScheduleData;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.pddstudio.preferences.encrypted.EncryptedPreferences;
 
 import javax.inject.Inject;
 
@@ -23,23 +23,16 @@ public class PreferencesHelper {
 	private static final String PREF_KEY_ROUTE_OPTION = "PREF_KEY_ROUTE_OPTION";
 	private static final String PREF_KEY_POI_OPTION = "PREF_KEY_POI_OPTION";
 
-	private final EncryptedPreferences mEncryptedPref;
 	private final SharedPreferences mSharedPref;
 	private final Gson mGson;
 
 	@Inject
 	PreferencesHelper(@ApplicationContext Context context) {
-		mEncryptedPref = new EncryptedPreferences.Builder(context)
-				                 .withEncryptionPassword(com.cleytongoncalves.centralufmt
-						                                         .BuildConfig
-						                                         .SHARED_PREFERENCES_KEY)
-				                 .withPreferenceName(PREF_FILE_NAME)
-				                 .build();
-
 		mSharedPref = context.getSharedPreferences(PREF_FILE_NAME, Context.MODE_PRIVATE);
-		mGson = new GsonBuilder()
-				        .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSz")
-				        .create();
+
+		mGson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSz")
+		                         .registerTypeAdapterFactory(new GsonAdaptersModel())
+		                         .create();
 	}
 
 	public void clear() {
@@ -47,18 +40,18 @@ public class PreferencesHelper {
 	}
 
 	public void putCredentials(String rga, char[] password) {
-		mEncryptedPref.edit().putString(PREF_KEY_RGA, rga).apply();
-		mEncryptedPref.edit().putString(PREF_KEY_AUTH, String.valueOf(password)).apply();
+		mSharedPref.edit().putString(PREF_KEY_RGA, rga).apply();
+		mSharedPref.edit().putString(PREF_KEY_AUTH, String.valueOf(password)).apply();
 	}
 
 	@Nullable
 	public String getRga() {
-		return mEncryptedPref.getString(PREF_KEY_RGA, null);
+		return mSharedPref.getString(PREF_KEY_RGA, null);
 	}
 
 	@Nullable
 	public char[] getAuth() {
-		char[] auth = mEncryptedPref.getString(PREF_KEY_AUTH, "").toCharArray();
+		char[] auth = mSharedPref.getString(PREF_KEY_AUTH, "").toCharArray();
 		return auth.length > 0 ? auth : null;
 	}
 
