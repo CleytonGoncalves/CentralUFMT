@@ -1,5 +1,7 @@
 package com.cleytongoncalves.centralufmt.ui.moodle;
 
+import android.support.annotation.Nullable;
+
 import com.cleytongoncalves.centralufmt.data.DataManager;
 import com.cleytongoncalves.centralufmt.data.events.LogInEvent;
 import com.cleytongoncalves.centralufmt.ui.base.Presenter;
@@ -15,7 +17,7 @@ import timber.log.Timber;
 
 public final class MoodlePresenter implements Presenter<MoodleMvpView> {
 	private final DataManager mDataManager;
-	private MoodleMvpView mView;
+	@Nullable private MoodleMvpView mView;
 
 	@Inject
 	MoodlePresenter(DataManager dataManager) {
@@ -45,8 +47,10 @@ public final class MoodlePresenter implements Presenter<MoodleMvpView> {
 	}
 
 	private void doLogIn() {
-		mView.showProgressBar(true);
-		mView.showWebView(false);
+		if (mView != null) {
+			mView.showProgressBar(true);
+			mView.showWebView(false);
+		}
 
 		EventBus.getDefault().register(this);
 		mDataManager.triggerMoodleLogIn();
@@ -65,6 +69,8 @@ public final class MoodlePresenter implements Presenter<MoodleMvpView> {
 	}
 
 	private void onLogInSuccessful(Cookie cookie) {
+		if (mView == null) { return; }
+
 		mView.onLogInSuccessful(getCookieString(cookie));
 		mView.showWebView(true);
 		mView.showProgressBar(false);
@@ -72,6 +78,8 @@ public final class MoodlePresenter implements Presenter<MoodleMvpView> {
 
 	@SuppressWarnings("UnusedParameters")
 	private void onLogInFailure(String reason) {
+		if (mView == null) { return; }
+
 		mView.showGeneralLogInError();
 		mView.showProgressBar(false);
 	}
@@ -82,14 +90,18 @@ public final class MoodlePresenter implements Presenter<MoodleMvpView> {
 
 	void onDownloadStart() {
 		Timber.d("Downloading file");
-		mView.showDownloadStart();
+		if (mView != null) {
+			mView.showDownloadStart();
+		}
 	}
 
 	void onLoadingPage() {
+		if (mView == null) { return; }
 		mView.showLoadingTitle();
 	}
 
 	void onLoadComplete() {
+		if (mView == null) { return; }
 		mView.showDefaultTitle();
 	}
 }

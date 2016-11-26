@@ -33,8 +33,9 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 	private static final int MAXIMUM_ROOM_LENGTH = 10;
 
 	private final DataManager mDataManager;
-	private ScheduleMvpView mView;
-	private ScheduleAdapter mScheduleAdapter;
+	@Nullable private ScheduleMvpView mView;
+	@Nullable private ScheduleAdapter mAdapter;
+
 	private ScheduleData mSchedule;
 
 	@Nullable private DataParserTask mParserTask;
@@ -65,8 +66,10 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 		ScheduleData schedule = null;
 		if (! forceUpdate) { schedule = mDataManager.getPreferencesHelper().getSchedule(); }
 
-		mView.hideRecyclerView();
-		mView.showProgressBar();
+		if (mView != null) {
+			mView.hideRecyclerView();
+			mView.showProgressBar();
+		}
 
 		if (schedule == null) {
 			if (! isLoading()) {
@@ -82,12 +85,12 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 
 	@Override
 	public void attachAdapter(ScheduleAdapter adapter) {
-		mScheduleAdapter = adapter;
+		mAdapter = adapter;
 	}
 
 	@Override
 	public void detachAdapter() {
-		mScheduleAdapter = null;
+		mAdapter = null;
 	}
 
 	@Override
@@ -127,24 +130,30 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 		if (scheduleEvent.isSuccessful()) {
 			onFetchSuccess(scheduleEvent.getDisciplineList());
 		} else {
-			onFetchFailure(scheduleEvent.getFailureReason());
+			onFetchFailure();
 		}
 	}
 
 	private void onFetchSuccess(List<Discipline> disciplineList) {
+		if (mView == null || mAdapter == null) { return; }
+
 		mParserTask = new DataParserTask(disciplineList);
 		mParserTask.execute();
 	}
 
-	private void onFetchFailure(String reason) {
+	private void onFetchFailure() {
 		EventBus.getDefault().unregister(this);
 
-		mView.hideProgressBar();
-		mView.showGeneralErrorSnack();
+		if (mView != null) {
+			mView.hideProgressBar();
+			mView.showGeneralErrorSnack();
+		}
 	}
 
 	@Subscribe(threadMode = ThreadMode.MAIN)
 	public void onDataChanged(ScheduleData schedule) {
+		if (mView == null || mAdapter == null) { return; }
+
 		mSchedule = schedule;
 
 		int gridSpan = mSchedule.getAmountOfDays();
@@ -152,7 +161,7 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 			mView.setGridSpanCount(gridSpan);
 		}
 
-		mScheduleAdapter.notifyDataSetChanged();
+		mAdapter.notifyDataSetChanged();
 
 		mView.hideSnackIfShown();
 		mView.hideProgressBar();

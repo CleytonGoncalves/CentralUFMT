@@ -2,6 +2,7 @@ package com.cleytongoncalves.centralufmt.ui.map;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.support.annotation.Nullable;
 
 import com.cleytongoncalves.centralufmt.R;
 import com.cleytongoncalves.centralufmt.data.DataManager;
@@ -31,10 +32,10 @@ public final class MapPresenter implements Presenter<MapMvpView> {
 	private static final int ROUTE_MARKERS_ID = R.raw.ufmt_route_markers;
 
 	private final DataManager mDataManager;
-	private MapMvpView mView;
+	@Nullable private MapMvpView mView;
 
-	private GoogleMap mGoogleMap;
-	private KmlLayerManager mKmlLayerManager;
+	@Nullable private GoogleMap mGoogleMap;
+	@Nullable private KmlLayerManager mKmlLayerManager;
 
 	@Inject
 	MapPresenter(DataManager dataManager) {
@@ -83,7 +84,7 @@ public final class MapPresenter implements Presenter<MapMvpView> {
 
 	void toggleBusRoute() {
 		if (mKmlLayerManager == null) {
-			mView.showBusRouteError();
+			if (mView != null) { mView.showBusRouteError(); }
 			return;
 		}
 
@@ -93,12 +94,12 @@ public final class MapPresenter implements Presenter<MapMvpView> {
 		mDataManager.getPreferencesHelper().putMapBusRouteDisplayState(newState);
 
 		boolean actualState = mKmlLayerManager.toggleBusRoute();
-		mView.setBusRouteMenuState(actualState);
+		if (mView != null) { mView.setBusRouteMenuState(actualState); }
 	}
 
 	void togglePointsOfInterest() {
 		if (mKmlLayerManager == null) {
-			mView.showPoiError();
+			if (mView != null) { mView.showPoiError(); }
 			return;
 		}
 
@@ -108,7 +109,7 @@ public final class MapPresenter implements Presenter<MapMvpView> {
 		mDataManager.getPreferencesHelper().putMapPoiDisplayState(newState);
 
 		boolean actualState = mKmlLayerManager.togglePointsOfInterest();
-		mView.setPoiMenuState(actualState);
+		if (mView != null) { mView.setPoiMenuState(actualState); }
 	}
 
 	/* Private Helper Methods */
@@ -122,7 +123,9 @@ public final class MapPresenter implements Presenter<MapMvpView> {
 				                          .bearing(BEARING_LVL)
 				                          .build();
 
-		mGoogleMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));
+		if (mGoogleMap != null) {
+			mGoogleMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));
+		}
 	}
 
 	private KmlLayerManager createKmlLayers(Context context) {
