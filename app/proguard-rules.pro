@@ -48,8 +48,10 @@
 # Gson
 -keepattributes Signature
 -keep class sun.misc.Unsafe { *; }
-# Keep non static or private fields of models so Gson can find their names
--keepclassmembers class centralufmt.data.model.** {
+-keep class com.google.gson** { *; }
+-keepclassmembers class com.google.gson** {*;}
+-keep class com.cleytongoncalves.centralufmt.data.model.** {*;}
+-keepclassmembers class com.cleytongoncalves.centralufmt.data.model.** {
     !static !private <fields>;
 }
 

@@ -5,6 +5,9 @@ import android.os.AsyncTask;
 import com.cleytongoncalves.centralufmt.data.events.LogInEvent;
 import com.cleytongoncalves.centralufmt.data.events.ScheduleFetchEvent;
 import com.cleytongoncalves.centralufmt.data.local.PreferencesHelper;
+import com.cleytongoncalves.centralufmt.data.model.Course;
+import com.cleytongoncalves.centralufmt.data.model.ImmutableCourse;
+import com.cleytongoncalves.centralufmt.data.model.ImmutableStudent;
 import com.cleytongoncalves.centralufmt.data.model.Student;
 import com.cleytongoncalves.centralufmt.data.remote.NetworkService;
 import com.cleytongoncalves.centralufmt.data.remote.task.LogInTask;
@@ -122,7 +125,7 @@ public class DataManager {
 		if (logInEvent.isSuccessful()) {
 			Object obj = logInEvent.getObjectResult();
 
-			if (obj.getClass() == Student.class) {
+			if (Student.class.isAssignableFrom(obj.getClass())) {
 				mStudent = (Student) obj;
 				mPreferencesHelper.putLoggedInStudent(mStudent);
 				Timber.d("Student saved successfully");
@@ -141,7 +144,11 @@ public class DataManager {
 		mScheduleTask = null;
 
 		if (scheduleEvent.isSuccessful()) {
-			mStudent.getCourse().setEnrolledDisciplines(scheduleEvent.getDisciplineList());
+			Course newCourse = ImmutableCourse
+					                   .copyOf(mStudent.getCourse())
+					                   .withEnrolledDisciplines(scheduleEvent.getDisciplineList());
+
+			mStudent = ImmutableStudent.copyOf(mStudent).withCourse(newCourse);
 			Timber.d("Enrolled disciplines saved successfully");
 		}
 	}
