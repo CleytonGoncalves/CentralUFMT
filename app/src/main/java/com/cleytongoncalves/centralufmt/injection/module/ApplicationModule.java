@@ -37,6 +37,6 @@ public class ApplicationModule {
 	@Provides
 	@Singleton
 	NetworkService provideNetworkService() {
-		return NetworkService.Factory.make();
+		return NetworkService.builder().build();
 	}
 }

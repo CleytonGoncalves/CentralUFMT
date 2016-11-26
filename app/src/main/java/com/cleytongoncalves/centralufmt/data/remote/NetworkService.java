@@ -19,8 +19,12 @@ public final class NetworkService {
 	private static final String CHARSET = "ISO-8859-1";
 	private final OkHttpClient mClient;
 
+	public static NetworkService.Builder builder() {
+		return new Builder();
+	}
+
 	/**
-	 * Generated through this class Factory
+	 * Generated through this class Builder
 	 */
 	private NetworkService(OkHttpClient client) {
 		this.mClient = client;
@@ -81,11 +85,12 @@ public final class NetworkService {
 		return mClient.cookieJar().loadForRequest(HttpUrl.parse(baseUrl));
 	}
 
+
 	/********
-	 * Factory class that sets up a new network service
+	 * Builder class that sets up a new network service
 	 *******/
-	public static class Factory {
-		public static NetworkService make() {
+	public static class Builder {
+		public NetworkService build() {
 			OkHttpClient client = new OkHttpClient()
 					                      .newBuilder()
 					                      .cookieJar(new MyCookieJar())
