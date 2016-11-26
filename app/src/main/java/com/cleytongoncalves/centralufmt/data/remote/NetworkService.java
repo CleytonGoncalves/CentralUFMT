@@ -43,7 +43,7 @@ public final class NetworkService {
 			}
 			response.close();
 		} catch (IOException e) {
-			Timber.e(e, "Get operation failed on %s failed.", url);
+			Timber.i(e, "Get operation failed on %s failed.", url);
 			result = new NetworkOperation(NetworkOperation.IO_ERROR);
 		}
 
@@ -69,7 +69,7 @@ public final class NetworkService {
 			}
 			response.close();
 		} catch (IOException e) {
-			Timber.e(e, "Post operation failed on %s failed.", url);
+			Timber.i(e, "Post operation failed on %s failed.", url);
 			result = new NetworkOperation(NetworkOperation.IO_ERROR);
 		}
 
