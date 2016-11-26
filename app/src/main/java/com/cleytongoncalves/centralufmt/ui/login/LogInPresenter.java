@@ -1,11 +1,14 @@
 package com.cleytongoncalves.centralufmt.ui.login;
 
+import android.support.annotation.Nullable;
+
 import com.cleytongoncalves.centralufmt.data.DataManager;
 import com.cleytongoncalves.centralufmt.data.events.LogInEvent;
 import com.cleytongoncalves.centralufmt.ui.base.Presenter;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import javax.inject.Inject;
 
@@ -13,7 +16,7 @@ import timber.log.Timber;
 
 public final class LogInPresenter implements Presenter<LogInMvpView> {
 	private final DataManager mDataManager;
-	private LogInMvpView mView;
+	@Nullable private LogInMvpView mView;
 
 	@Inject
 	LogInPresenter(DataManager dataManager) {
@@ -24,8 +27,9 @@ public final class LogInPresenter implements Presenter<LogInMvpView> {
 	public void attachView(LogInMvpView mvpView) {
 		mView = mvpView;
 		if (mDataManager.isLoggedInSiga()) {
-			//Check if it isn't already logged in when attaching the view
-			onLogInSuccess(false);
+			onLogInSuccess(false); //Check if it isn't already logged in when attaching the view
+		} else {
+			mDataManager.initializeNetwork();
 		}
 	}
 
@@ -36,17 +40,22 @@ public final class LogInPresenter implements Presenter<LogInMvpView> {
 	}
 
 	void doAnonymousLogIn() {
-		mView.setLogInButtonEnabled(false);
-		mView.setAnonymousLogInEnabled(false);
-		mView.showProgress(true);
+		if (mView != null) {
+			mView.setLogInButtonEnabled(false);
+			mView.setAnonymousLogInEnabled(false);
+			mView.showProgress(true);
+		}
+
 		onLogInSuccess(true); //Goes directly to the result
 		Timber.d("Anonymous LogIn");
 	}
 
 	void doLogIn(String rga, char[] password) {
-		mView.setLogInButtonEnabled(false);
-		mView.setAnonymousLogInEnabled(false);
-		mView.showProgress(true);
+		if (mView != null) {
+			mView.setLogInButtonEnabled(false);
+			mView.setAnonymousLogInEnabled(false);
+			mView.showProgress(true);
+		}
 
 		EventBus.getDefault().register(this);
 		mDataManager.logIn(rga, password, DataManager.LOGIN_SIGA);
@@ -56,7 +65,7 @@ public final class LogInPresenter implements Presenter<LogInMvpView> {
 		mDataManager.cancelLogIn();
 	}
 
-	@Subscribe
+	@Subscribe(threadMode = ThreadMode.MAIN)
 	public void onLogInEvent(LogInEvent event) {
 		EventBus.getDefault().unregister(this);
 
@@ -69,11 +78,16 @@ public final class LogInPresenter implements Presenter<LogInMvpView> {
 
 	private void onLogInSuccess(boolean anonymous) {
 		mDataManager.getPreferencesHelper().setAnonymousLogIn(anonymous);
-		mView.showProgress(false);
-		mView.onLogInSuccessful();
+
+		if (mView != null) {
+			mView.showProgress(false);
+			mView.onLogInSuccessful();
+		}
 	}
 
 	private void onLogInFailure(String reason) {
+		if (mView == null) { return; }
+
 		mView.showProgress(false);
 		mView.setLogInButtonEnabled(true);
 		mView.setAnonymousLogInEnabled(true);

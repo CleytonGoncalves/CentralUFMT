@@ -1,5 +1,7 @@
 package com.cleytongoncalves.centralufmt.data;
 
+import android.os.AsyncTask;
+
 import com.cleytongoncalves.centralufmt.data.events.LogInEvent;
 import com.cleytongoncalves.centralufmt.data.events.ScheduleFetchEvent;
 import com.cleytongoncalves.centralufmt.data.local.PreferencesHelper;
@@ -12,10 +14,12 @@ import com.cleytongoncalves.centralufmt.data.remote.task.SigaLogInTask;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import dagger.Lazy;
 import okhttp3.Cookie;
 import timber.log.Timber;
 
@@ -25,7 +29,7 @@ public class DataManager {
 	public static final int LOGIN_SIGA = 0;
 	private static final int LOGIN_MOODLE = - 1;
 
-	private final NetworkService mNetworkService;
+	private final Lazy<NetworkService> mNetworkService;
 	private final PreferencesHelper mPreferencesHelper;
 
 	private LogInTask mLogInTask;
@@ -35,7 +39,8 @@ public class DataManager {
 	private Cookie mMoodleCookie;
 
 	@Inject
-	public DataManager(PreferencesHelper preferencesHelper, NetworkService networkService) {
+	public DataManager(final PreferencesHelper preferencesHelper,
+	                   final Lazy<NetworkService> networkService) {
 		mPreferencesHelper = preferencesHelper;
 		mNetworkService = networkService;
 		mStudent = preferencesHelper.getLoggedInStudent();
@@ -44,6 +49,13 @@ public class DataManager {
 
 	public PreferencesHelper getPreferencesHelper() {
 		return mPreferencesHelper;
+	}
+
+	/**
+	 * Initializes the Network Service if it hasn't been used yet.
+	 */
+	public void initializeNetwork() {
+		AsyncTask.execute(mNetworkService::get); //Singleton instantiation is thread-safe on Dagger
 	}
 
 	public Student getStudent() {
@@ -58,10 +70,10 @@ public class DataManager {
 
 	public void logIn(String rga, char[] password, int platform) {
 		if (platform == LOGIN_MOODLE) {
-			mLogInTask = new MoodleLogInTask(rga, password, mNetworkService);
+			mLogInTask = new MoodleLogInTask(rga, password, mNetworkService.get());
 		} else {
 			mPreferencesHelper.putCredentials(rga, password);
-			mLogInTask = new SigaLogInTask(rga, password, mNetworkService);
+			mLogInTask = new SigaLogInTask(rga, password, mNetworkService.get());
 		}
 
 		Timber.d("LogIn - %s", platform == LOGIN_MOODLE ? "Moodle" : "Siga");
@@ -97,13 +109,13 @@ public class DataManager {
 
 	public void fetchSchedule() {
 		Timber.d("Fetching Schedule");
-		mScheduleTask = new ScheduleTask(mNetworkService);
+		mScheduleTask = new ScheduleTask(mNetworkService.get());
 		mScheduleTask.execute();
 	}
 
 	/* ----- EventBus Listeners ----- */
 
-	@Subscribe(priority = 1)
+	@Subscribe(threadMode = ThreadMode.MAIN, priority = 1)
 	public void onLogInCompleted(LogInEvent logInEvent) {
 		mLogInTask = null;
 
@@ -124,7 +136,7 @@ public class DataManager {
 		}
 	}
 
-	@Subscribe(priority = 1)
+	@Subscribe(threadMode = ThreadMode.MAIN, priority = 1)
 	public void onScheduleFetched(ScheduleFetchEvent scheduleEvent) {
 		mScheduleTask = null;
 
