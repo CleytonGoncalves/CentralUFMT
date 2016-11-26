@@ -131,7 +131,7 @@ public class DataManager {
 				mMoodleCookie = (Cookie) obj;
 				Timber.d("Cookie saved successfully");
 			} else {
-				Timber.e("LogInEvent object unknown: %s", obj.getClass());
+				Timber.wtf("LogInEvent object unknown: %s", obj.getClass());
 			}
 		}
 	}
