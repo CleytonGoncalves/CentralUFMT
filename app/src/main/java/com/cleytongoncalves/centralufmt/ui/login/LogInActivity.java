@@ -61,11 +61,18 @@ public final class LogInActivity extends BaseActivity implements LogInMvpView {
 		ButterKnife.bind(this);
 		mPresenter.attachView(this);
 
-		//TODO: REMOVE AUTO COMPLETE ON LOGIN
-		mRgaView.setText(BuildConfig.DEFAULT_LOGIN_RGA);
-		mPasswordView.setText(BuildConfig.DEFAULT_LOGIN_PASS);
-
 		mShouldFinishOnStop = false;
+	}
+
+	@Override
+	protected void onPostResume() {
+		super.onPostResume();
+		if (BuildConfig.DEBUG) {
+			//TODO: Remove on final version
+			//Auto complete with my credentials for easy login
+			mRgaView.setText(BuildConfig.DEFAULT_LOGIN_RGA);
+			mPasswordView.setText(BuildConfig.DEFAULT_LOGIN_PASS);
+		}
 	}
 
 	@Override
