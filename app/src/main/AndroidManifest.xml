@@ -24,6 +24,10 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/MAPS_API_KEY"/>
 
+        <meta-data
+            android:name="com.bugsnag.android.API_KEY"
+            android:value="@string/BUGSNAG_API_KEY"/>
+
         <activity
             android:name="com.cleytongoncalves.centralufmt.ui.LauncherActivity"
             android:theme="@style/SplashTheme">

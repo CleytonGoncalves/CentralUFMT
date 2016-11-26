@@ -5,12 +5,12 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.bugsnag.android.Bugsnag;
+import com.bugsnag.android.Severity;
 import com.cleytongoncalves.centralufmt.data.DataManager;
 import com.cleytongoncalves.centralufmt.injection.component.ApplicationComponent;
 import com.cleytongoncalves.centralufmt.injection.component.DaggerApplicationComponent;
 import com.cleytongoncalves.centralufmt.injection.module.ApplicationModule;
-import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.core.CrashlyticsCore;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 
@@ -18,7 +18,6 @@ import net.danlew.android.joda.JodaTimeAndroid;
 
 import javax.inject.Inject;
 
-import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 
 public class CentralUfmt extends Application {
@@ -65,8 +64,7 @@ public class CentralUfmt extends Application {
 
 		JodaTimeAndroid.init(this);
 
-		CrashlyticsCore core = new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build();
-		Fabric.with(this, new Crashlytics.Builder().core(core).build());
+		Bugsnag.init(this);
 	}
 
 	private void plantTrees() {
@@ -78,31 +76,24 @@ public class CentralUfmt extends Application {
 				}
 			});
 		} else {
-			Timber.plant(new CrashlyticsTree());
-		}
-	}
+			Timber.plant(new Timber.Tree() {
+				@Override
+				protected void log(int priority, @Nullable String tag, @Nullable String message,
+				                   @Nullable Throwable t) {
+					if (priority == Log.VERBOSE || priority == Log.DEBUG || priority == Log.INFO) {
+						return;
+					}
 
-	private static class CrashlyticsTree extends Timber.Tree {
-		private static final String CRASHLYTICS_KEY_PRIORITY = "priority";
-		private static final String CRASHLYTICS_KEY_TAG = "tag";
-		private static final String CRASHLYTICS_KEY_MESSAGE = "message";
-
-		@Override
-		protected void log(int priority, @Nullable String tag, @Nullable String message,
-		                   @Nullable Throwable t) {
-			if (priority == Log.VERBOSE || priority == Log.DEBUG || priority == Log.INFO) {
-				return;
-			}
-
-			Crashlytics.setInt(CRASHLYTICS_KEY_PRIORITY, priority);
-			Crashlytics.setString(CRASHLYTICS_KEY_TAG, "Timber_" + tag);
-			Crashlytics.setString(CRASHLYTICS_KEY_MESSAGE, message);
-
-			if (t == null) {
-				Crashlytics.logException(new Exception(message));
-			} else {
-				Crashlytics.logException(t);
-			}
+					Severity severity = (priority == Log.WARN) ? Severity.WARNING : Severity.ERROR;
+					if (t == null) {
+						Bugsnag.notify("Timber_" + tag, message, new StackTraceElement[0],
+						               severity,
+						               null);
+					} else {
+						Bugsnag.notify(t, severity);
+					}
+				}
+			});
 		}
 	}
 
