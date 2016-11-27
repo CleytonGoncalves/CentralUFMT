@@ -110,8 +110,8 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		mUnbinder.unbind();
 		mWebView.destroy();
+		mUnbinder.unbind();
 		CentralUfmt.getRefWatcher(getActivity()).watch(this);
 	}
 
