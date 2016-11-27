@@ -66,11 +66,16 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 		mUnbinder = ButterKnife.bind(this, rootView);
 		mPresenter.attachView(this);
 
+		showProgressBar(true);
+		showWebView(false);
+		return rootView;
+	}
+
+	@Override
+	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
 		setUpWebViewConfig();
 		setUpCookieConfig();
-
-		mPresenter.onLoadingPage();
-		return rootView;
 	}
 
 	@Override
@@ -93,6 +98,8 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 	public void onResume() {
 		super.onResume();
 		mWebView.onResume();
+		showProgressBar(false);
+		showWebView(true);
 	}
 
 	@Override
@@ -135,6 +142,12 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 			}
 			return false;
 		});
+
+		if (Build.VERSION.SDK_INT >= 19) {
+			mWebView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+		} else {
+			mWebView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+		}
 	}
 
 	private void setUpCookieConfig() {
