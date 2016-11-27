@@ -71,7 +71,8 @@ public final class MoodlePresenter implements Presenter<MoodleMvpView> {
 	private void onLogInSuccessful(Cookie cookie) {
 		if (mView == null) { return; }
 
-		mView.onLogInSuccessful(getCookieString(cookie));
+		mView.setCookieString(getCookieString(cookie));
+		mView.loadStartPage();
 		mView.showWebView(true);
 		mView.showProgressBar(false);
 	}

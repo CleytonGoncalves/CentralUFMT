@@ -66,17 +66,27 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 		mUnbinder = ButterKnife.bind(this, rootView);
 		mPresenter.attachView(this);
 
-		setUpWebViewDefaults();
-
-		CookieManager cookieManager = CookieManager.getInstance();
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-			CookieSyncManager.createInstance(mWebView.getContext());
-		}
-		cookieManager.setAcceptCookie(true);
-		//cookieManager.removeSessionCookie();
+		setUpWebViewConfig();
+		setUpCookieConfig();
 
 		mPresenter.onLoadingPage();
 		return rootView;
+	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.fragment_moodle, menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.menu_refresh_page:
+				mWebView.reload();
+				return true;
+		}
+
+		return super.onOptionsItemSelected(item);
 	}
 
 	@Override
@@ -101,26 +111,11 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 	public void onDestroy() {
 		super.onDestroy();
 		mUnbinder.unbind();
+		mWebView.destroy();
 		CentralUfmt.getRefWatcher(getActivity()).watch(this);
 	}
 
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		inflater.inflate(R.menu.fragment_moodle, menu);
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case R.id.menu_refresh_page:
-				mWebView.reload();
-				return true;
-		}
-
-		return super.onOptionsItemSelected(item);
-	}
-
-	private void setUpWebViewDefaults() {
+	private void setUpWebViewConfig() {
 		mWebView.getSettings().setLoadsImagesAutomatically(true);
 		mWebView.setScrollBarStyle(View.SCROLLBARS_OUTSIDE_OVERLAY);
 
@@ -142,11 +137,27 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 		});
 	}
 
-	public void onLogInSuccessful(String cookieString) {
-		CookieManager.getInstance().setCookie("www.ava.ufmt.br", cookieString);
+	private void setUpCookieConfig() {
+		CookieManager cookieManager = CookieManager.getInstance();
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+			CookieSyncManager.createInstance(mWebView.getContext());
+		}
+		cookieManager.setAcceptCookie(true);
+		//cookieManager.removeSessionCookie();
+	}
+
+	/* MVP Methods */
+
+	@Override
+	public void setCookieString(String cookieString) {
+		CookieManager.getInstance().setCookie(AVA_BASE_URL, cookieString);
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
 			CookieSyncManager.getInstance().sync();
 		}
+	}
+
+	@Override
+	public void loadStartPage() {
 		mWebView.loadUrl(FRONT_PAGE_URL);
 	}
 
@@ -209,6 +220,7 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 	private class MyWebChromeClient extends WebChromeClient {
 		@Override
 		public void onProgressChanged(WebView view, int newProgress) {
+			if (mPresenter == null) { return; }
 			mPresenter.onLoadingPage();
 
 			if (newProgress == 100) {
@@ -243,7 +255,7 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 							                                                         .DOWNLOAD_SERVICE);
 			dm.enqueue(request);
 
-			mPresenter.onDownloadStart();
+			if (mPresenter != null) { mPresenter.onDownloadStart(); }
 		}
 	}
 
