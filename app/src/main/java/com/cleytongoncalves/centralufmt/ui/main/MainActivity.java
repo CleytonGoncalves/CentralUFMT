@@ -1,6 +1,5 @@
 package com.cleytongoncalves.centralufmt.ui.main;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -8,7 +7,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.NavigationView.OnNavigationItemSelectedListener;
 import android.support.v4.app.Fragment;
@@ -72,9 +70,10 @@ public class MainActivity extends BaseActivity
 
 		activityComponent().inject(this);
 		mUnbinder = ButterKnife.bind(this);
-
-		setUpDrawer(toolbar);
 		mHandler = new Handler();
+
+		setUpDrawer();
+		setUpDrawerToggle(toolbar);
 
 		mFragmentManager = getSupportFragmentManager();
 		mFragmentManager.addOnBackStackChangedListener(this);
@@ -109,6 +108,12 @@ public class MainActivity extends BaseActivity
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 		mDrawerToggle.onConfigurationChanged(newConfig);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		return mDrawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
+
 	}
 
 	@Override
@@ -203,13 +208,7 @@ public class MainActivity extends BaseActivity
 		mUnbinder.unbind();
 	}
 
-	private void setUpDrawer(Toolbar toolbar) {
-		mDrawerToggle = new MyActionBarDrawerToggle(this, mDrawer, toolbar,
-		                                            R.string.navigation_drawer_open, R.string
-						                                                           .navigation_drawer_close);
-
-		mDrawer.addDrawerListener(mDrawerToggle);
-
+	private void setUpDrawer() {
 		View headerView = mNavigationView.getHeaderView(0);
 		TextView mainText = (TextView) headerView.findViewById(R.id.nav_header_name);
 		TextView secondaryText = (TextView) headerView.findViewById(R.id.nav_header_rga);
@@ -238,6 +237,23 @@ public class MainActivity extends BaseActivity
 		//mNavigationView.getMenu().getItem(0).setChecked(true);
 	}
 
+	private void setUpDrawerToggle(Toolbar toolbar) {
+		mDrawerToggle = new ActionBarDrawerToggle(this, mDrawer, toolbar,
+		                                          R.string.navigation_drawer_open,
+		                                          R.string.navigation_drawer_close) {
+			@Override
+			public void onDrawerClosed(View drawerView) {
+				if (mPendingRunnable != null) {
+					mHandler.post(mPendingRunnable);
+					mPendingRunnable = null;
+				}
+				super.onDrawerClosed(drawerView);
+			}
+		};
+
+		mDrawer.addDrawerListener(mDrawerToggle);
+	}
+
 	private void goToFragment(Fragment fragment) {
 		String fragmentTag = fragment.getClass().getName();
 		boolean fragmentPopped = mFragmentManager.popBackStackImmediate(fragmentTag, 0);
@@ -247,26 +263,6 @@ public class MainActivity extends BaseActivity
 			                .replace(R.id.container_main, fragment, fragmentTag)
 			                .addToBackStack(fragmentTag)
 			                .commitAllowingStateLoss();
-		}
-	}
-
-	private class MyActionBarDrawerToggle extends ActionBarDrawerToggle {
-
-		MyActionBarDrawerToggle(Activity activity, DrawerLayout drawerLayout,
-		                        Toolbar toolbar,
-		                        @StringRes int openDrawerContentDescRes,
-		                        @StringRes int closeDrawerContentDescRes) {
-			super(activity, drawerLayout, toolbar, openDrawerContentDescRes,
-			      closeDrawerContentDescRes);
-		}
-
-		@Override
-		public void onDrawerClosed(View drawerView) {
-			if (mPendingRunnable != null) {
-				mHandler.post(mPendingRunnable);
-				mPendingRunnable = null;
-			}
-			super.onDrawerClosed(drawerView);
 		}
 	}
 }
