@@ -7,7 +7,6 @@ import android.util.Log;
 
 import com.bugsnag.android.Bugsnag;
 import com.bugsnag.android.Severity;
-import com.cleytongoncalves.centralufmt.data.DataManager;
 import com.cleytongoncalves.centralufmt.injection.component.ApplicationComponent;
 import com.cleytongoncalves.centralufmt.injection.component.DaggerApplicationComponent;
 import com.cleytongoncalves.centralufmt.injection.module.ApplicationModule;
@@ -16,13 +15,9 @@ import com.squareup.leakcanary.RefWatcher;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
-import javax.inject.Inject;
-
 import timber.log.Timber;
 
 public class CentralUfmt extends Application {
-	@Inject DataManager mDataManager;
-
 	ApplicationComponent mApplicationComponent;
 	private RefWatcher mRefWatcher;
 
