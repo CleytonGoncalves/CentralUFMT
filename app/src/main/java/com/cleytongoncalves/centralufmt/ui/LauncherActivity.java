@@ -7,7 +7,6 @@ import com.cleytongoncalves.centralufmt.data.DataManager;
 import com.cleytongoncalves.centralufmt.ui.base.BaseActivity;
 import com.cleytongoncalves.centralufmt.ui.login.LogInActivity;
 import com.cleytongoncalves.centralufmt.ui.main.MainActivity;
-import com.cleytongoncalves.centralufmt.util.NetworkUtil;
 
 import javax.inject.Inject;
 
@@ -18,13 +17,10 @@ public class LauncherActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		activityComponent().inject(this);
-		Intent intent;
 
+		Intent intent;
 		if (mDataManager.isLoggedInSiga()) {
 			intent = MainActivity.getStartIntent(this, true);
-			if (NetworkUtil.isNetworkConnected(this)) {
-				mDataManager.triggerMoodleLogIn();
-			}
 		} else if (mDataManager.getPreferencesHelper().getAnonymousLogIn()) {
 			intent = MainActivity.getStartIntent(this, true);
 		} else {

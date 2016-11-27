@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.NavigationView.OnNavigationItemSelectedListener;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -34,9 +35,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
 
+import static android.support.v4.app.FragmentManager.OnBackStackChangedListener;
+
 public class MainActivity extends BaseActivity
-		implements NavigationView.OnNavigationItemSelectedListener, FragmentManager
-				                                                            .OnBackStackChangedListener {
+		implements OnNavigationItemSelectedListener, OnBackStackChangedListener {
 
 	@Inject DataManager mDataManager;
 	@BindView(R.id.drawer_layout) DrawerLayout mDrawer;
@@ -71,6 +73,7 @@ public class MainActivity extends BaseActivity
 	@Override
 	protected void onPostCreate(@Nullable Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
+
 		//Hacky way to pre-load the Play Services and Map data
 		new Thread(() -> {
 			try {
@@ -84,43 +87,11 @@ public class MainActivity extends BaseActivity
 				//This hack works regardless
 			}
 		}).start();
-	}
 
-	private void setUpDrawer(Toolbar toolbar) {
-		ActionBarDrawerToggle toggle =
-				new ActionBarDrawerToggle(this, mDrawer, toolbar,
-				                          R.string.navigation_drawer_open, R.string
-						                                                           .navigation_drawer_close);
-
-		mDrawer.addDrawerListener(toggle);
-		toggle.syncState();
-
-		View headerView = mNavigationView.getHeaderView(0);
-		TextView mainText = (TextView) headerView.findViewById(R.id.nav_header_name);
-		TextView secondaryText = (TextView) headerView.findViewById(R.id.nav_header_rga);
-		TextView tertiaryText = (TextView) headerView.findViewById(R.id.nav_header_curso);
-
-		if (mDataManager.isLoggedInSiga()) {
-			Student student = mDataManager.getStudent();
-			mainText.setText(student.getFirstName() + " " + student.getLastName());
-			secondaryText.setText(student.getRga());
-			tertiaryText.setText(student.getCourse().getTitle());
-		} else {
-			mainText.setText(getString(R.string.not_logged_in));
-			secondaryText.setVisibility(View.GONE);
-			tertiaryText.setVisibility(View.GONE);
-
-			mNavigationView.getMenu().setGroupEnabled(R.id.nav_group_logged_only, false);
+		if (NetworkUtil.isNetworkConnected(this)) {
+			//Sign in ahead of time. Webview is already slow enough by itself.
+			mDataManager.triggerMoodleLogIn();
 		}
-
-		if (! NetworkUtil.isNetworkConnected(this)) {
-			mNavigationView.getMenu().findItem(R.id.nav_moodle).setEnabled(false);
-			Toast.makeText(this, getString(R.string.toast_offline_main), Toast.LENGTH_LONG)
-			     .show();
-		}
-
-		mNavigationView.setNavigationItemSelectedListener(this);
-		//mNavigationView.getMenu().getItem(0).setChecked(true);
 	}
 
 	@Override
@@ -204,6 +175,43 @@ public class MainActivity extends BaseActivity
 
 		mDrawer.closeDrawer(GravityCompat.START);
 		return true;
+	}
+
+	private void setUpDrawer(Toolbar toolbar) {
+		ActionBarDrawerToggle toggle =
+				new ActionBarDrawerToggle(this, mDrawer, toolbar,
+				                          R.string.navigation_drawer_open, R.string
+						                                                           .navigation_drawer_close);
+
+		mDrawer.addDrawerListener(toggle);
+		toggle.syncState();
+
+		View headerView = mNavigationView.getHeaderView(0);
+		TextView mainText = (TextView) headerView.findViewById(R.id.nav_header_name);
+		TextView secondaryText = (TextView) headerView.findViewById(R.id.nav_header_rga);
+		TextView tertiaryText = (TextView) headerView.findViewById(R.id.nav_header_curso);
+
+		if (mDataManager.isLoggedInSiga()) {
+			Student student = mDataManager.getStudent();
+			mainText.setText(student.getFirstName() + " " + student.getLastName());
+			secondaryText.setText(student.getRga());
+			tertiaryText.setText(student.getCourse().getTitle());
+		} else {
+			mainText.setText(getString(R.string.not_logged_in));
+			secondaryText.setVisibility(View.GONE);
+			tertiaryText.setVisibility(View.GONE);
+
+			mNavigationView.getMenu().setGroupEnabled(R.id.nav_group_logged_only, false);
+		}
+
+		if (! NetworkUtil.isNetworkConnected(this)) {
+			mNavigationView.getMenu().findItem(R.id.nav_moodle).setEnabled(false);
+			Toast.makeText(this, getString(R.string.toast_offline_main), Toast.LENGTH_LONG)
+			     .show();
+		}
+
+		mNavigationView.setNavigationItemSelectedListener(this);
+		//mNavigationView.getMenu().getItem(0).setChecked(true);
 	}
 
 	private void goToFragment(Fragment fragment) {
