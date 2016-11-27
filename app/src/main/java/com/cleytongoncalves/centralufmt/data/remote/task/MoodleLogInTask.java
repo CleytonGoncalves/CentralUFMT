@@ -11,6 +11,7 @@ import org.greenrobot.eventbus.EventBus;
 import java.util.Arrays;
 import java.util.List;
 
+import dagger.Lazy;
 import okhttp3.Cookie;
 import okhttp3.FormBody;
 import timber.log.Timber;
@@ -19,11 +20,11 @@ public final class MoodleLogInTask extends AsyncTask<Void, Void, LogInEvent> imp
 	private static final String BASE_AVA_URL = "http://www.ava.ufmt.br";
 	private static final String POST_AVA_URL = "/index.php?pag=login";
 
-	private final NetworkService mNetworkService;
+	private final Lazy<NetworkService> mNetworkService;
 	private final String mRga;
 	private char[] mPassword;
 
-	public MoodleLogInTask(String rga, char[] password, NetworkService networkService) {
+	public MoodleLogInTask(String rga, char[] password, Lazy<NetworkService> networkService) {
 		mRga = rga;
 		mPassword = password;
 		mNetworkService = networkService;
@@ -42,14 +43,16 @@ public final class MoodleLogInTask extends AsyncTask<Void, Void, LogInEvent> imp
 
 	@Override
 	protected LogInEvent doInBackground(Void... voids) {
+		NetworkService networkService = mNetworkService.get();
+
 		FormBody params = createAvaFormParams();
-		NetworkOperation logInPost = mNetworkService.post(BASE_AVA_URL + POST_AVA_URL, params);
+		NetworkOperation logInPost = networkService.post(BASE_AVA_URL + POST_AVA_URL, params);
 
 		LogInEvent event;
 		if (logInPost.hasFailed()) {
 			event = new LogInEvent(LogInEvent.GENERAL_ERROR);
 		} else {
-			List<Cookie> cookies = mNetworkService.getCookieFromJar(BASE_AVA_URL);
+			List<Cookie> cookies = networkService.getCookieFromJar(BASE_AVA_URL);
 
 			if (cookies.isEmpty()) {
 				event = new LogInEvent(LogInEvent.GENERAL_ERROR);

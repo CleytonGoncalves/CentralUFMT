@@ -12,6 +12,7 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
+import dagger.Lazy;
 import timber.log.Timber;
 
 public final class ScheduleTask extends AsyncTask<Void, Void, Void> {
@@ -19,15 +20,17 @@ public final class ScheduleTask extends AsyncTask<Void, Void, Void> {
 			"http://sia.ufmt.br/www-siga/WebSnap/C_PlanilhaHorario/planilhaHorariodoAluno" +
 					".dll/HorarioAluno";
 
-	private final NetworkService mNetworkService;
+	private final Lazy<NetworkService> mNetworkService;
 
-	public ScheduleTask(NetworkService networkService) {
+	public ScheduleTask(Lazy<NetworkService> networkService) {
 		mNetworkService = networkService;
 	}
 
 	@Override
 	protected Void doInBackground(Void... params) {
-		NetworkOperation scheduleGet = mNetworkService.get(URL);
+		NetworkService networkService = mNetworkService.get();
+
+		NetworkOperation scheduleGet = networkService.get(URL);
 
 		ScheduleFetchEvent event;
 		if (scheduleGet.hasFailed()) {

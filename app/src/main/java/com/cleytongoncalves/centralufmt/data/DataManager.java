@@ -73,10 +73,10 @@ public class DataManager {
 
 	public void logIn(String rga, char[] password, int platform) {
 		if (platform == LOGIN_MOODLE) {
-			mLogInTask = new MoodleLogInTask(rga, password, mNetworkService.get());
+			mLogInTask = new MoodleLogInTask(rga, password, mNetworkService);
 		} else {
 			mPreferencesHelper.putCredentials(rga, password);
-			mLogInTask = new SigaLogInTask(rga, password, mNetworkService.get());
+			mLogInTask = new SigaLogInTask(rga, password, mNetworkService);
 		}
 
 		Timber.d("LogIn - %s", platform == LOGIN_MOODLE ? "Moodle" : "Siga");
@@ -112,7 +112,7 @@ public class DataManager {
 
 	public void fetchSchedule() {
 		Timber.d("Fetching Schedule");
-		mScheduleTask = new ScheduleTask(mNetworkService.get());
+		mScheduleTask = new ScheduleTask(mNetworkService);
 		mScheduleTask.execute();
 	}
 

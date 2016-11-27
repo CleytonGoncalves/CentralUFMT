@@ -16,6 +16,7 @@ import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Map;
 
+import dagger.Lazy;
 import okhttp3.FormBody;
 import timber.log.Timber;
 
@@ -27,11 +28,11 @@ public final class SigaLogInTask extends AsyncTask<Void, Void, LogInEvent> imple
 	private static final String POST_SIGA_URL = "autenticacao_unica/LoginUnicoIDBUFMT.dll/logar";
 	private static final String EXACAO_SIGA_URL = "PConferencia_EXACAO.exe/consultaExacao";
 
+	private final Lazy<NetworkService> mNetworkService;
 	private final String mRga;
-	private final NetworkService mNetworkService;
 	private char[] mPassword;
 
-	public SigaLogInTask(String rga, char[] password, NetworkService networkService) {
+	public SigaLogInTask(String rga, char[] password, Lazy<NetworkService> networkService) {
 		mRga = rga;
 		mPassword = password;
 		mNetworkService = networkService;
@@ -49,7 +50,9 @@ public final class SigaLogInTask extends AsyncTask<Void, Void, LogInEvent> imple
 
 	@Override
 	protected LogInEvent doInBackground(Void... voids) {
-		NetworkOperation logInPageGet = mNetworkService.get(BASE_SIGA_URL + GET_SIGA_URL);
+		NetworkService networkService = mNetworkService.get();
+
+		NetworkOperation logInPageGet = networkService.get(BASE_SIGA_URL + GET_SIGA_URL);
 
 		if (isCancelled()) {
 			return userCanceled();
@@ -58,7 +61,7 @@ public final class SigaLogInTask extends AsyncTask<Void, Void, LogInEvent> imple
 		}
 
 		FormBody params = createFormParams(logInPageGet.getResponseBody());
-		NetworkOperation logInPost = mNetworkService.post(BASE_SIGA_URL + POST_SIGA_URL, params);
+		NetworkOperation logInPost = networkService.post(BASE_SIGA_URL + POST_SIGA_URL, params);
 
 		if (isCancelled()) {
 			return userCanceled();
@@ -68,7 +71,7 @@ public final class SigaLogInTask extends AsyncTask<Void, Void, LogInEvent> imple
 			return accessDenied();
 		}
 
-		NetworkOperation exacaoPageGet = mNetworkService.get(BASE_SIGA_URL + EXACAO_SIGA_URL);
+		NetworkOperation exacaoPageGet = networkService.get(BASE_SIGA_URL + EXACAO_SIGA_URL);
 
 		if (isCancelled()) {
 			return userCanceled();
