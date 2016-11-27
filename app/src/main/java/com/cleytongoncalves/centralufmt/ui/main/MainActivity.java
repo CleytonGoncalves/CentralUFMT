@@ -1,15 +1,18 @@
 package com.cleytongoncalves.centralufmt.ui.main;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.NavigationView.OnNavigationItemSelectedListener;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -33,6 +36,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import timber.log.Timber;
 
 import static android.support.v4.app.FragmentManager.OnBackStackChangedListener;
@@ -44,7 +48,12 @@ public class MainActivity extends BaseActivity
 	@BindView(R.id.drawer_layout) DrawerLayout mDrawer;
 	@BindView(R.id.nav_view) NavigationView mNavigationView;
 
+	private ActionBarDrawerToggle mDrawerToggle;
 	private FragmentManager mFragmentManager;
+	private Handler mHandler;
+	private Runnable mPendingRunnable;
+
+	private Unbinder mUnbinder;
 
 	public static Intent getStartIntent(Context context, boolean clearPreviousActivites) {
 		Intent intent = new Intent(context, MainActivity.class);
@@ -62,9 +71,10 @@ public class MainActivity extends BaseActivity
 		setSupportActionBar(toolbar);
 
 		activityComponent().inject(this);
-		ButterKnife.bind(this);
+		mUnbinder = ButterKnife.bind(this);
 
 		setUpDrawer(toolbar);
+		mHandler = new Handler();
 
 		mFragmentManager = getSupportFragmentManager();
 		mFragmentManager.addOnBackStackChangedListener(this);
@@ -73,6 +83,7 @@ public class MainActivity extends BaseActivity
 	@Override
 	protected void onPostCreate(@Nullable Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
+		mDrawerToggle.syncState();
 
 		//Hacky way to pre-load the Play Services and Map data
 		new Thread(() -> {
@@ -92,6 +103,12 @@ public class MainActivity extends BaseActivity
 			//Sign in ahead of time. Webview is already slow enough by itself.
 			mDataManager.triggerMoodleLogIn();
 		}
+	}
+
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		mDrawerToggle.onConfigurationChanged(newConfig);
 	}
 
 	@Override
@@ -165,26 +182,33 @@ public class MainActivity extends BaseActivity
 		}
 
 		if (fragmentClass != null) {
-			try {
-				Fragment fragment = (Fragment) fragmentClass.newInstance();
-				goToFragment(fragment);
-			} catch (Exception e) {
-				Timber.e(e, "Error on fragment instantiation");
-			}
+			mPendingRunnable = () -> {
+				try {
+					Fragment fragment = (Fragment) fragmentClass.newInstance();
+					goToFragment(fragment);
+				} catch (Exception e) {
+					Timber.e(e, "Error on fragment instantiation");
+				}
+			};
 		}
 
 		mDrawer.closeDrawer(GravityCompat.START);
 		return true;
 	}
 
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		if (mPendingRunnable != null) { mHandler.removeCallbacks(mPendingRunnable); }
+		mUnbinder.unbind();
+	}
+
 	private void setUpDrawer(Toolbar toolbar) {
-		ActionBarDrawerToggle toggle =
-				new ActionBarDrawerToggle(this, mDrawer, toolbar,
-				                          R.string.navigation_drawer_open, R.string
+		mDrawerToggle = new MyActionBarDrawerToggle(this, mDrawer, toolbar,
+		                                            R.string.navigation_drawer_open, R.string
 						                                                           .navigation_drawer_close);
 
-		mDrawer.addDrawerListener(toggle);
-		toggle.syncState();
+		mDrawer.addDrawerListener(mDrawerToggle);
 
 		View headerView = mNavigationView.getHeaderView(0);
 		TextView mainText = (TextView) headerView.findViewById(R.id.nav_header_name);
@@ -216,14 +240,33 @@ public class MainActivity extends BaseActivity
 
 	private void goToFragment(Fragment fragment) {
 		String fragmentTag = fragment.getClass().getName();
-		boolean fragmentPopped = mFragmentManager
-				                         .popBackStackImmediate(fragmentTag, 0);
+		boolean fragmentPopped = mFragmentManager.popBackStackImmediate(fragmentTag, 0);
 
 		if (! fragmentPopped && mFragmentManager.findFragmentByTag(fragmentTag) == null) {
-			FragmentTransaction ft = mFragmentManager.beginTransaction();
-			ft.replace(R.id.container_main, fragment, fragmentTag);
-			ft.addToBackStack(fragmentTag);
-			ft.commit();
+			mFragmentManager.beginTransaction()
+			                .replace(R.id.container_main, fragment, fragmentTag)
+			                .addToBackStack(fragmentTag)
+			                .commitAllowingStateLoss();
+		}
+	}
+
+	private class MyActionBarDrawerToggle extends ActionBarDrawerToggle {
+
+		MyActionBarDrawerToggle(Activity activity, DrawerLayout drawerLayout,
+		                        Toolbar toolbar,
+		                        @StringRes int openDrawerContentDescRes,
+		                        @StringRes int closeDrawerContentDescRes) {
+			super(activity, drawerLayout, toolbar, openDrawerContentDescRes,
+			      closeDrawerContentDescRes);
+		}
+
+		@Override
+		public void onDrawerClosed(View drawerView) {
+			if (mPendingRunnable != null) {
+				mHandler.post(mPendingRunnable);
+				mPendingRunnable = null;
+			}
+			super.onDrawerClosed(drawerView);
 		}
 	}
 }
