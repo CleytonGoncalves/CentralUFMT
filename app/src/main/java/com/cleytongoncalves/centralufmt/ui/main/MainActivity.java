@@ -13,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -45,11 +46,14 @@ public class MainActivity extends BaseActivity
 	@Inject DataManager mDataManager;
 	@BindView(R.id.drawer_layout) DrawerLayout mDrawer;
 	@BindView(R.id.nav_view) NavigationView mNavigationView;
-
 	private ActionBarDrawerToggle mDrawerToggle;
+
 	private FragmentManager mFragmentManager;
 	private Handler mHandler;
 	private Runnable mPendingRunnable;
+
+	private CharSequence mDefaultTitle;
+	private CharSequence mTitle;
 
 	private Unbinder mUnbinder;
 
@@ -75,8 +79,19 @@ public class MainActivity extends BaseActivity
 		setUpDrawer();
 		setUpDrawerToggle(toolbar);
 
+		ActionBar actionBar = getSupportActionBar();
+		if (actionBar != null) {
+			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+			getSupportActionBar().setHomeButtonEnabled(true);
+		}
+
+		Timber.w("Supp: %s  --  Normal: %s", getSupportActionBar(),
+		         getActionBar()); //TODO: REMOVE THIS
+
 		mFragmentManager = getSupportFragmentManager();
 		mFragmentManager.addOnBackStackChangedListener(this);
+
+		mTitle = mDefaultTitle = getTitle();
 	}
 
 	@Override
@@ -131,27 +146,36 @@ public class MainActivity extends BaseActivity
 		Fragment currFragment = mFragmentManager.findFragmentById(R.id.container_main);
 
 		//TODO: ADD REMAINING FRAGMENTS TO CHANGE TITLE/SELECTION
-		String title;
+		CharSequence title;
+		int id = 0;
 		if (currFragment != null) {
 			String fragTag = currFragment.getTag();
 
 			if (fragTag.equals(MapFragment.class.getName())) {
 				title = getString(R.string.title_fragment_map);
-				mNavigationView.getMenu().findItem(R.id.nav_map).setChecked(true);
+				id = R.id.nav_map;
 			} else if (fragTag.equals(MoodleFragment.class.getName())) {
 				title = getString(R.string.title_fragment_moodle);
-				mNavigationView.getMenu().findItem(R.id.nav_moodle).setChecked(true);
+				id = R.id.nav_moodle;
 			} else if (fragTag.equals(ScheduleFragment.class.getName())) {
 				title = getString(R.string.title_fragment_schedule);
-				mNavigationView.getMenu().findItem(R.id.nav_schedule).setChecked(true);
+				id = R.id.nav_schedule;
 			} else {
-				title = getString(R.string.title_activity_main);
+				title = mDefaultTitle;
 			}
 		} else {
-			title = getString(R.string.title_activity_main);
+			title = mDefaultTitle;
 		}
 
-		setTitle(title);
+
+		if (title == mDefaultTitle) {
+			mNavigationView.getMenu().getItem(0).setChecked(true);
+			mNavigationView.getMenu().getItem(0).setChecked(false);
+		} else {
+			mNavigationView.getMenu().findItem(id).setChecked(true);
+		}
+
+		changeTitle(title);
 	}
 
 	@Override
@@ -178,23 +202,18 @@ public class MainActivity extends BaseActivity
 			case R.id.nav_manage:
 				fragmentClass = null;
 				break;
-			case R.id.nav_share:
-				fragmentClass = null;
-				break;
-			//TODO: IMPLEMENT APP SHARE
 			default:
 				fragmentClass = null; //TODO: SET THE MAIN FRAGMENT AS DEFAULT
 		}
 
 		if (fragmentClass != null) {
-			mPendingRunnable = () -> {
-				try {
-					Fragment fragment = (Fragment) fragmentClass.newInstance();
-					goToFragment(fragment);
-				} catch (Exception e) {
-					Timber.e(e, "Error on fragment instantiation");
-				}
-			};
+			try {
+				Fragment fragment = (Fragment) fragmentClass.newInstance();
+				mPendingRunnable = () -> goToFragment(fragment);
+				changeTitle(getFragmentTitle(fragmentClass));
+			} catch (Exception e) {
+				Timber.e(e, "Error on fragment instantiation");
+			}
 		}
 
 		mDrawer.closeDrawer(GravityCompat.START);
@@ -212,17 +231,14 @@ public class MainActivity extends BaseActivity
 		View headerView = mNavigationView.getHeaderView(0);
 		TextView mainText = (TextView) headerView.findViewById(R.id.nav_header_name);
 		TextView secondaryText = (TextView) headerView.findViewById(R.id.nav_header_rga);
-		TextView tertiaryText = (TextView) headerView.findViewById(R.id.nav_header_curso);
 
 		if (mDataManager.isLoggedInSiga()) {
 			Student student = mDataManager.getStudent();
 			mainText.setText(student.getFirstName() + " " + student.getLastName());
 			secondaryText.setText(student.getRga());
-			tertiaryText.setText(student.getCourse().getTitle());
 		} else {
 			mainText.setText(getString(R.string.not_logged_in));
-			secondaryText.setVisibility(View.GONE);
-			tertiaryText.setVisibility(View.GONE);
+			secondaryText.setVisibility(View.INVISIBLE);
 
 			mNavigationView.getMenu().setGroupEnabled(R.id.nav_group_logged_only, false);
 		}
@@ -234,13 +250,15 @@ public class MainActivity extends BaseActivity
 		}
 
 		mNavigationView.setNavigationItemSelectedListener(this);
-		//mNavigationView.getMenu().getItem(0).setChecked(true);
+		//mNavigationView.getMenu().getItem(0).setChecked(true); //Checks the first item (default
+		// frag)
 	}
 
 	private void setUpDrawerToggle(Toolbar toolbar) {
 		mDrawerToggle = new ActionBarDrawerToggle(this, mDrawer, toolbar,
 		                                          R.string.navigation_drawer_open,
 		                                          R.string.navigation_drawer_close) {
+
 			@Override
 			public void onDrawerClosed(View drawerView) {
 				if (mPendingRunnable != null) {
@@ -264,5 +282,26 @@ public class MainActivity extends BaseActivity
 			                .addToBackStack(fragmentTag)
 			                .commitAllowingStateLoss();
 		}
+	}
+
+	private void changeTitle(CharSequence newTitle) {
+		mTitle = newTitle;
+		setTitle(newTitle);
+	}
+
+	private CharSequence getFragmentTitle(Class fragmentClass) {
+		CharSequence title;
+
+		if (fragmentClass == MapFragment.class) {
+			title = getString(R.string.title_fragment_map);
+		} else if (fragmentClass == MoodleFragment.class) {
+			title = getString(R.string.title_fragment_moodle);
+		} else if (fragmentClass == ScheduleFragment.class) {
+			title = getString(R.string.title_fragment_schedule);
+		} else {
+			title = mDefaultTitle;
+		}
+
+		return title;
 	}
 }
