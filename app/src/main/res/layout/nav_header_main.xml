@@ -5,19 +5,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/nav_header_height"
+    android:layout_height="170dp"
     android:background="@drawable/signinbg"
-    android:gravity="bottom"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingTop="24dp"
+    android:paddingBottom="12dp"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
     <ImageView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_marginTop="@dimen/nav_header_vertical_spacing"
         android:contentDescription="@string/ufmt_logo_description"
         android:scaleType="fitXY"
@@ -27,7 +26,7 @@
         android:id="@+id/nav_header_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="12dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         tools:text="Cleyton Goncalves"
         />
@@ -36,14 +35,9 @@
         android:id="@+id/nav_header_rga"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         tools:text="201611310023"
-        />
-
-    <TextView
-        android:id="@+id/nav_header_curso"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="Ciencia da Computacao"
         />
 
 </LinearLayout>
