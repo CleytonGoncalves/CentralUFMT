@@ -85,9 +85,6 @@ public class MainActivity extends BaseActivity
 			getSupportActionBar().setHomeButtonEnabled(true);
 		}
 
-		Timber.w("Supp: %s  --  Normal: %s", getSupportActionBar(),
-		         getActionBar()); //TODO: REMOVE THIS
-
 		mFragmentManager = getSupportFragmentManager();
 		mFragmentManager.addOnBackStackChangedListener(this);
 
