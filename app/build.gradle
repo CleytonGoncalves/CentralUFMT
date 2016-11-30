@@ -73,6 +73,7 @@ dependencies {
     final BUTTERKNIFE_VERSION = '8.4.0'
     final EVENTBUS_VERSION = '3.0.0'
     final OKHTTP_VERSION = '3.4.1'
+    final JSOUP_VERSION = '1.10.1'
     final DAGGER_VERSION = '2.7'
     final GSON_VERSION = '2.7'
     final ENCRYPTEDPREFERENCES_VERSION = '1.2.0'
@@ -97,12 +98,11 @@ dependencies {
 
     compile "com.squareup.okhttp3:okhttp:$OKHTTP_VERSION"
     compile "org.greenrobot:eventbus:$EVENTBUS_VERSION"
+    compile "org.jsoup:jsoup:$JSOUP_VERSION"
 
     compile "com.google.dagger:dagger:$DAGGER_VERSION"
     apt "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
     provided 'org.glassfish:javax.annotation:10.0-b28' //Required by Dagger2
-
-    compile files('libs/jsoup-1.9.2.jar')
 
     compile "com.google.code.gson:gson:$GSON_VERSION"
     compile "com.pddstudio:encrypted-preferences:$ENCRYPTEDPREFERENCES_VERSION"
