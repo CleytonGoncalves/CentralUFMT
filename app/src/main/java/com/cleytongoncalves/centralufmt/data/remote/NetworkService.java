@@ -39,19 +39,20 @@ public final class NetworkService {
 		try {
 			Response response = mClient.newCall(request).execute();
 
-			if (response.code() == 200) {
-				result = new NetworkOperation(new String(response.body().bytes(), CHARSET),
-						                             response.headers().toMultimap());
+			String responseBody = new String(response.body().bytes(), CHARSET);
+			if (response.isSuccessful()) {
+				result = new NetworkOperation(responseBody, response.headers().toMultimap());
+				Timber.d("Successful GET Operation on %s", url);
 			} else {
 				result = new NetworkOperation(NetworkOperation.NETWORK_ERROR);
+				Timber.d("Failed GET Operation on %s - Network Error: %s", url, responseBody);
 			}
 			response.close();
 		} catch (IOException e) {
-			Timber.i(e, "Get operation failed on %s failed.", url);
 			result = new NetworkOperation(NetworkOperation.IO_ERROR);
+			Timber.i(e, "Failed GET operation on %s - I/O Error", url);
 		}
 
-		Timber.d("Get Operation on %s - Successful: %s", url, ! result.hasFailed());
 		return result;
 	}
 
@@ -65,19 +66,20 @@ public final class NetworkService {
 		try {
 			Response response = mClient.newCall(request).execute();
 
-			if (response.code() == 200) {
-				result = new NetworkOperation(new String(response.body().bytes(), CHARSET),
-						                             response.headers().toMultimap());
+			String responseBody = new String(response.body().bytes(), CHARSET);
+			if (response.isSuccessful()) {
+				result = new NetworkOperation(responseBody, response.headers().toMultimap());
+				Timber.d("Successful POST Operation on %s", url);
 			} else {
 				result = new NetworkOperation(NetworkOperation.NETWORK_ERROR);
+				Timber.d("Failed POST Operation on %s - Network Error: %s", url, responseBody);
 			}
 			response.close();
 		} catch (IOException e) {
-			Timber.i(e, "Post operation failed on %s failed.", url);
 			result = new NetworkOperation(NetworkOperation.IO_ERROR);
+			Timber.i(e, "Failed POST operation on %s - I/O Error", url);
 		}
 
-		Timber.d("Post Operation on %s - Successful: %s", url, ! result.hasFailed());
 		return result;
 	}
 
