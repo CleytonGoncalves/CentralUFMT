@@ -98,23 +98,13 @@ public final class ScheduleFragment extends Fragment implements ScheduleMvpView 
 	}
 
 	@Override
-	public void showRecyclerView() {
-		mRecyclerView.setVisibility(View.VISIBLE);
+	public void showRecyclerView(boolean enabled) {
+		mRecyclerView.setVisibility(enabled ? View.VISIBLE : View.GONE);
 	}
 
 	@Override
-	public void hideRecyclerView() {
-		mRecyclerView.setVisibility(View.GONE);
-	}
-
-	@Override
-	public void showProgressBar() {
-		mProgressBar.setVisibility(View.VISIBLE);
-	}
-
-	@Override
-	public void hideProgressBar() {
-		mProgressBar.setVisibility(View.GONE);
+	public void showProgressBar(boolean enabled) {
+		mProgressBar.setVisibility(enabled ? View.VISIBLE : View.INVISIBLE);
 	}
 
 	@Override

@@ -66,8 +66,8 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 		if (! forceUpdate) { schedule = mDataManager.getPreferencesHelper().getSchedule(); }
 
 		if (mView != null) {
-			mView.hideRecyclerView();
-			mView.showProgressBar();
+			mView.showRecyclerView(false);
+			mView.showProgressBar(true);
 		}
 
 		if (schedule == null) {
@@ -144,7 +144,7 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 		EventBus.getDefault().unregister(this);
 
 		if (mView != null) {
-			mView.hideProgressBar();
+			mView.showProgressBar(false);
 			mView.showGeneralErrorSnack();
 		}
 	}
@@ -163,8 +163,8 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 		mAdapter.notifyDataSetChanged();
 
 		mView.hideSnackIfShown();
-		mView.hideProgressBar();
-		mView.showRecyclerView();
+		mView.showProgressBar(false);
+		mView.showRecyclerView(true);
 
 		if (isLoading()) {
 			EventBus.getDefault().unregister(this);
