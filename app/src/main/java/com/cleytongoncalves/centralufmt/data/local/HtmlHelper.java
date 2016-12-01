@@ -2,9 +2,6 @@ package com.cleytongoncalves.centralufmt.data.local;
 
 import com.cleytongoncalves.centralufmt.data.model.Course;
 import com.cleytongoncalves.centralufmt.data.model.Discipline;
-import com.cleytongoncalves.centralufmt.data.model.ImmutableCourse;
-import com.cleytongoncalves.centralufmt.data.model.ImmutableDiscipline;
-import com.cleytongoncalves.centralufmt.data.model.ImmutableStudent;
 import com.cleytongoncalves.centralufmt.data.model.Student;
 import com.cleytongoncalves.centralufmt.util.TextUtil;
 
@@ -52,7 +49,7 @@ public final class HtmlHelper {
 		String term = infoTermSplit[0];
 
 		List<Discipline> emptyList = Collections.emptyList();
-		return ImmutableCourse.of(title, code, type, term, emptyList);
+		return Course.of(title, code, type, term, emptyList);
 	}
 
 	private static Student extractStudent(List<TextNode> alunoInfoNodes, Course course) {
@@ -62,7 +59,7 @@ public final class HtmlHelper {
 		String rga = infoAluno[0].trim();
 		String nomeCompleto = TextUtil.capsMeaningfulWords(infoAluno[1].trim());
 
-		return ImmutableStudent.of(nomeCompleto, rga, course);
+		return Student.of(nomeCompleto, rga, course);
 	}
 	
 	public static List<Discipline> parseSchedule(String html) {
@@ -139,8 +136,8 @@ public final class HtmlHelper {
 			}
 
 			//(nome, cod, turma, sala, crd, carga, tipo, periodo, aulas);
-			Discipline disc = ImmutableDiscipline
-					                  .of(nome, cod, turma, sala, crd, carga, tipo, periodo, aulas);
+			Discipline disc =
+					Discipline.of(nome, cod, turma, sala, crd, carga, tipo, periodo, aulas);
 			disciplinas.add(disc);
 		}
 		

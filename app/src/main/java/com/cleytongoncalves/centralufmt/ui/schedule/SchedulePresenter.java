@@ -8,7 +8,6 @@ import com.cleytongoncalves.centralufmt.data.DataManager;
 import com.cleytongoncalves.centralufmt.data.events.ScheduleFetchEvent;
 import com.cleytongoncalves.centralufmt.data.model.Discipline;
 import com.cleytongoncalves.centralufmt.ui.base.Presenter;
-import com.cleytongoncalves.centralufmt.ui.schedule.ScheduleData.DisciplineModelView;
 import com.cleytongoncalves.centralufmt.util.TextUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -209,7 +208,7 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 
 				if (! isCancelled()) {
 					List<DisciplineModelView> scheduleList = createListForDisplay(rawSchedule);
-					schedule = new ScheduleData(mMaxDailyClasses, mAmountOfDays, scheduleList);
+					schedule = ScheduleData.of(mMaxDailyClasses, mAmountOfDays, scheduleList);
 				}
 			}
 
@@ -248,7 +247,7 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 					String room = TextUtil.ellipsizeString(disc.getRoom(), MAXIMUM_ROOM_LENGTH);
 
 					DisciplineModelView discData =
-							new DisciplineModelView(dayOfWeek - 1, title, time, room);
+							DisciplineModelView.of(dayOfWeek - 1, title, time, room);
 
 					SortedSet<DisciplineModelView> viewSet = rawSchedule.get(start.getHourOfDay());
 					if (viewSet == null) {

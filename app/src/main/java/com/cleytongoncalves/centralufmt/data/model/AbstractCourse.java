@@ -5,7 +5,7 @@ import org.immutables.value.Value;
 import java.util.List;
 
 @Value.Immutable
-public abstract class Course {
+public abstract class AbstractCourse {
 	public abstract String getTitle();
 
 	public abstract String getCode();
@@ -14,5 +14,5 @@ public abstract class Course {
 
 	public abstract String getCurrentTerm();
 
-	public abstract List<Discipline> getEnrolledDisciplines();
+	public abstract List<AbstractDiscipline> getEnrolledDisciplines();
 }

@@ -79,7 +79,6 @@ dependencies {
     final ENCRYPTEDPREFERENCES_VERSION = '1.2.0'
     final GMAPS_VERSION = '10.0.0'
     final GMAPS_UTILS_VERSION = '0.4.4'
-    final LOMBOK_VERSION = '1.16.10'
     final JODA_TIME_VERSION = '2.9.4.3'
     final AUTOFITTEXTVIEW_VERSION = '0.2.1'
     final TIMBER_VERSION = '4.3.1'
@@ -109,8 +108,6 @@ dependencies {
 
     compile "com.google.android.gms:play-services-maps:$GMAPS_VERSION"
     compile "com.google.maps.android:android-maps-utils:$GMAPS_UTILS_VERSION"
-
-    provided "org.projectlombok:lombok:$LOMBOK_VERSION"
 
     compile "net.danlew:android.joda:$JODA_TIME_VERSION"
 

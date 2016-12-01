@@ -6,8 +6,6 @@ import com.cleytongoncalves.centralufmt.data.events.LogInEvent;
 import com.cleytongoncalves.centralufmt.data.events.ScheduleFetchEvent;
 import com.cleytongoncalves.centralufmt.data.local.PreferencesHelper;
 import com.cleytongoncalves.centralufmt.data.model.Course;
-import com.cleytongoncalves.centralufmt.data.model.ImmutableCourse;
-import com.cleytongoncalves.centralufmt.data.model.ImmutableStudent;
 import com.cleytongoncalves.centralufmt.data.model.Student;
 import com.cleytongoncalves.centralufmt.data.remote.NetworkService;
 import com.cleytongoncalves.centralufmt.data.remote.task.LogInTask;
@@ -144,11 +142,10 @@ public class DataManager {
 		mScheduleTask = null;
 
 		if (scheduleEvent.isSuccessful()) {
-			Course newCourse = ImmutableCourse
-					                   .copyOf(mStudent.getCourse())
-					                   .withEnrolledDisciplines(scheduleEvent.getDisciplineList());
+			Course newCourse = Course.copyOf(mStudent.getCourse())
+			                         .withEnrolledDisciplines(scheduleEvent.getDisciplineList());
 
-			mStudent = ImmutableStudent.copyOf(mStudent).withCourse(newCourse);
+			mStudent = Student.copyOf(mStudent).withCourse(newCourse);
 			Timber.d("Enrolled disciplines saved successfully");
 		}
 	}

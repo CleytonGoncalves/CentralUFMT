@@ -6,7 +6,7 @@ import org.joda.time.Interval;
 import java.util.List;
 
 @Value.Immutable()
-public abstract class Discipline {
+public abstract class AbstractDiscipline {
 	public abstract String getTitle();
 
 	public abstract String getCode();

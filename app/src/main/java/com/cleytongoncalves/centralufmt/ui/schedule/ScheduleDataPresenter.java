@@ -1,7 +1,5 @@
 package com.cleytongoncalves.centralufmt.ui.schedule;
 
-import com.cleytongoncalves.centralufmt.ui.schedule.ScheduleData.DisciplineModelView;
-
 interface ScheduleDataPresenter {
 	void attachAdapter(ScheduleAdapter adapter);
 

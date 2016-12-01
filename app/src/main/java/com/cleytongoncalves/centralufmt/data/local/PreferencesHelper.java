@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import com.cleytongoncalves.centralufmt.data.model.GsonAdaptersModel;
 import com.cleytongoncalves.centralufmt.data.model.Student;
 import com.cleytongoncalves.centralufmt.injection.ApplicationContext;
+import com.cleytongoncalves.centralufmt.ui.schedule.GsonAdaptersAbstractScheduleData;
 import com.cleytongoncalves.centralufmt.ui.schedule.ScheduleData;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -32,6 +33,9 @@ public class PreferencesHelper {
 
 		mGson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSz")
 		                         .registerTypeAdapterFactory(new GsonAdaptersModel())
+		                         .registerTypeAdapterFactory(new
+				                                                     GsonAdaptersAbstractScheduleData())
+
 		                         .create();
 	}
 

@@ -9,7 +9,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.cleytongoncalves.centralufmt.R;
-import com.cleytongoncalves.centralufmt.ui.schedule.ScheduleData.DisciplineModelView;
 
 import javax.inject.Inject;
 
@@ -65,7 +64,7 @@ final class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
 		classViewHolder.classLayout.setBackgroundColor(Color.parseColor("#3370ff"));
 		classViewHolder.classTitleView.setText(data.getTitle());
-		classViewHolder.classScheduleView.setText(data.getSchedule());
+		classViewHolder.classScheduleView.setText(data.getScheduleHours());
 
 		if (data.getRoom().isEmpty()) {
 			classViewHolder.classRoomView.setVisibility(View.INVISIBLE);
