@@ -79,15 +79,16 @@ public final class ScheduleFragment extends Fragment implements ScheduleMvpView 
 
 	@Override
 	public void onDestroyView() {
-		super.onDestroyView();
+		mSnackbar.dismiss();
 		mPresenter.detachView();
+		super.onDestroyView();
 	}
 
 	@Override
 	public void onDestroy() {
-		super.onDestroy();
 		mUnbinder.unbind();
 		CentralUfmt.getRefWatcher(getActivity()).watch(this);
+		super.onDestroy();
 	}
 
 	/* MVP Methods */
