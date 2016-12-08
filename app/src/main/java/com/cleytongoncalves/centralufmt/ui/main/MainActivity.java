@@ -36,7 +36,6 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import timber.log.Timber;
 
 import static android.support.v4.app.FragmentManager.OnBackStackChangedListener;
 
@@ -179,38 +178,33 @@ public class MainActivity extends BaseActivity
 	public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 		int id = item.getItemId();
 
-		Class fragmentClass;
+		Fragment fragment;
 		switch (id) {
 			case R.id.nav_schedule:
-				fragmentClass = ScheduleFragment.class;
+				fragment = new ScheduleFragment();
 				break;
 			case R.id.nav_student:
-				fragmentClass = null;
+				fragment = null;
 				break;
 			case R.id.nav_curriculum:
-				fragmentClass = null;
+				fragment = null;
 				break;
 			case R.id.nav_moodle:
-				fragmentClass = MoodleFragment.class;
+				fragment = new MoodleFragment();
 				break;
 			case R.id.nav_map:
-				fragmentClass = MapFragment.class;
+				fragment = new MapFragment();
 				break;
 			case R.id.nav_manage:
-				fragmentClass = null;
+				fragment = null;
 				break;
 			default:
-				fragmentClass = null; //TODO: SET THE MAIN FRAGMENT AS DEFAULT
+				fragment = null; //TODO: SET THE MAIN FRAGMENT AS DEFAULT
 		}
 
-		if (fragmentClass != null) {
-			try {
-				Fragment fragment = (Fragment) fragmentClass.newInstance();
-				mPendingRunnable = () -> goToFragment(fragment);
-				changeTitle(getFragmentTitle(fragmentClass));
-			} catch (Exception e) {
-				Timber.e(e, "Error on fragment instantiation");
-			}
+		if (fragment != null) {
+			mPendingRunnable = () -> goToFragment(fragment);
+			changeTitle(getFragmentTitle(fragment));
 		}
 
 		mDrawer.closeDrawer(GravityCompat.START);
@@ -286,14 +280,14 @@ public class MainActivity extends BaseActivity
 		setTitle(newTitle);
 	}
 
-	private CharSequence getFragmentTitle(Class fragmentClass) {
+	private CharSequence getFragmentTitle(Fragment fragment) {
 		CharSequence title;
 
-		if (fragmentClass == MapFragment.class) {
+		if (fragment instanceof MapFragment) {
 			title = getString(R.string.title_fragment_map);
-		} else if (fragmentClass == MoodleFragment.class) {
+		} else if (fragment instanceof MoodleFragment) {
 			title = getString(R.string.title_fragment_moodle);
-		} else if (fragmentClass == ScheduleFragment.class) {
+		} else if (fragment instanceof ScheduleFragment) {
 			title = getString(R.string.title_fragment_schedule);
 		} else {
 			title = mDefaultTitle;
