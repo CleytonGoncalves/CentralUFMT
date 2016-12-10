@@ -33,7 +33,7 @@ public final class ScheduleTask extends AsyncTask<Void, Void, Void> {
 		NetworkOperation scheduleGet = networkService.get(URL);
 
 		ScheduleFetchEvent event;
-		if (scheduleGet.hasFailed()) {
+		if (! scheduleGet.isSuccessful()) {
 			event = new ScheduleFetchEvent(ScheduleFetchEvent.GENERAL_ERROR);
 		} else {
 			List<Discipline> disciplineList =

@@ -56,7 +56,7 @@ public final class SigaLogInTask extends AsyncTask<Void, Void, LogInEvent> imple
 
 		if (isCancelled()) {
 			return userCanceled();
-		} else if (logInPageGet.hasFailed()) {
+		} else if (! logInPageGet.isSuccessful()) {
 			return generalFailure();
 		}
 
@@ -65,7 +65,7 @@ public final class SigaLogInTask extends AsyncTask<Void, Void, LogInEvent> imple
 
 		if (isCancelled()) {
 			return userCanceled();
-		} else if (logInPost.hasFailed()) {
+		} else if (! logInPost.isSuccessful()) {
 			return generalFailure();
 		} else if (! isLogInSuccessful(logInPost)) {
 			return accessDenied();
@@ -75,7 +75,7 @@ public final class SigaLogInTask extends AsyncTask<Void, Void, LogInEvent> imple
 
 		if (isCancelled()) {
 			return userCanceled();
-		} else if (exacaoPageGet.hasFailed()) {
+		} else if (! exacaoPageGet.isSuccessful()) {
 			return generalFailure();
 		}
 
