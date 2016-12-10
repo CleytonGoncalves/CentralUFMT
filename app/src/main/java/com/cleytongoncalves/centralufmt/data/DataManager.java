@@ -2,10 +2,10 @@ package com.cleytongoncalves.centralufmt.data;
 
 import android.os.AsyncTask;
 
-import com.cleytongoncalves.centralufmt.data.events.LogInEvent;
-import com.cleytongoncalves.centralufmt.data.events.ScheduleFetchEvent;
+import com.cleytongoncalves.centralufmt.data.events.BusEvent;
 import com.cleytongoncalves.centralufmt.data.local.PreferencesHelper;
 import com.cleytongoncalves.centralufmt.data.model.Course;
+import com.cleytongoncalves.centralufmt.data.model.Discipline;
 import com.cleytongoncalves.centralufmt.data.model.Student;
 import com.cleytongoncalves.centralufmt.data.remote.NetworkService;
 import com.cleytongoncalves.centralufmt.data.remote.task.LogInTask;
@@ -16,6 +16,8 @@ import com.cleytongoncalves.centralufmt.data.remote.task.SigaLogInTask;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -117,11 +119,11 @@ public class DataManager {
 	/* ----- EventBus Listeners ----- */
 
 	@Subscribe(threadMode = ThreadMode.MAIN, priority = 1)
-	public void onLogInCompleted(LogInEvent logInEvent) {
+	public void onLogInCompleted(BusEvent<Object> logInEvent) {
 		mLogInTask = null;
 
 		if (logInEvent.isSuccessful()) {
-			Object obj = logInEvent.getObjectResult();
+			Object obj = logInEvent.getResult();
 
 			if (Student.class.isAssignableFrom(obj.getClass())) {
 				mStudent = (Student) obj;
@@ -138,12 +140,12 @@ public class DataManager {
 	}
 
 	@Subscribe(threadMode = ThreadMode.MAIN, priority = 1)
-	public void onScheduleFetched(ScheduleFetchEvent scheduleEvent) {
+	public void onScheduleFetched(BusEvent<List<Discipline>> scheduleEvent) {
 		mScheduleTask = null;
 
 		if (scheduleEvent.isSuccessful()) {
 			Course newCourse = Course.copyOf(mStudent.getCourse())
-			                         .withEnrolledDisciplines(scheduleEvent.getDisciplineList());
+			                         .withEnrolledDisciplines(scheduleEvent.getResult());
 
 			mStudent = Student.copyOf(mStudent).withCourse(newCourse);
 			Timber.d("Enrolled disciplines saved successfully");

@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 import android.util.SparseArray;
 
 import com.cleytongoncalves.centralufmt.data.DataManager;
-import com.cleytongoncalves.centralufmt.data.events.ScheduleFetchEvent;
+import com.cleytongoncalves.centralufmt.data.events.BusEvent;
 import com.cleytongoncalves.centralufmt.data.model.Discipline;
 import com.cleytongoncalves.centralufmt.ui.base.Presenter;
 import com.cleytongoncalves.centralufmt.util.TextUtil;
@@ -125,9 +125,9 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 	/* Data Methods */
 
 	@Subscribe(threadMode = ThreadMode.MAIN)
-	public void onScheduleFetched(ScheduleFetchEvent scheduleEvent) {
+	public void onScheduleFetched(BusEvent<List<Discipline>> scheduleEvent) {
 		if (scheduleEvent.isSuccessful()) {
-			onFetchSuccess(scheduleEvent.getDisciplineList());
+			onFetchSuccess(scheduleEvent.getResult());
 		} else {
 			onFetchFailure();
 		}

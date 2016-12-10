@@ -4,7 +4,7 @@ import com.cleytongoncalves.centralufmt.data.model.Discipline;
 
 import java.util.List;
 
-public final class ScheduleFetchEvent {
+public final class ScheduleFetchEvent implements BusEvent<List<Discipline>> {
 	public static final String GENERAL_ERROR = "Network/IO Error";
 
 	private List<Discipline> mDisciplineList;
@@ -18,15 +18,15 @@ public final class ScheduleFetchEvent {
 		mFailureReason = failureReason;
 	}
 
-	public List<Discipline> getDisciplineList() {
+	public boolean isSuccessful() {
+		return mDisciplineList != null;
+	}
+
+	public List<Discipline> getResult() {
 		return mDisciplineList;
 	}
 
 	public String getFailureReason() {
 		return mFailureReason;
-	}
-
-	public boolean isSuccessful() {
-		return mDisciplineList != null;
 	}
 }
