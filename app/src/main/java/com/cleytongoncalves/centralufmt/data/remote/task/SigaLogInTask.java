@@ -52,7 +52,8 @@ public final class SigaLogInTask extends AsyncTask<Void, Void, LogInEvent> imple
 	protected LogInEvent doInBackground(Void... voids) {
 		NetworkService networkService = mNetworkService.get();
 
-		NetworkOperation logInPageGet = networkService.get(BASE_SIGA_URL + GET_SIGA_URL);
+		NetworkOperation logInPageGet =
+				networkService.get(BASE_SIGA_URL + GET_SIGA_URL, NetworkService.CHARSET_ISO);
 
 		if (isCancelled()) {
 			return userCanceled();
@@ -71,7 +72,8 @@ public final class SigaLogInTask extends AsyncTask<Void, Void, LogInEvent> imple
 			return accessDenied();
 		}
 
-		NetworkOperation exacaoPageGet = networkService.get(BASE_SIGA_URL + EXACAO_SIGA_URL);
+		NetworkOperation exacaoPageGet =
+				networkService.get(BASE_SIGA_URL + EXACAO_SIGA_URL, NetworkService.CHARSET_ISO);
 
 		if (isCancelled()) {
 			return userCanceled();
