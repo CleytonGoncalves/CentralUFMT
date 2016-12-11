@@ -2,13 +2,15 @@ package com.cleytongoncalves.centralufmt.data;
 
 import android.os.AsyncTask;
 
-import com.cleytongoncalves.centralufmt.data.events.BusEvent;
+import com.cleytongoncalves.centralufmt.data.events.LogInEvent;
+import com.cleytongoncalves.centralufmt.data.events.MenuRuFetchEvent;
+import com.cleytongoncalves.centralufmt.data.events.ScheduleFetchEvent;
 import com.cleytongoncalves.centralufmt.data.local.PreferencesHelper;
 import com.cleytongoncalves.centralufmt.data.model.Course;
-import com.cleytongoncalves.centralufmt.data.model.Discipline;
 import com.cleytongoncalves.centralufmt.data.model.Student;
 import com.cleytongoncalves.centralufmt.data.remote.NetworkService;
 import com.cleytongoncalves.centralufmt.data.remote.task.LogInTask;
+import com.cleytongoncalves.centralufmt.data.remote.task.MenuRuTask;
 import com.cleytongoncalves.centralufmt.data.remote.task.MoodleLogInTask;
 import com.cleytongoncalves.centralufmt.data.remote.task.ScheduleTask;
 import com.cleytongoncalves.centralufmt.data.remote.task.SigaLogInTask;
@@ -16,8 +18,6 @@ import com.cleytongoncalves.centralufmt.data.remote.task.SigaLogInTask;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -37,6 +37,7 @@ public class DataManager {
 
 	private LogInTask mLogInTask;
 	private ScheduleTask mScheduleTask;
+	private MenuRuTask mMenuRuTask;
 
 	private Student mStudent;
 	private Cookie mMoodleCookie;
@@ -116,10 +117,18 @@ public class DataManager {
 		mScheduleTask.execute();
 	}
 
+	/* ----- Menu RU ----- */
+
+	public void fetchMenuRu() {
+		Timber.d("Fetching Menu Ru");
+		mMenuRuTask = new MenuRuTask(mNetworkService);
+		mMenuRuTask.execute();
+	}
+
 	/* ----- EventBus Listeners ----- */
 
 	@Subscribe(threadMode = ThreadMode.MAIN, priority = 1)
-	public void onLogInCompleted(BusEvent<Object> logInEvent) {
+	public void onLogInCompleted(LogInEvent logInEvent) {
 		mLogInTask = null;
 
 		if (logInEvent.isSuccessful()) {
@@ -140,7 +149,7 @@ public class DataManager {
 	}
 
 	@Subscribe(threadMode = ThreadMode.MAIN, priority = 1)
-	public void onScheduleFetched(BusEvent<List<Discipline>> scheduleEvent) {
+	public void onScheduleFetched(ScheduleFetchEvent scheduleEvent) {
 		mScheduleTask = null;
 
 		if (scheduleEvent.isSuccessful()) {
@@ -148,7 +157,17 @@ public class DataManager {
 			                         .withEnrolledDisciplines(scheduleEvent.getResult());
 
 			mStudent = Student.copyOf(mStudent).withCourse(newCourse);
+			mPreferencesHelper.putLoggedInStudent(mStudent);
 			Timber.d("Enrolled disciplines saved successfully");
+		}
+	}
+
+	@Subscribe(threadMode = ThreadMode.MAIN, priority = 1)
+	public void onMenuRuFetched(MenuRuFetchEvent menuRuEvent) {
+		mMenuRuTask = null;
+
+		if (menuRuEvent.isSuccessful()) {
+			Timber.d("Menu RU received successfully");
 		}
 	}
 }
