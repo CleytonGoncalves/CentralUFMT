@@ -3,7 +3,7 @@ package com.cleytongoncalves.centralufmt.ui.moodle;
 import android.support.annotation.Nullable;
 
 import com.cleytongoncalves.centralufmt.data.DataManager;
-import com.cleytongoncalves.centralufmt.data.events.BusEvent;
+import com.cleytongoncalves.centralufmt.data.events.LogInEvent;
 import com.cleytongoncalves.centralufmt.ui.base.Presenter;
 
 import org.greenrobot.eventbus.EventBus;
@@ -57,7 +57,7 @@ public final class MoodlePresenter implements Presenter<MoodleMvpView> {
 	}
 
 	@Subscribe(threadMode = ThreadMode.MAIN)
-	public void onLogInEvent(BusEvent<Object> event) {
+	public void onLogInEvent(LogInEvent event) {
 		EventBus.getDefault().unregister(this);
 
 		if (event.isSuccessful()) {
