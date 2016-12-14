@@ -1,6 +1,7 @@
 package com.cleytongoncalves.centralufmt.data.remote;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,12 +47,19 @@ public final class NetworkService {
 				Timber.d("Successful GET Operation on %s", url);
 			} else {
 				result = new NetworkOperation(NetworkOperation.NETWORK_ERROR);
-				Timber.d("Failed GET Operation on %s - Network Error: %s", url, responseBody);
+				Timber.i("Failed GET Operation on %s - Network Error: %s", url, responseBody);
 			}
 			response.close();
+		} catch (UnknownHostException e) {
+			result = new NetworkOperation(NetworkOperation.NETWORK_ERROR);
+			Timber.d(e, "Failed GET operation on %s - Network Error (Probably not connected)",
+			         url);
 		} catch (IOException e) {
 			result = new NetworkOperation(NetworkOperation.IO_ERROR);
 			Timber.i(e, "Failed GET operation on %s - I/O Error", url);
+		} catch (IllegalStateException e) {
+			result = new NetworkOperation(NetworkOperation.IO_ERROR);
+			Timber.i(e, "Failed GET operation on %s - IllegalState Error", url);
 		}
 
 		return result;
@@ -76,9 +84,16 @@ public final class NetworkService {
 				Timber.d("Failed POST Operation on %s - Network Error: %s", url, responseBody);
 			}
 			response.close();
+		} catch (UnknownHostException e) {
+			result = new NetworkOperation(NetworkOperation.NETWORK_ERROR);
+			Timber.d(e, "Failed POST operation on %s - Network Error (Probably not connected)",
+			         url);
 		} catch (IOException e) {
 			result = new NetworkOperation(NetworkOperation.IO_ERROR);
 			Timber.i(e, "Failed POST operation on %s - I/O Error", url);
+		} catch (IllegalStateException e) {
+			result = new NetworkOperation(NetworkOperation.IO_ERROR);
+			Timber.i(e, "Failed POST operation on %s - IllegalState Error", url);
 		}
 
 		return result;
