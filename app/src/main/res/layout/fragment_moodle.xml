@@ -4,12 +4,11 @@
                 android:layout_height="match_parent"
                 tools:context="com.cleytongoncalves.centralufmt.ui.moodle.MoodleFragment">
 
-    <ProgressBar
+    <android.support.v4.widget.ContentLoadingProgressBar
         android:id="@+id/progress_moodle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:theme="@style/ProgressWhite"
         android:visibility="visible"
         tools:visibility="visible"/>
 
