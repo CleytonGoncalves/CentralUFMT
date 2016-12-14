@@ -6,6 +6,7 @@ import com.cleytongoncalves.centralufmt.ui.LauncherActivity;
 import com.cleytongoncalves.centralufmt.ui.login.LogInActivity;
 import com.cleytongoncalves.centralufmt.ui.main.MainActivity;
 import com.cleytongoncalves.centralufmt.ui.map.MapFragment;
+import com.cleytongoncalves.centralufmt.ui.menuru.MenuRuFragment;
 import com.cleytongoncalves.centralufmt.ui.moodle.MoodleFragment;
 import com.cleytongoncalves.centralufmt.ui.schedule.ScheduleFragment;
 
@@ -27,5 +28,7 @@ public interface ActivityComponent {
 	void inject(MoodleFragment moodleFragment);
 
 	void inject(ScheduleFragment scheduleFragment);
+
+	void inject(MenuRuFragment menuRuFragment);
 
 }

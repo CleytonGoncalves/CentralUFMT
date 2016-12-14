@@ -61,7 +61,7 @@ public final class MoodlePresenter implements Presenter<MoodleMvpView> {
 		EventBus.getDefault().unregister(this);
 
 		if (event.isSuccessful()) {
-			Cookie cookie = (Cookie) event.getObjectResult();
+			Cookie cookie = (Cookie) event.getResult();
 			onLogInSuccessful(cookie);
 		} else {
 			onLogInFailure(event.getFailureReason());

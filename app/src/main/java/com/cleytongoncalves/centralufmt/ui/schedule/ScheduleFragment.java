@@ -79,7 +79,7 @@ public final class ScheduleFragment extends Fragment implements ScheduleMvpView 
 
 	@Override
 	public void onDestroyView() {
-		mSnackbar.dismiss();
+		hideSnackIfShown();
 		mPresenter.detachView();
 		super.onDestroyView();
 	}

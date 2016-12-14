@@ -127,7 +127,7 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 	@Subscribe(threadMode = ThreadMode.MAIN)
 	public void onScheduleFetched(ScheduleFetchEvent scheduleEvent) {
 		if (scheduleEvent.isSuccessful()) {
-			onFetchSuccess(scheduleEvent.getDisciplineList());
+			onFetchSuccess(scheduleEvent.getResult());
 		} else {
 			onFetchFailure();
 		}
@@ -239,7 +239,7 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 						mAmountOfDays = dayOfWeek;
 					}
 
-					String title = TextUtil.capsMeaningfulWords(disc.getTitle());
+					String title = TextUtil.capsWordsFirstLetter(disc.getTitle());
 					title = TextUtil.ellipsizeString(title, MAXIMUM_TITLE_LENGTH);
 
 					String time = start.toString("HH:mm") + " - " + end.toString("HH:mm");

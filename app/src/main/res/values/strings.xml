@@ -42,6 +42,15 @@
     <string name="snack_empty_schedule">O horário está vazio.</string>
     <string name="snack_dismiss_schedule">@android:string/ok</string>
 
+    <!-- MenuRu Fragment -->
+    <string name="text_main_course_menuru">"\u2022 Prato Principal: "</string>
+    <string name="text_garnish_menuru">"\u2022 Guarnição: "</string>
+    <string name="text_vegetarian_menuru">"\u2022 Vegetariano: "</string>
+    <string name="text_salad_menuru">"\u2022  Salada: "</string>
+    <string name="text_acompaniment_menuru">"\u2022 Acompanhamento: "</string>
+    <string name="text_dessert_menuru">"\u2022 Sobremesa: "</string>
+    <string name="snack_error_menuru">Falha ao carregar o cardápio.</string>
+
     <!-- Student Fragment -->
     <string name="title_fragment_student">Aluno</string>
 
@@ -67,7 +76,9 @@
     <string name="ufmt_logo_description">Logomarca da UFMT</string>
     <string name="navigation_drawer_open">Abrir menu de navegação</string>
     <string name="navigation_drawer_close">Fechar menu de navegação</string>
+    <string name="title_fragment_menuru">Cardápio</string>
 
     <!-- Uncategorized-->
+
 
 </resources>

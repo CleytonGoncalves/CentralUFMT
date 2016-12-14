@@ -49,7 +49,7 @@ public final class MoodleLogInTask extends AsyncTask<Void, Void, LogInEvent> imp
 		NetworkOperation logInPost = networkService.post(BASE_AVA_URL + POST_AVA_URL, params);
 
 		LogInEvent event;
-		if (logInPost.hasFailed()) {
+		if (! logInPost.isSuccessful()) {
 			event = new LogInEvent(LogInEvent.GENERAL_ERROR);
 		} else {
 			List<Cookie> cookies = networkService.getCookieFromJar(BASE_AVA_URL);

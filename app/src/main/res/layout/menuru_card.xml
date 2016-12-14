@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    android:id="@+id/menuru_card"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp">
+
+    <LinearLayout
+        android:id="@+id/menuru_card_linear_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- HEADER -->
+
+        <TextView
+            android:id="@+id/menuru_card_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/accent"
+            android:padding="10dp"
+            android:textColor="@color/primary_text_inverse"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            tools:text="ALMOÇO"/>
+
+        <!-- DATE -->
+
+        <TextView
+            android:id="@+id/menuru_card_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingRight="10dp"
+            android:paddingLeft="10dp"
+            android:paddingTop="3dp"
+            android:paddingBottom="1dp"
+            android:gravity="right"
+            android:textSize="12sp"
+            tools:text="seg - 12/12/16"
+            />
+
+        <!-- MAIN COURSE -->
+
+        <TextView
+            android:id="@+id/menuru_card_main_course"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="8dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/text_main_course_menuru"
+            android:maxLines="2"
+            tools:text="• Prato Principal: Feijoada"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="1dp"
+            android:layout_marginBottom="8dp"
+            android:background="#80bdbdbd"/>
+
+        <!-- VEGETARIAN -->
+
+        <TextView
+            android:id="@+id/menuru_card_vegetarian"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="8dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/text_vegetarian_menuru"
+            android:maxLines="2"
+            tools:text="• Vegetariano: Jardineira de Soja c/ Legumes (bat, cen, vagem, milho verde)"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="1dp"
+            android:layout_marginBottom="8dp"
+            android:background="#80bdbdbd"/>
+
+        <!-- GARNISH -->
+
+        <TextView
+            android:id="@+id/menuru_card_garnish"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="8dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/text_garnish_menuru"
+            android:maxLines="2"
+            tools:text="• Guarnição: Farofa de Alho"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="1dp"
+            android:layout_marginBottom="8dp"
+            android:background="#80bdbdbd"/>
+
+        <!-- SALAD -->
+
+        <TextView
+            android:id="@+id/menuru_card_salad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="8dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/text_salad_menuru"
+            android:maxLines="2"
+            tools:text="• Salada: Alface Americana / Vinagrete / Vagem c/ Cenoura Palito"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="1dp"
+            android:layout_marginBottom="8dp"
+            android:background="#80bdbdbd"/>
+
+        <!-- ACOMPANIMENT -->
+
+        <TextView
+            android:id="@+id/menuru_card_acompaniment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="8dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/text_acompaniment_menuru"
+            android:maxLines="2"
+            tools:text="• Acompanhamento: Arroz Branco / Arroz Integral / Feijão"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="1dp"
+            android:layout_marginBottom="8dp"
+            android:background="#80bdbdbd"/>
+
+        <!-- DESSERT -->
+
+        <TextView
+            android:id="@+id/menuru_card_dessert"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="10dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/text_dessert_menuru"
+            android:maxLines="2"
+            tools:text="• Sobremesa: Laranja"/>
+
+    </LinearLayout>
+</android.support.v7.widget.CardView>

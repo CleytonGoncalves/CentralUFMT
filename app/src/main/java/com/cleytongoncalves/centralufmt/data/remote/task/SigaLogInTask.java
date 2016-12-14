@@ -52,11 +52,12 @@ public final class SigaLogInTask extends AsyncTask<Void, Void, LogInEvent> imple
 	protected LogInEvent doInBackground(Void... voids) {
 		NetworkService networkService = mNetworkService.get();
 
-		NetworkOperation logInPageGet = networkService.get(BASE_SIGA_URL + GET_SIGA_URL);
+		NetworkOperation logInPageGet =
+				networkService.get(BASE_SIGA_URL + GET_SIGA_URL, NetworkService.CHARSET_ISO);
 
 		if (isCancelled()) {
 			return userCanceled();
-		} else if (logInPageGet.hasFailed()) {
+		} else if (! logInPageGet.isSuccessful()) {
 			return generalFailure();
 		}
 
@@ -65,17 +66,18 @@ public final class SigaLogInTask extends AsyncTask<Void, Void, LogInEvent> imple
 
 		if (isCancelled()) {
 			return userCanceled();
-		} else if (logInPost.hasFailed()) {
+		} else if (! logInPost.isSuccessful()) {
 			return generalFailure();
 		} else if (! isLogInSuccessful(logInPost)) {
 			return accessDenied();
 		}
 
-		NetworkOperation exacaoPageGet = networkService.get(BASE_SIGA_URL + EXACAO_SIGA_URL);
+		NetworkOperation exacaoPageGet =
+				networkService.get(BASE_SIGA_URL + EXACAO_SIGA_URL, NetworkService.CHARSET_ISO);
 
 		if (isCancelled()) {
 			return userCanceled();
-		} else if (exacaoPageGet.hasFailed()) {
+		} else if (! exacaoPageGet.isSuccessful()) {
 			return generalFailure();
 		}
 

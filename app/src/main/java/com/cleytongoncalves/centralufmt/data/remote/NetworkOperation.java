@@ -21,16 +21,16 @@ public final class NetworkOperation {
 		this.mFailureReason = failureReason;
 	}
 
+	public boolean isSuccessful() {
+		return mResponseBody != null;
+	}
+
 	public String getResponseBody() {
 		return mResponseBody;
 	}
 
 	public Map<String, List<String>> getResponseHeaders() {
 		return mResponseHeaders;
-	}
-
-	public boolean hasFailed() {
-		return mResponseBody == null;
 	}
 
 	public String getFailureReason() {

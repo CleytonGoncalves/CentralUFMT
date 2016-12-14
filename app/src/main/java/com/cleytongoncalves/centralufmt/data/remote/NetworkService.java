@@ -16,7 +16,8 @@ import okhttp3.Response;
 import timber.log.Timber;
 
 public final class NetworkService {
-	private static final String CHARSET = "ISO-8859-1";
+	public static final String CHARSET_ISO = "ISO-8859-1";
+	public static final String CHARSET_UTF8 = "UTF-8";
 	private final OkHttpClient mClient;
 
 	public static NetworkService.Builder builder() {
@@ -30,7 +31,7 @@ public final class NetworkService {
 		this.mClient = client;
 	}
 
-	public NetworkOperation get(String url) {
+	public NetworkOperation get(String url, String charset) {
 		Request request = new Request.Builder()
 				                  .url(url)
 				                  .build();
@@ -39,7 +40,7 @@ public final class NetworkService {
 		try {
 			Response response = mClient.newCall(request).execute();
 
-			String responseBody = new String(response.body().bytes(), CHARSET);
+			String responseBody = new String(response.body().bytes(), charset);
 			if (response.isSuccessful()) {
 				result = new NetworkOperation(responseBody, response.headers().toMultimap());
 				Timber.d("Successful GET Operation on %s", url);
@@ -66,7 +67,7 @@ public final class NetworkService {
 		try {
 			Response response = mClient.newCall(request).execute();
 
-			String responseBody = new String(response.body().bytes(), CHARSET);
+			String responseBody = new String(response.body().bytes(), CHARSET_ISO);
 			if (response.isSuccessful()) {
 				result = new NetworkOperation(responseBody, response.headers().toMultimap());
 				Timber.d("Successful POST Operation on %s", url);
@@ -96,6 +97,10 @@ public final class NetworkService {
 			OkHttpClient client = new OkHttpClient()
 					                      .newBuilder()
 					                      .cookieJar(new MyCookieJar())
+					                      .addNetworkInterceptor(chain -> chain.proceed(
+							                      chain.request().newBuilder()
+							                           .addHeader("Accept-Language", "pt-BR")
+							                           .build()))
 					                      .build();
 
 			return new NetworkService(client);

@@ -58,8 +58,6 @@ public class CentralUfmt extends Application {
 		mRefWatcher = LeakCanary.install(this);
 
 		JodaTimeAndroid.init(this);
-
-		Bugsnag.init(this);
 	}
 
 	private void plantTrees() {
@@ -71,6 +69,7 @@ public class CentralUfmt extends Application {
 				}
 			});
 		} else {
+			Bugsnag.init(this);
 			Timber.plant(new Timber.Tree() {
 				@Override
 				protected void log(int priority, @Nullable String tag, @Nullable String message,

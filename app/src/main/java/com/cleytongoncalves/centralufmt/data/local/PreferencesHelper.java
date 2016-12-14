@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
 
 import com.cleytongoncalves.centralufmt.data.model.GsonAdaptersModel;
+import com.cleytongoncalves.centralufmt.data.model.MenuRu;
 import com.cleytongoncalves.centralufmt.data.model.Student;
 import com.cleytongoncalves.centralufmt.injection.ApplicationContext;
 import com.cleytongoncalves.centralufmt.ui.schedule.GsonAdaptersAbstractScheduleData;
@@ -23,6 +24,7 @@ public class PreferencesHelper {
 	private static final String PREF_KEY_SCHEDULE_DATA = "PREF_KEY_SCHEDULE_DATA";
 	private static final String PREF_KEY_ROUTE_OPTION = "PREF_KEY_ROUTE_OPTION";
 	private static final String PREF_KEY_POI_OPTION = "PREF_KEY_POI_OPTION";
+	private static final String PREF_KEY_MENURU = "PREF_KEY_MENURU";
 
 	private final SharedPreferences mSharedPref;
 	private final Gson mGson;
@@ -88,10 +90,8 @@ public class PreferencesHelper {
 	@Nullable
 	public ScheduleData getSchedule() {
 		String scheduleJson = mSharedPref.getString(PREF_KEY_SCHEDULE_DATA, null);
+		if (scheduleJson == null) { return null; }
 
-		if (scheduleJson == null) {
-			return null;
-		}
 		return mGson.fromJson(scheduleJson, ScheduleData.class);
 	}
 
@@ -109,5 +109,17 @@ public class PreferencesHelper {
 
 	public boolean getMapPoiDisplayState() {
 		return mSharedPref.getBoolean(PREF_KEY_POI_OPTION, true);
+	}
+
+	public void putMenuRu(MenuRu menuRu) {
+		mSharedPref.edit().putString(PREF_KEY_MENURU, mGson.toJson(menuRu)).apply();
+	}
+
+	@Nullable
+	public MenuRu getMenuRu() {
+		String menuRuJson = mSharedPref.getString(PREF_KEY_MENURU, null);
+		if (menuRuJson == null) { return null; }
+
+		return mGson.fromJson(menuRuJson, MenuRu.class);
 	}
 }

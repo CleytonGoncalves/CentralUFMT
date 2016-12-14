@@ -30,10 +30,10 @@ public final class ScheduleTask extends AsyncTask<Void, Void, Void> {
 	protected Void doInBackground(Void... params) {
 		NetworkService networkService = mNetworkService.get();
 
-		NetworkOperation scheduleGet = networkService.get(URL);
+		NetworkOperation scheduleGet = networkService.get(URL, NetworkService.CHARSET_ISO);
 
 		ScheduleFetchEvent event;
-		if (scheduleGet.hasFailed()) {
+		if (! scheduleGet.isSuccessful()) {
 			event = new ScheduleFetchEvent(ScheduleFetchEvent.GENERAL_ERROR);
 		} else {
 			List<Discipline> disciplineList =

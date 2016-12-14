@@ -1,12 +1,3 @@
-buildscript {
-    repositories {
-        maven { url 'https://maven.fabric.io/public' }
-    }
-
-    dependencies {
-        classpath 'io.fabric.tools:gradle:1.+'
-    }
-}
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt' //Dager2
 apply plugin: 'android-apt' //ButterKnife
@@ -125,4 +116,6 @@ dependencies {
     provided "org.immutables:value:$IMMUTABLES_VERSION:annotations"
     provided "org.immutables:builder:$IMMUTABLES_VERSION"
     provided "org.immutables:gson:$IMMUTABLES_VERSION:annotations"
+
+    compile "com.android.support:cardview-v7:$SUPPORT_LIBRARY_VERSION"
 }
