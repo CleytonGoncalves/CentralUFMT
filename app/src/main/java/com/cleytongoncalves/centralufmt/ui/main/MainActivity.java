@@ -158,12 +158,10 @@ public class MainActivity extends BaseActivity
 				id = R.id.nav_menuru;
 			}
 
-			title = getFragmentTitle(currFragment.getClass());
+			title = getFragmentTitle(currFragment);
 		} else {
 			title = mDefaultTitle;
 		}
-
-
 
 		if (title == mDefaultTitle) {
 			mNavigationView.getMenu().getItem(0).setChecked(true);
@@ -182,7 +180,7 @@ public class MainActivity extends BaseActivity
 		Fragment fragment;
 		switch (id) {
 			case R.id.nav_menuru:
-				fragmentClass = MenuRuFragment.class;
+				fragment = new MenuRuFragment();
 				break;
 			case R.id.nav_schedule:
 				fragment = new ScheduleFragment();
@@ -293,7 +291,7 @@ public class MainActivity extends BaseActivity
 			title = getString(R.string.title_fragment_moodle);
 		} else if (fragment instanceof ScheduleFragment) {
 			title = getString(R.string.title_fragment_schedule);
-		} else if (fragmentClass == MenuRuFragment.class) {
+		} else if (fragment instanceof MenuRuFragment) {
 			title = getString(R.string.title_fragment_menuru);
 		} else {
 			title = mDefaultTitle;
