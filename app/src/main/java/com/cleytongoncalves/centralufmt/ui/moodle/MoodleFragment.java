@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.ContentLoadingProgressBar;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -26,7 +27,6 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.cleytongoncalves.centralufmt.CentralUfmt;
@@ -48,7 +48,7 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 	@Inject MoodlePresenter mPresenter;
 
 	@BindView(R.id.moodle_web_view) WebView mWebView;
-	@BindView(R.id.progress_moodle) ProgressBar mProgressBar;
+	@BindView(R.id.moodle_progress_bar) ContentLoadingProgressBar mProgressBar;
 	private Unbinder mUnbinder;
 
 	@Override
@@ -176,7 +176,11 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 
 	@Override
 	public void showProgressBar(boolean enabled) {
-		mProgressBar.setVisibility(enabled ? View.VISIBLE : View.GONE);
+		if (enabled) {
+			mProgressBar.show();
+		} else {
+			mProgressBar.hide();
+		}
 	}
 
 	@Override
