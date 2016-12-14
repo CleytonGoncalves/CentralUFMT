@@ -24,7 +24,12 @@ public abstract class AbstractMeal {
 
 	public abstract List<String> getJuice();
 
+	@Value.Default
+	public boolean isEmpty() {
+		return false;
+	}
+
 	public static Meal emptyMeal(TimeInterval timeInterval) {
-		return Meal.builder().timeInterval(timeInterval).build();
+		return Meal.builder().timeInterval(timeInterval).isEmpty(true).build();
 	}
 }

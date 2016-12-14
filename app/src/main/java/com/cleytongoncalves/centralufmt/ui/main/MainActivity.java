@@ -26,6 +26,7 @@ import com.cleytongoncalves.centralufmt.data.DataManager;
 import com.cleytongoncalves.centralufmt.data.model.Student;
 import com.cleytongoncalves.centralufmt.ui.base.BaseActivity;
 import com.cleytongoncalves.centralufmt.ui.map.MapFragment;
+import com.cleytongoncalves.centralufmt.ui.menuru.MenuRuFragment;
 import com.cleytongoncalves.centralufmt.ui.moodle.MoodleFragment;
 import com.cleytongoncalves.centralufmt.ui.schedule.ScheduleFragment;
 import com.cleytongoncalves.centralufmt.util.NetworkUtil;
@@ -149,20 +150,20 @@ public class MainActivity extends BaseActivity
 			String fragTag = currFragment.getTag();
 
 			if (fragTag.equals(MapFragment.class.getName())) {
-				title = getString(R.string.title_fragment_map);
 				id = R.id.nav_map;
 			} else if (fragTag.equals(MoodleFragment.class.getName())) {
-				title = getString(R.string.title_fragment_moodle);
 				id = R.id.nav_moodle;
 			} else if (fragTag.equals(ScheduleFragment.class.getName())) {
-				title = getString(R.string.title_fragment_schedule);
 				id = R.id.nav_schedule;
-			} else {
-				title = mDefaultTitle;
+			} else if (fragTag.equals(MenuRuFragment.class.getName())) {
+				id = R.id.nav_menuru;
 			}
+
+			title = getFragmentTitle(currFragment.getClass());
 		} else {
 			title = mDefaultTitle;
 		}
+
 
 
 		if (title == mDefaultTitle) {
@@ -181,6 +182,9 @@ public class MainActivity extends BaseActivity
 
 		Class fragmentClass;
 		switch (id) {
+			case R.id.nav_menuru:
+				fragmentClass = MenuRuFragment.class;
+				break;
 			case R.id.nav_schedule:
 				fragmentClass = ScheduleFragment.class;
 				break;
@@ -295,6 +299,8 @@ public class MainActivity extends BaseActivity
 			title = getString(R.string.title_fragment_moodle);
 		} else if (fragmentClass == ScheduleFragment.class) {
 			title = getString(R.string.title_fragment_schedule);
+		} else if (fragmentClass == MenuRuFragment.class) {
+			title = getString(R.string.title_fragment_menuru);
 		} else {
 			title = mDefaultTitle;
 		}
