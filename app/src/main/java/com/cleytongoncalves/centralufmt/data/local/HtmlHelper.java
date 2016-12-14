@@ -41,8 +41,8 @@ public final class HtmlHelper {
 		String[] infoCurso = infoCursoRaw.split(":")[1].split("-");
 
 		String code = infoCurso[0].trim();
-		String title = TextUtil.capsMeaningfulWords(infoCurso[1].trim());
-		String type = TextUtil.capsMeaningfulWords(infoCurso[2].trim());
+		String title = TextUtil.capsWordsFirstLetter(infoCurso[1].trim());
+		String type = TextUtil.capsWordsFirstLetter(infoCurso[2].trim());
 
 		String infoTerm = alunoInfoNodes.get(2).text();
 		String[] infoTermSplit = infoTerm.split(":")[1].split(" ");
@@ -57,7 +57,7 @@ public final class HtmlHelper {
 		String[] infoAluno = infoAlunoRaw.split(":")[1].split("-");
 
 		String rga = infoAluno[0].trim();
-		String nomeCompleto = TextUtil.capsMeaningfulWords(infoAluno[1].trim());
+		String nomeCompleto = TextUtil.capsWordsFirstLetter(infoAluno[1].trim());
 
 		return Student.of(nomeCompleto, rga, course);
 	}
@@ -82,7 +82,7 @@ public final class HtmlHelper {
 			Element currRow = rows.get(i);
 			Elements content = currRow.getElementsByTag("div");
 
-			String nome = TextUtil.capsMeaningfulWords(content.get(1).ownText());
+			String nome = TextUtil.capsWordsFirstLetter(content.get(1).ownText());
 			String cod = content.get(0).ownText();
 			String turma = content.get(4).ownText();
 			String sala = content.get(5).ownText();
