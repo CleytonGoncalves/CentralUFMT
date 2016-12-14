@@ -30,10 +30,8 @@ public final class MenuRuTask extends AsyncTask<Void, Void, Void> {
 		NetworkOperation menuGet = networkService.get(CARDAPIO_URL, NetworkService.CHARSET_UTF8);
 
 		MenuRuFetchEvent event;
-		//if (menuGet.isSuccessful()) {
-		if (! menuGet.isSuccessful()) {
-			//MenuRu menu = MenuParser.parse(menuGet.getResponseBody());
-			MenuRu menu = MenuParser.parse(MenuParser.getHtml());
+		if (menuGet.isSuccessful()) {
+			MenuRu menu = MenuParser.parse(menuGet.getResponseBody());
 			event = new MenuRuFetchEvent(menu);
 		} else {
 			event = new MenuRuFetchEvent(MenuRuFetchEvent.GENERAL_ERROR);
