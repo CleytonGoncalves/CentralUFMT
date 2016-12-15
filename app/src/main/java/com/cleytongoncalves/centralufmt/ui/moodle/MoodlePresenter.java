@@ -13,10 +13,10 @@ import org.greenrobot.eventbus.ThreadMode;
 import javax.inject.Inject;
 
 import okhttp3.Cookie;
-import timber.log.Timber;
 
 public final class MoodlePresenter implements Presenter<MoodleMvpView> {
 	private final DataManager mDataManager;
+
 	@Nullable private MoodleMvpView mView;
 
 	@Inject
@@ -27,6 +27,7 @@ public final class MoodlePresenter implements Presenter<MoodleMvpView> {
 	@Override
 	public void attachView(MoodleMvpView mvpView) {
 		mView = mvpView;
+
 		if (mDataManager.isLoggedInMoodle()) {
 			//Already logged in before by self, or after the app login screen.
 			onLogInSuccessful(mDataManager.getMoodleCookie());
@@ -46,7 +47,7 @@ public final class MoodlePresenter implements Presenter<MoodleMvpView> {
 		if (EventBus.getDefault().isRegistered(this)) { EventBus.getDefault().unregister(this); }
 	}
 
-	private void doLogIn() {
+	void doLogIn() {
 		if (mView != null) {
 			mView.showProgressBar(true);
 			mView.showWebView(false);
@@ -74,7 +75,6 @@ public final class MoodlePresenter implements Presenter<MoodleMvpView> {
 		mView.setCookieString(getCookieString(cookie));
 		mView.loadStartPage();
 		mView.showWebView(true);
-		mView.showProgressBar(false);
 	}
 
 	@SuppressWarnings("UnusedParameters")
@@ -82,27 +82,11 @@ public final class MoodlePresenter implements Presenter<MoodleMvpView> {
 		if (mView == null) { return; }
 
 		mView.showGeneralLogInError();
+		mView.showWebView(true);
 		mView.showProgressBar(false);
 	}
 
 	private String getCookieString(Cookie cookie) {
 		return cookie.name() + "=" + cookie.value() + "; domain=" + cookie.domain();
-	}
-
-	void onDownloadStart() {
-		Timber.d("Downloading file");
-		if (mView != null) {
-			mView.showDownloadStart();
-		}
-	}
-
-	void onLoadingPage() {
-		if (mView == null) { return; }
-		mView.showLoadingTitle();
-	}
-
-	void onLoadComplete() {
-		if (mView == null) { return; }
-		mView.showDefaultTitle();
 	}
 }

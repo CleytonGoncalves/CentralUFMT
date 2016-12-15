@@ -30,9 +30,9 @@
 
     <!-- Moodle Fragment -->
     <string name="title_fragment_moodle">AVA</string>
-    <string name="title_fragment_moodle_loading">Carregando…</string>
     <string name="menu_refresh_moodle">Atualizar Página</string>
     <string name="toast_download_moodle">Baixando arquivo…</string>
+    <string name="snack_retry_login_moodle">Relogar</string>
 
     <!-- Schedule Fragment -->
     <string name="title_fragment_schedule">Horários</string>
@@ -79,6 +79,6 @@
     <string name="title_fragment_menuru">Cardápio</string>
 
     <!-- Uncategorized-->
-
+    <string name="strings.xml_placeholder"/>
 
 </resources>
