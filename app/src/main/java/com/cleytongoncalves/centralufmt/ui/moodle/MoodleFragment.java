@@ -280,7 +280,6 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 							                                                         .DOWNLOAD_SERVICE);
 			dm.enqueue(request);
 
-
 			if (mPresenter != null) { showDownloadStart(); }
 		}
 	}
