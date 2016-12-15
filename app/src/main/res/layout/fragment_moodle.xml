@@ -2,6 +2,7 @@
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
+             android:orientation="vertical"
              tools:context="com.cleytongoncalves.centralufmt.ui.moodle.MoodleFragment">
 
     <WebView
@@ -9,15 +10,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"
+        tools:background="@color/black_20p"
         />
 
     <android.support.v4.widget.ContentLoadingProgressBar
         android:id="@+id/moodle_progress_bar"
+        style="?android:attr/progressBarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/activity_vertical_margin"
         android:layout_gravity="center"
+        android:padding="@dimen/activity_vertical_margin"
         android:visibility="visible"
-        style="?android:attr/progressBarStyle"
         />
 </FrameLayout>

@@ -5,11 +5,13 @@ import android.annotation.TargetApi;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.ContentLoadingProgressBar;
 import android.view.KeyEvent;
@@ -47,9 +49,12 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 
 	@Inject MoodlePresenter mPresenter;
 
-	@BindView(R.id.moodle_web_view) WebView mWebView;
 	@BindView(R.id.moodle_progress_bar) ContentLoadingProgressBar mProgressBar;
+	@BindView(R.id.moodle_web_view) WebView mWebView;
 	private Unbinder mUnbinder;
+
+	private View mRootView;
+	private Snackbar mSnackbar;
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -61,14 +66,13 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
-		View rootView = inflater.inflate(R.layout.fragment_moodle, container, false);
+		mRootView = inflater.inflate(R.layout.fragment_moodle, container, false);
 
-		mUnbinder = ButterKnife.bind(this, rootView);
+		mUnbinder = ButterKnife.bind(this, mRootView);
 		mPresenter.attachView(this);
 
-		showProgressBar(true);
-		showWebView(false);
-		return rootView;
+		showProgressBar(true); //Will stop at MyBrowser.onPageFinished() or onLogInFailure()
+		return mRootView;
 	}
 
 	@Override
@@ -98,8 +102,6 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 	public void onResume() {
 		super.onResume();
 		mWebView.onResume();
-		showProgressBar(false);
-		showWebView(true);
 	}
 
 	@Override
@@ -110,15 +112,16 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 
 	@Override
 	public void onDestroyView() {
-		super.onDestroyView();
+		hideSnackIfShown();
 		mPresenter.detachView();
+		super.onDestroyView();
 	}
 
 	@Override
 	public void onDestroy() {
-		super.onDestroy();
 		mWebView.destroy();
 		mUnbinder.unbind();
+		super.onDestroy();
 		CentralUfmt.getRefWatcher(getActivity()).watch(this);
 	}
 
@@ -133,7 +136,7 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 		mWebView.getSettings().setDisplayZoomControls(false);
 
 		mWebView.setWebViewClient(new MyBrowser());
-		mWebView.setWebChromeClient(new MyWebChromeClient());
+		mWebView.setWebChromeClient(new WebChromeClient());
 		mWebView.setDownloadListener(new MyDownloadListener());
 		mWebView.setOnKeyListener((v, keyCode, event) -> {
 			if (keyCode == KeyEvent.KEYCODE_BACK && mWebView.canGoBack()) {
@@ -159,6 +162,11 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 		//cookieManager.removeSessionCookie();
 	}
 
+	public void showDownloadStart() {
+		Toast.makeText(getActivity(), getString(R.string.toast_download_moodle), Toast.LENGTH_LONG)
+		     .show();
+	}
+
 	/* MVP Methods */
 
 	@Override
@@ -176,37 +184,33 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 
 	@Override
 	public void showProgressBar(boolean enabled) {
-		if (enabled) {
+		boolean isShown = mProgressBar.isShown();
+		if (enabled && ! isShown) {
 			mProgressBar.show();
-		} else {
+		} else if (! enabled && isShown) {
 			mProgressBar.hide();
 		}
 	}
 
 	@Override
 	public void showWebView(boolean enabled) {
-		mWebView.setVisibility(enabled ? View.VISIBLE : View.GONE);
-	}
-
-	@Override
-	public void showLoadingTitle() {
-		getActivity().setTitle(getString(R.string.title_fragment_moodle_loading));
-	}
-
-	@Override
-	public void showDefaultTitle() {
-		getActivity().setTitle(getString(R.string.title_fragment_moodle));
-	}
-
-	@Override
-	public void showDownloadStart() {
-		Toast.makeText(getActivity(), getString(R.string.toast_download_moodle), Toast.LENGTH_LONG)
-		     .show();
+		mWebView.setVisibility(enabled ? View.VISIBLE : View.INVISIBLE);
 	}
 
 	@Override
 	public void showGeneralLogInError() {
-		Toast.makeText(getActivity(), R.string.error_generic_log_in, Toast.LENGTH_SHORT).show();
+		mSnackbar = Snackbar.make(mRootView, getString(R.string.error_generic_log_in),
+		                          Snackbar.LENGTH_INDEFINITE)
+		                    .setAction(getString(R.string.snack_retry_login_moodle),
+		                               v -> mPresenter.doLogIn());
+		mSnackbar.show();
+	}
+
+	@Override
+	public void hideSnackIfShown() {
+		if (mSnackbar != null && mSnackbar.isShownOrQueued()) {
+			mSnackbar.dismiss();
+		}
 	}
 
 	private class MyBrowser extends WebViewClient {
@@ -223,6 +227,8 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 		}
 
 		private boolean handleUrl(Uri url) {
+			if (mPresenter == null) { return false; }
+
 			if (url.getHost().equals(AVA_BASE_URL) || url.getHost().equals(ALT_AVA_BASE_URL)) {
 				mWebView.loadUrl(url.toString());
 				return false;
@@ -232,17 +238,19 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 			startActivity(intent);
 			return true;
 		}
-	}
 
-	private class MyWebChromeClient extends WebChromeClient {
 		@Override
-		public void onProgressChanged(WebView view, int newProgress) {
+		public void onPageStarted(WebView view, String url, Bitmap favicon) {
 			if (mPresenter == null) { return; }
-			mPresenter.onLoadingPage();
+			showProgressBar(true);
+			super.onPageStarted(view, url, favicon);
+		}
 
-			if (newProgress == 100) {
-				mPresenter.onLoadComplete();
-			}
+		@Override
+		public void onPageFinished(WebView view, String url) {
+			if (mPresenter == null) { return; }
+			showProgressBar(false);
+			super.onPageFinished(view, url);
 		}
 	}
 
@@ -272,7 +280,8 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 							                                                         .DOWNLOAD_SERVICE);
 			dm.enqueue(request);
 
-			if (mPresenter != null) { mPresenter.onDownloadStart(); }
+
+			if (mPresenter != null) { showDownloadStart(); }
 		}
 	}
 
