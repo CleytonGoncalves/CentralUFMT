@@ -67,7 +67,6 @@ dependencies {
     final JSOUP_VERSION = '1.10.1'
     final DAGGER_VERSION = '2.7'
     final GSON_VERSION = '2.7'
-    final ENCRYPTEDPREFERENCES_VERSION = '1.2.0'
     final GMAPS_VERSION = '10.0.1'
     final GMAPS_UTILS_VERSION = '0.4.4'
     final JODA_TIME_VERSION = '2.9.4.3'
@@ -95,7 +94,6 @@ dependencies {
     provided 'org.glassfish:javax.annotation:10.0-b28' //Required by Dagger2
 
     compile "com.google.code.gson:gson:$GSON_VERSION"
-    compile "com.pddstudio:encrypted-preferences:$ENCRYPTEDPREFERENCES_VERSION"
 
     compile "com.google.android.gms:play-services-maps:$GMAPS_VERSION"
     compile "com.google.maps.android:android-maps-utils:$GMAPS_UTILS_VERSION"
