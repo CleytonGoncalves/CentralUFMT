@@ -15,12 +15,16 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import timber.log.Timber;
 
 public class MenuParser {
 	private static final Charset CHARSET = Charset.forName("UTF-8");
 	private static final char NBSP_CODE = '\u00a0';
+
+	//TODO: PARSE SATURDAY
 
 	public static MenuRu parse(String pageHtml) {
 		Element mealSection = getMealSection(pageHtml);
@@ -34,13 +38,19 @@ public class MenuParser {
 		final int breakfastTableIdx = 0;
 		final int lunchTableIdx = 1;
 		final int dinnerTableIdx = 2;
+		final int saturdayLunchTableIdx = 3;
 		
 		List<String> breakfast;
 		Meal lunch, dinner;
 		try {
 			breakfast = parseBreakfast(tables.get(breakfastTableIdx));
-			lunch = parseMeal(tables.get(lunchTableIdx), MenuRu.HORARIO_ALMOCO);
-			dinner = parseMeal(tables.get(dinnerTableIdx), MenuRu.HORARIO_JANTA);
+			if (date.toString("EEE").equals("sáb")) {
+				lunch = parseMeal(tables.get(saturdayLunchTableIdx), MenuRu.HORARIO_ALMOCO_SABADO);
+				dinner = Meal.emptyMeal(MenuRu.HORARIO_JANTA);
+			} else {
+				lunch = parseMeal(tables.get(lunchTableIdx), MenuRu.HORARIO_ALMOCO);
+				dinner = parseMeal(tables.get(dinnerTableIdx), MenuRu.HORARIO_JANTA);
+			}
 		} catch (IndexOutOfBoundsException e) {
 			Timber.e("Error parsing menu (defaulted to Empty): %s", e.getMessage());
 			breakfast = Collections.emptyList();
@@ -62,15 +72,16 @@ public class MenuParser {
 	private static LocalDate parseDate(Element mealSection) {
 		LocalDate date;
 		final int dateTagIndex = 4;
-		//TODO: DATA:/09/12/2016 6ª feira - Make it correct indepedent of typos
-		//DATA:16/09/2016 6ª feira
-		final int subStrStart = 5;
-		final int subStrEnd = 15;
 		DateTimeFormatter fmt = DateTimeFormat.forPattern("dd/MM/yyyy");
 		
 		String dateStr = null;
 		try {
-			dateStr = mealSection.child(dateTagIndex).text().substring(subStrStart, subStrEnd);
+			String dateLine = mealSection.child(dateTagIndex).text().replaceAll(" ", "");
+
+			Pattern pattern = Pattern.compile("\\d\\d/\\d\\d/\\d\\d\\d\\d"); //e.g. 11/12/2016
+			Matcher matcher = pattern.matcher(dateLine);
+
+			if (matcher.find()) { dateStr = matcher.group(); }
 			date = fmt.parseLocalDate(dateStr);
 		} catch (Exception e) {
 			Timber.w("Error parsing date (defaulted to Today): %s - %s", dateStr, e.getMessage());

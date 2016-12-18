@@ -12,6 +12,7 @@ public abstract class AbstractMenuRu {
 	public static final TimeInterval HORARIO_CAFE = new TimeInterval("07:00", "08:00");
 	public static final TimeInterval HORARIO_ALMOCO = new TimeInterval("11:00", "13:30");
 	public static final TimeInterval HORARIO_JANTA = new TimeInterval("17:00", "19:30");
+	public static final TimeInterval HORARIO_ALMOCO_SABADO = new TimeInterval("11:00", "13:00");
 	
 	public abstract LocalDate getDate();
 
