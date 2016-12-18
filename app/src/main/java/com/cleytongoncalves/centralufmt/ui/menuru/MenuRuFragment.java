@@ -7,6 +7,9 @@ import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -34,6 +37,7 @@ public final class MenuRuFragment extends Fragment implements MenuRuMvpView {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		((BaseActivity) getActivity()).activityComponent().inject(this);
+		setHasOptionsMenu(true);
 	}
 
 	@Override
@@ -56,6 +60,22 @@ public final class MenuRuFragment extends Fragment implements MenuRuMvpView {
 	}
 
 	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.fragment_menuru, menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.menu_reload_menuru:
+				mPresenter.loadMenuRu(true);
+				return true;
+		}
+
+		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
 	public void onDestroyView() {
 		hideSnackIfShown();
 		mPresenter.detachView();
@@ -73,16 +93,12 @@ public final class MenuRuFragment extends Fragment implements MenuRuMvpView {
 
 	@Override
 	public void showRecyclerView(boolean enabled) {
-		mRecyclerView.setVisibility(enabled ? View.VISIBLE : View.GONE);
+		mRecyclerView.setVisibility(enabled ? View.VISIBLE : View.INVISIBLE);
 	}
 
 	@Override
 	public void showProgressBar(boolean enabled) {
-		if (enabled) {
-			mProgressBar.show();
-		} else {
-			mProgressBar.hide();
-		}
+		if (enabled) { mProgressBar.show(); } else { mProgressBar.hide(); }
 	}
 
 	@Override

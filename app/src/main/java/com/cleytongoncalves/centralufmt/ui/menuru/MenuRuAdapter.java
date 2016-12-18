@@ -1,5 +1,6 @@
 package com.cleytongoncalves.centralufmt.ui.menuru;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,15 +33,30 @@ final class MenuRuAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 	public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 		MealModelView meal = mMealList.get(position);
 		CardViewHolder viewHolder = (CardViewHolder) holder;
+		Context context = viewHolder.headerView.getContext();
 
-		viewHolder.headerView.append(meal.getHeader());
-		viewHolder.dateView.append(meal.getTimeDate());
-		viewHolder.mainCourseView.append(meal.getMainCourse());
-		viewHolder.vegetarianView.append(meal.getVegetarian());
-		viewHolder.garnishView.append(meal.getGarnish());
-		viewHolder.saladView.append(meal.getSalad());
-		viewHolder.acompanimentView.append(meal.getAcompaniment());
-		viewHolder.dessertView.append(meal.getDessert());
+		viewHolder.headerView.setText(meal.getHeader());
+		viewHolder.dateView.setText(meal.getTimeDate());
+
+		String prefixedText =
+				context.getString(R.string.text_main_course_menuru) + meal.getMainCourse();
+		viewHolder.mainCourseView.setText(prefixedText);
+
+		prefixedText = context.getString(R.string.text_vegetarian_menuru) + meal.getVegetarian();
+		viewHolder.vegetarianView.setText(prefixedText);
+
+		prefixedText = context.getString(R.string.text_garnish_menuru) + meal.getGarnish();
+		viewHolder.garnishView.setText(prefixedText);
+
+		prefixedText = context.getString(R.string.text_salad_menuru) + meal.getSalad();
+		viewHolder.saladView.setText(prefixedText);
+
+		prefixedText =
+				context.getString(R.string.text_acompaniment_menuru) + meal.getAcompaniment();
+		viewHolder.acompanimentView.setText(prefixedText);
+
+		prefixedText = context.getString(R.string.text_dessert_menuru) + meal.getDessert();
+		viewHolder.dessertView.setText(prefixedText);
 	}
 
 	@Override

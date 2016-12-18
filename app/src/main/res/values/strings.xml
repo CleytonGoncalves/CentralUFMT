@@ -80,5 +80,6 @@
 
     <!-- Uncategorized-->
     <string name="strings.xml_placeholder"/>
+    <string name="menu_reload_menuru">Recarregar cardápio</string>
 
 </resources>
