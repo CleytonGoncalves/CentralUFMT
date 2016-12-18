@@ -30,7 +30,6 @@ final class MenuRuPresenter implements Presenter<MenuRuMvpView>, DataPresenter {
 
 	@Nullable private DataParserTask mParserTask;
 
-	//TODO: SEE IF IT IS THE FIRST FETCH OF THE DAY, IF SO, FORCE UPDATE
 	//TODO: SERVICE TO AUTO-UPDATE AT CERTAIN TIME OF THE DAY, AND TO PUSH A NOTIFICATION
 
 	@Inject
@@ -81,9 +80,7 @@ final class MenuRuPresenter implements Presenter<MenuRuMvpView>, DataPresenter {
 		}
 
 		EventBus.getDefault().register(this);
-		if (menuRu == null) {
-			mDataManager.fetchMenuRu();
-		} else {
+		if (menuRu == null || ! isTodaysMenu(menuRu)) { mDataManager.fetchMenuRu(); } else {
 			onFetchSuccessful(menuRu);
 		}
 	}
@@ -91,14 +88,15 @@ final class MenuRuPresenter implements Presenter<MenuRuMvpView>, DataPresenter {
 	@Subscribe(threadMode = ThreadMode.MAIN)
 	public void onMenuFetched(MenuRuFetchEvent event) {
 		if (event.isSuccessful()) {
-			onFetchSuccessful(event.getResult());
+			MenuRu menuRu = event.getResult();
+			onFetchSuccessful(menuRu);
+			mDataManager.getPreferencesHelper().putMenuRu(menuRu);
 		} else {
 			onFetchFailure();
 		}
 	}
 
 	private void onFetchSuccessful(MenuRu menuRu) {
-		mDataManager.getPreferencesHelper().putMenuRu(menuRu);
 		if (mView == null || mAdapter == null) { return; }
 
 		mParserTask = new DataParserTask(menuRu);
@@ -133,8 +131,14 @@ final class MenuRuPresenter implements Presenter<MenuRuMvpView>, DataPresenter {
 		}
 	}
 
+	/* Private Helper Methods */
+
 	private boolean isLoadingData() {
 		return mParserTask != null;
+	}
+
+	private boolean isTodaysMenu(MenuRu menuRu) {
+		return ! menuRu.getDate().isEqual(LocalDate.now());
 	}
 
 	private static class DataParserTask extends AsyncTask<Void, Void, Void> {

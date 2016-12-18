@@ -50,7 +50,7 @@ public final class MenuRuFragment extends Fragment implements MenuRuMvpView {
 		mRecyclerView.setAdapter(adapter);
 		mPresenter.attachAdapter(adapter);
 
-		mPresenter.loadMenuRu(true);
+		mPresenter.loadMenuRu(false);
 
 		return mRootView;
 	}

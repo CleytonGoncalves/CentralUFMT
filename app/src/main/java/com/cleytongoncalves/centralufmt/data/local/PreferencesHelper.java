@@ -10,8 +10,17 @@ import com.cleytongoncalves.centralufmt.data.model.Student;
 import com.cleytongoncalves.centralufmt.injection.ApplicationContext;
 import com.cleytongoncalves.centralufmt.ui.schedule.GsonAdaptersAbstractScheduleData;
 import com.cleytongoncalves.centralufmt.ui.schedule.ScheduleData;
+import com.cleytongoncalves.centralufmt.util.converter.DateTimeConverter;
+import com.cleytongoncalves.centralufmt.util.converter.IntervalConverter;
+import com.cleytongoncalves.centralufmt.util.converter.LocalDateConverter;
+import com.cleytongoncalves.centralufmt.util.converter.LocalTimeConverter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import org.joda.time.DateTime;
+import org.joda.time.Interval;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
 
 import javax.inject.Inject;
 
@@ -33,14 +42,16 @@ public class PreferencesHelper {
 	PreferencesHelper(@ApplicationContext Context context) {
 		mSharedPref = context.getSharedPreferences(PREF_FILE_NAME, Context.MODE_PRIVATE);
 
-		mGson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSz")
+		mGson = new GsonBuilder().registerTypeAdapter(DateTime.class, new DateTimeConverter())
+		                         .registerTypeAdapter(LocalDate.class, new LocalDateConverter())
+		                         .registerTypeAdapter(LocalTime.class, new LocalTimeConverter())
+		                         .registerTypeAdapter(Interval.class, new IntervalConverter())
 		                         .registerTypeAdapterFactory(new GsonAdaptersModel())
-		                         .registerTypeAdapterFactory(new
-				                                                     GsonAdaptersAbstractScheduleData())
-
+		                         .registerTypeAdapterFactory(new GsonAdaptersAbstractScheduleData())
 		                         .create();
 	}
 
+	@SuppressWarnings("unused")
 	public void clear() {
 		mSharedPref.edit().clear().apply();
 	}
