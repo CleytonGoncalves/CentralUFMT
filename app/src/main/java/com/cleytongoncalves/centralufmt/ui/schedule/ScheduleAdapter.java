@@ -15,25 +15,20 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.cleytongoncalves.centralufmt.ui.schedule.SchedulePresenter.MINIMUM_AMOUNT_OF_DAYS;
+
 final class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 	private static final int TYPE_HEADER = 0;
 	private static final int TYPE_ITEM = 1;
 	private static final int TYPE_EMPTY = 2;
 	private static final String[] SHORT_DAY_NAME = {"seg", "ter", "qua", "qui", "sex", "sáb",
 	                                                "dom"};
-
-	private final ScheduleDataPresenter mSchedulePresenter;
+	private ScheduleData mScheduleData;
 
 	@Inject
-	ScheduleAdapter(SchedulePresenter schedulePresenter) {
-		mSchedulePresenter = schedulePresenter;
+	ScheduleAdapter() {
+		mScheduleData = ScheduleData.emptySchedule();
 		setHasStableIds(true);
-	}
-
-	@Override
-	public void onAttachedToRecyclerView(RecyclerView recyclerView) {
-		super.onAttachedToRecyclerView(recyclerView);
-		mSchedulePresenter.attachAdapter(this);
 	}
 
 	@Override
@@ -51,7 +46,7 @@ final class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
 	@Override
 	public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-		if (mSchedulePresenter.isHeader(position)) {
+		if (isHeader(position)) {
 			((HeaderViewHolder) holder).header.setText(SHORT_DAY_NAME[position]);
 			return;
 		} else if (isFiller(position)) {
@@ -59,7 +54,7 @@ final class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 			return;
 		}
 
-		DisciplineModelView data = mSchedulePresenter.getDataForPosition(position);
+		DisciplineModelView data = getDataForPosition(position);
 		ClassViewHolder classViewHolder = (ClassViewHolder) holder;
 
 		classViewHolder.classLayout.setBackgroundColor(Color.parseColor("#3370ff"));
@@ -76,7 +71,7 @@ final class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
 	@Override
 	public int getItemViewType(int position) {
-		if (mSchedulePresenter.isHeader(position)) {
+		if (isHeader(position)) {
 			return TYPE_HEADER;
 		} else if (isFiller(position)) {
 			return TYPE_EMPTY;
@@ -87,22 +82,44 @@ final class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
 	@Override
 	public long getItemId(int position) {
-		return mSchedulePresenter.getItemId(position);
+		if (isHeader(position)) {
+			return position;
+		}
+
+		int realPos = correctItemPosition(position);
+		return mScheduleData.getItem(realPos).hashCode();
 	}
 
 	@Override
 	public int getItemCount() {
-		return mSchedulePresenter.getItemCount();
+		if (mScheduleData == null) {
+			return MINIMUM_AMOUNT_OF_DAYS;
+		}
+
+		return mScheduleData.getScheduleSize() + mScheduleData.getAmountOfDays();
 	}
 
-	@Override
-	public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
-		super.onDetachedFromRecyclerView(recyclerView);
-		mSchedulePresenter.detachAdapter();
+	/* Private Helper Methods */
+
+	private boolean isHeader(int position) {
+		return mScheduleData == null || position < mScheduleData.getAmountOfDays();
 	}
 
 	private boolean isFiller(int position) {
-		return mSchedulePresenter.getDataForPosition(position).isFiller();
+		return getDataForPosition(position).isFiller();
+	}
+
+	private DisciplineModelView getDataForPosition(int pos) {
+		//Not called on header positions
+		return mScheduleData.getItem(correctItemPosition(pos));
+	}
+
+	private int correctItemPosition(int position) {
+		return position - mScheduleData.getAmountOfDays(); //Removes the header from the count;
+	}
+
+	void setScheduleData(ScheduleData data) {
+		mScheduleData = data;
 	}
 
 	static class ClassViewHolder extends RecyclerView.ViewHolder {

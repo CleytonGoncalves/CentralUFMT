@@ -53,7 +53,10 @@ public final class ScheduleFragment extends Fragment implements ScheduleMvpView 
 		//Sets an recycler view containing header only
 		mRecyclerView.setLayoutManager(
 				new GridLayoutManager(getActivity(), SchedulePresenter.MINIMUM_AMOUNT_OF_DAYS));
-		mRecyclerView.setAdapter(new ScheduleAdapter(mPresenter));
+
+		ScheduleAdapter adapter = new ScheduleAdapter();
+		mRecyclerView.setAdapter(adapter);
+		mPresenter.attachAdapter(adapter);
 
 		mPresenter.loadSchedule(false);
 
@@ -110,6 +113,13 @@ public final class ScheduleFragment extends Fragment implements ScheduleMvpView 
 		} else {
 			mProgressBar.hide();
 		}
+	}
+
+	@Override
+	public void showDataUpdatedSnack() {
+		mSnackbar = Snackbar.make(mRootView, getString(R.string.snack_success_schedule),
+		                          Snackbar.LENGTH_SHORT);
+		mSnackbar.show();
 	}
 
 	@Override

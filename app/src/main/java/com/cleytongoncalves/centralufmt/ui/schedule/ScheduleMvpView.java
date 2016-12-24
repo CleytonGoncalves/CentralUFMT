@@ -9,6 +9,8 @@ interface ScheduleMvpView extends MvpView {
 
 	void showProgressBar(boolean enabled);
 
+	void showDataUpdatedSnack();
+
 	void showEmptyScheduleSnack();
 
 	void showGeneralErrorSnack();

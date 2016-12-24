@@ -27,15 +27,14 @@ import javax.inject.Inject;
 import timber.log.Timber;
 
 final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDataPresenter {
-	static final int MINIMUM_AMOUNT_OF_DAYS = 5;
 	private static final int MAXIMUM_TITLE_LENGTH = 25;
 	private static final int MAXIMUM_ROOM_LENGTH = 10;
+	static final int MINIMUM_AMOUNT_OF_DAYS = 5;
 
 	private final DataManager mDataManager;
+
 	@Nullable private ScheduleMvpView mView;
 	@Nullable private ScheduleAdapter mAdapter;
-
-	private ScheduleData mSchedule;
 
 	@Nullable private DataParserTask mParserTask;
 
@@ -43,6 +42,8 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 	SchedulePresenter(DataManager dataManager) {
 		mDataManager = dataManager;
 	}
+
+	/* View Methods */
 
 	@Override
 	public void attachView(ScheduleMvpView mvpView) {
@@ -62,6 +63,8 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 	}
 
 	void loadSchedule(boolean forceUpdate) {
+		if (isLoadingData()) { return; }
+
 		ScheduleData schedule = null;
 		if (! forceUpdate) { schedule = mDataManager.getPreferencesHelper().getSchedule(); }
 
@@ -71,10 +74,8 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 		}
 
 		if (schedule == null) {
-			if (! isLoading()) {
-				EventBus.getDefault().register(this);
-				mDataManager.fetchSchedule();
-			}
+			EventBus.getDefault().register(this);
+			mDataManager.fetchSchedule();
 		} else {
 			onDataChanged(schedule);
 		}
@@ -92,55 +93,51 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 		mAdapter = null;
 	}
 
-	@Override
-	public DisciplineModelView getDataForPosition(int pos) {
-		//Not called on header positions
-		return mSchedule.getItem(getTrueItemPosition(pos));
-	}
-
-	@Override
-	public boolean isHeader(int position) {
-		return mSchedule == null || position < mSchedule.getAmountOfDays();
-	}
-
-	@Override
-	public int getItemId(int position) {
-		if (isHeader(position)) {
-			return position;
-		}
-
-		int realPos = getTrueItemPosition(position);
-		return mSchedule.getItem(realPos).hashCode();
-	}
-
-	@Override
-	public int getItemCount() {
-		if (mSchedule == null) {
-			return MINIMUM_AMOUNT_OF_DAYS;
-		}
-
-		return mSchedule.getScheduleSize() + mSchedule.getAmountOfDays();
-	}
-
 	/* Data Methods */
 
 	@Subscribe(threadMode = ThreadMode.MAIN)
-	public void onScheduleFetched(ScheduleFetchEvent scheduleEvent) {
-		if (scheduleEvent.isSuccessful()) {
-			onFetchSuccess(scheduleEvent.getResult());
-		} else {
-			onFetchFailure();
+	public void onScheduleFetched(ScheduleFetchEvent event) {
+		if (! event.isSuccessful()) {
+			failureToFetch();
+			return;
 		}
+
+		parseDisciplinesForAdapter(event.getResult());
 	}
 
-	private void onFetchSuccess(List<Discipline> disciplineList) {
-		if (mView == null || mAdapter == null) { return; }
+	private void parseDisciplinesForAdapter(List<Discipline> disciplineList) {
+		if (mView == null) { return; }
 
 		mParserTask = new DataParserTask(disciplineList);
 		mParserTask.execute();
 	}
 
-	private void onFetchFailure() {
+	@Subscribe(threadMode = ThreadMode.MAIN)
+	public void onDataChanged(ScheduleData schedule) {
+		if (mView == null || mAdapter == null) { return; }
+
+		int gridSpan = schedule.getAmountOfDays();
+		if (gridSpan > MINIMUM_AMOUNT_OF_DAYS) { mView.setGridSpanCount(gridSpan); }
+
+		mAdapter.setScheduleData(schedule);
+		mAdapter.notifyDataSetChanged();
+
+		mView.hideSnackIfShown();
+		mView.showProgressBar(false);
+		mView.showRecyclerView(true);
+
+		if (isLoadingData()) {
+			EventBus.getDefault().unregister(this);
+			mParserTask = null;
+
+			mDataManager.getPreferencesHelper().putSchedule(schedule);
+			mView.showDataUpdatedSnack();
+		}
+
+		if (! schedule.containsData()) { mView.showEmptyScheduleSnack(); }
+	}
+
+	private void failureToFetch() {
 		EventBus.getDefault().unregister(this);
 
 		if (mView != null) {
@@ -149,42 +146,9 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 		}
 	}
 
-	@Subscribe(threadMode = ThreadMode.MAIN)
-	public void onDataChanged(ScheduleData schedule) {
-		if (mView == null || mAdapter == null) { return; }
-
-		mSchedule = schedule;
-
-		int gridSpan = mSchedule.getAmountOfDays();
-		if (gridSpan > MINIMUM_AMOUNT_OF_DAYS) {
-			mView.setGridSpanCount(gridSpan);
-		}
-
-		mAdapter.notifyDataSetChanged();
-
-		mView.hideSnackIfShown();
-		mView.showProgressBar(false);
-		mView.showRecyclerView(true);
-
-		if (isLoading()) {
-			EventBus.getDefault().unregister(this);
-			mDataManager.getPreferencesHelper().putSchedule(mSchedule);
-			mParserTask = null;
-			Timber.d("Schedule updated successfully");
-		}
-
-		if (! schedule.containsData()) {
-			mView.showEmptyScheduleSnack();
-		}
-	}
-
 	/* Private Helper Methods */
 
-	private int getTrueItemPosition(int position) {
-		return position - mSchedule.getAmountOfDays(); //Removes the header from the count;
-	}
-
-	private boolean isLoading() {
+	private boolean isLoadingData() {
 		return EventBus.getDefault().isRegistered(this);
 	}
 
@@ -268,7 +232,7 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 			emptyItem
 		classes */
 			List<DisciplineModelView> scheduleList = new ArrayList<>(mAmountOfDays *
-					                                                      mMaxDailyClasses);
+					                                                         mMaxDailyClasses);
 
 			int lastDay = 0;
 			int scheduleSize = rawSchedule.size();
