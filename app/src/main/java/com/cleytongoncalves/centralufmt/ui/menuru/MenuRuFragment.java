@@ -102,6 +102,13 @@ public final class MenuRuFragment extends Fragment implements MenuRuMvpView {
 	}
 
 	@Override
+	public void showDataUpdatedSnack() {
+		mSnackbar = Snackbar.make(mRootView, getString(R.string.snack_success_menuru),
+		                          Snackbar.LENGTH_SHORT);
+		mSnackbar.show();
+	}
+
+	@Override
 	public void showGeneralErrorSnack() {
 		mSnackbar = Snackbar.make(mRootView, getString(R.string.snack_error_menuru),
 		                          Snackbar.LENGTH_INDEFINITE)

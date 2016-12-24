@@ -80,30 +80,29 @@ final class MenuRuPresenter implements Presenter<MenuRuMvpView>, DataPresenter {
 		}
 
 		EventBus.getDefault().register(this);
-		if (menuRu == null || ! isTodaysMenu(menuRu)) { mDataManager.fetchMenuRu(); } else {
-			onFetchSuccessful(menuRu);
-		}
+		if (menuRu == null || ! isTodaysMenu(menuRu)) { mDataManager.fetchMenuRu(); }
+		else { parseMenuForAdapter(menuRu); }
 	}
 
 	@Subscribe(threadMode = ThreadMode.MAIN)
 	public void onMenuFetched(MenuRuFetchEvent event) {
-		if (event.isSuccessful()) {
-			MenuRu menuRu = event.getResult();
-			onFetchSuccessful(menuRu);
-			mDataManager.getPreferencesHelper().putMenuRu(menuRu);
-		} else {
-			onFetchFailure();
-		}
+		if (! event.isSuccessful()) { failureToFetch(); }
+
+		MenuRu menuRu = event.getResult();
+		parseMenuForAdapter(menuRu);
+		mDataManager.getPreferencesHelper().putMenuRu(menuRu);
+
+		if (mView != null) { mView.showDataUpdatedSnack(); }
 	}
 
-	private void onFetchSuccessful(MenuRu menuRu) {
-		if (mView == null || mAdapter == null) { return; }
+	private void parseMenuForAdapter(MenuRu menuRu) {
+		if (mView == null) { return; }
 
 		mParserTask = new DataParserTask(menuRu);
 		mParserTask.execute();
 	}
 
-	private void onFetchFailure() {
+	private void failureToFetch() {
 		if (mView == null) { return; }
 
 		EventBus.getDefault().unregister(this);

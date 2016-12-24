@@ -49,6 +49,8 @@
     <string name="text_salad_menuru">"\u2022  Salada: "</string>
     <string name="text_acompaniment_menuru">"\u2022 Acompanhamento: "</string>
     <string name="text_dessert_menuru">"\u2022 Sobremesa: "</string>
+    <string name="menu_reload_menuru">Recarregar cardápio</string>
+    <string name="snack_success_menuru">Cardápio atualizado!</string>
     <string name="snack_error_menuru">Falha ao carregar o cardápio.</string>
 
     <!-- Student Fragment -->
@@ -80,6 +82,5 @@
 
     <!-- Uncategorized-->
     <string name="strings.xml_placeholder"/>
-    <string name="menu_reload_menuru">Recarregar cardápio</string>
 
 </resources>

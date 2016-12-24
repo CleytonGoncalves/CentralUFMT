@@ -7,6 +7,8 @@ interface MenuRuMvpView extends MvpView {
 
 	void showProgressBar(boolean enabled);
 
+	void showDataUpdatedSnack();
+
 	void showGeneralErrorSnack();
 
 	void hideSnackIfShown();
