@@ -37,6 +37,8 @@ final class MenuRuPresenter implements Presenter<MenuRuMvpView>, DataPresenter {
 		mDataManager = dataManager;
 	}
 
+	/* View Methods */
+
 	@Override
 	public void attachView(MenuRuMvpView mvpView) {
 		mView = mvpView;
@@ -54,20 +56,6 @@ final class MenuRuPresenter implements Presenter<MenuRuMvpView>, DataPresenter {
 		}
 	}
 
-	/* MenuRuAdapter Methods */
-
-	@Override
-	public void attachAdapter(MenuRuAdapter adapter) {
-		mAdapter = adapter;
-	}
-
-	@Override
-	public void detachAdapter() {
-		mAdapter = null;
-	}
-
-	/* Data Methods */
-
 	void loadMenuRu(boolean forceUpdate) {
 		if (isLoadingData()) { return; }
 
@@ -84,9 +72,26 @@ final class MenuRuPresenter implements Presenter<MenuRuMvpView>, DataPresenter {
 		else { parseMenuForAdapter(menuRu); }
 	}
 
+	/* Adapter Methods */
+
+	@Override
+	public void attachAdapter(MenuRuAdapter adapter) {
+		mAdapter = adapter;
+	}
+
+	@Override
+	public void detachAdapter() {
+		mAdapter = null;
+	}
+
+	/* Data Methods */
+
 	@Subscribe(threadMode = ThreadMode.MAIN)
 	public void onMenuFetched(MenuRuFetchEvent event) {
-		if (! event.isSuccessful()) { failureToFetch(); }
+		if (! event.isSuccessful()) {
+			failureToFetch();
+			return;
+		}
 
 		MenuRu menuRu = event.getResult();
 		parseMenuForAdapter(menuRu);
@@ -100,16 +105,6 @@ final class MenuRuPresenter implements Presenter<MenuRuMvpView>, DataPresenter {
 
 		mParserTask = new DataParserTask(menuRu);
 		mParserTask.execute();
-	}
-
-	private void failureToFetch() {
-		if (mView == null) { return; }
-
-		EventBus.getDefault().unregister(this);
-
-		mView.showProgressBar(false);
-		mView.showRecyclerView(true);
-		mView.showGeneralErrorSnack();
 	}
 
 	@Subscribe(threadMode = ThreadMode.MAIN)
@@ -128,6 +123,16 @@ final class MenuRuPresenter implements Presenter<MenuRuMvpView>, DataPresenter {
 			mParserTask = null;
 			Timber.d("MenuRu updated successfully");
 		}
+	}
+
+	private void failureToFetch() {
+		if (mView == null) { return; }
+
+		EventBus.getDefault().unregister(this);
+
+		mView.showProgressBar(false);
+		mView.showRecyclerView(true);
+		mView.showGeneralErrorSnack();
 	}
 
 	/* Private Helper Methods */
