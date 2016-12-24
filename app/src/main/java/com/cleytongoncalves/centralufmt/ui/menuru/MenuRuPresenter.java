@@ -191,7 +191,7 @@ final class MenuRuPresenter implements Presenter<MenuRuMvpView>, DataPresenter {
 
 			for (int i = 0, size = stringList.size(); i < size; i++) {
 				String each = TextUtil.capsSentenceFirstLetter(stringList.get(i));
-				int toRemoveIdx = each.indexOf("(");
+				int toRemoveIdx = each.indexOf('(');
 				if (toRemoveIdx != - 1) { each = each.substring(0, toRemoveIdx); }
 				sb.append(each);
 				if (i < size - 1) { sb.append(" / "); }

@@ -28,6 +28,9 @@ public final class HtmlHelper {
 	private static final String NBSP_CODE = "\u00a0";
 	//TODO: ENSURE THAT ANY FIELD CAN BE EMPTY WITHOUT TROWING EXCEPTION
 
+	private HtmlHelper() {
+	}
+
 	public static Student parseBasicStudent(String exacaoHtml) {
 		Element body = Jsoup.parse(exacaoHtml).body();
 		List<TextNode> alunoInfoNodes = body.getElementsByTag("div").get(0).textNodes();

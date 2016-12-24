@@ -24,7 +24,8 @@ public class MenuParser {
 	private static final Charset CHARSET = Charset.forName("UTF-8");
 	private static final char NBSP_CODE = '\u00a0';
 
-	//TODO: PARSE SATURDAY
+	private MenuParser() {
+	}
 
 	public static MenuRu parse(String pageHtml) {
 		Element mealSection = getMealSection(pageHtml);

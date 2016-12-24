@@ -1,6 +1,6 @@
 package com.cleytongoncalves.centralufmt.data.events;
 
-public interface BusEvent<T> {
+interface BusEvent<T> {
 
 	boolean isSuccessful();
 
