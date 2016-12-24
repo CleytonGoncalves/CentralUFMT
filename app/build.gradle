@@ -24,9 +24,9 @@ android {
         applicationId "com.cleytongoncalves.centralufmt"
         targetSdkVersion 25
         minSdkVersion 15
-        versionCode 1000
+        versionCode 2000
         // Major -> Millions, Minor -> Thousands, Bugfix -> Hundreds. E.g 1.3.72 == 1,003,072
-        versionName '0.1.0'
+        versionName '0.2.0'
         resConfigs "pt"
     }
 
@@ -76,7 +76,7 @@ dependencies {
     final BUGSNAG_VERSION = '3.4.0'
     final IMMUTABLES_VERSION = '2.3.9'
 
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    //compile fileTree(include: ['*.jar'], dir: 'libs')
     compile "com.android.support:appcompat-v7:$SUPPORT_LIBRARY_VERSION"
     compile "com.android.support:support-v4:$SUPPORT_LIBRARY_VERSION"
     compile "com.android.support:design:$SUPPORT_LIBRARY_VERSION"
