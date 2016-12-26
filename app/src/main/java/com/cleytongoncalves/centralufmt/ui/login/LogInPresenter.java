@@ -26,11 +26,6 @@ public final class LogInPresenter implements Presenter<LogInMvpView> {
 	@Override
 	public void attachView(LogInMvpView mvpView) {
 		mView = mvpView;
-		if (mDataManager.isLoggedInSiga()) {
-			onLogInSuccess(false); //Check if it isn't already logged in when attaching the view
-		} else {
-			mDataManager.initializeNetwork();
-		}
 	}
 
 	@Override

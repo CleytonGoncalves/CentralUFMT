@@ -1,7 +1,5 @@
 package com.cleytongoncalves.centralufmt.data;
 
-import android.os.AsyncTask;
-
 import com.cleytongoncalves.centralufmt.data.events.LogInEvent;
 import com.cleytongoncalves.centralufmt.data.events.MenuRuFetchEvent;
 import com.cleytongoncalves.centralufmt.data.events.ScheduleFetchEvent;
@@ -53,13 +51,6 @@ public class DataManager {
 
 	public PreferencesHelper getPreferencesHelper() {
 		return mPreferencesHelper;
-	}
-
-	/**
-	 * Initializes the Network Service if it hasn't been used yet.
-	 */
-	public void initializeNetwork() {
-		AsyncTask.execute(mNetworkService::get); //Singleton instantiation is thread-safe on Dagger
 	}
 
 	public Student getStudent() {
