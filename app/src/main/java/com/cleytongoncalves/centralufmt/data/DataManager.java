@@ -117,12 +117,20 @@ public class DataManager {
 		mScheduleTask.execute();
 	}
 
+	public boolean isFetchingSchedule() {
+		return mScheduleTask != null;
+	}
+
 	/* ----- Menu RU ----- */
 
 	public void fetchMenuRu() {
 		Timber.d("Fetching Menu Ru");
 		mMenuRuTask = new MenuRuTask(mNetworkService);
 		mMenuRuTask.execute();
+	}
+
+	public boolean isFetchingMenuRu() {
+		return mMenuRuTask != null;
 	}
 
 	/* ----- EventBus Listeners ----- */

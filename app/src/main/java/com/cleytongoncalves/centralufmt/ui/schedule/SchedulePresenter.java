@@ -63,7 +63,7 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 	}
 
 	void loadSchedule(boolean forceUpdate) {
-		if (isLoadingData()) { return; }
+		if (isLoadingData() || mDataManager.isFetchingSchedule()) { return; }
 
 		ScheduleData schedule = null;
 		if (! forceUpdate) { schedule = mDataManager.getPreferencesHelper().getSchedule(); }
@@ -126,15 +126,18 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 		mView.showProgressBar(false);
 		mView.showRecyclerView(true);
 
+		if (schedule.isEmpty()) {
+			mView.showEmptyScheduleSnack();
+		}
+		else if (isLoadingData()) {
+			mView.showDataUpdatedSnack();
+			mDataManager.getPreferencesHelper().putSchedule(schedule);
+		}
+
 		if (isLoadingData()) {
 			EventBus.getDefault().unregister(this);
 			mParserTask = null;
-
-			mDataManager.getPreferencesHelper().putSchedule(schedule);
-			mView.showDataUpdatedSnack();
 		}
-
-		if (! schedule.containsData()) { mView.showEmptyScheduleSnack(); }
 	}
 
 	private void failureToFetch() {

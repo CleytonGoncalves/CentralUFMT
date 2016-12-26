@@ -30,6 +30,8 @@ final class MenuRuPresenter implements Presenter<MenuRuMvpView>, DataPresenter {
 
 	@Nullable private DataParserTask mParserTask;
 
+	private boolean mFetchingData;
+
 	//TODO: SERVICE TO AUTO-UPDATE AT CERTAIN TIME OF THE DAY, AND TO PUSH A NOTIFICATION
 
 	@Inject
@@ -57,7 +59,7 @@ final class MenuRuPresenter implements Presenter<MenuRuMvpView>, DataPresenter {
 	}
 
 	void loadMenuRu(boolean forceUpdate) {
-		if (isLoadingData()) { return; }
+		if (isParsingData() || mDataManager.isFetchingMenuRu()) { return; }
 
 		MenuRu menuRu = null;
 		if (! forceUpdate) { menuRu = mDataManager.getPreferencesHelper().getMenuRu(); }
@@ -68,8 +70,13 @@ final class MenuRuPresenter implements Presenter<MenuRuMvpView>, DataPresenter {
 		}
 
 		EventBus.getDefault().register(this);
-		if (menuRu == null || ! isTodaysMenu(menuRu)) { mDataManager.fetchMenuRu(); }
-		else { parseMenuForAdapter(menuRu); }
+		if (menuRu == null || ! isTodaysMenu(menuRu)) {
+			mDataManager.fetchMenuRu();
+			mFetchingData = true;
+		}
+		else {
+			parseMenuForAdapter(menuRu);
+		}
 	}
 
 	/* Adapter Methods */
@@ -96,8 +103,6 @@ final class MenuRuPresenter implements Presenter<MenuRuMvpView>, DataPresenter {
 		MenuRu menuRu = event.getResult();
 		parseMenuForAdapter(menuRu);
 		mDataManager.getPreferencesHelper().putMenuRu(menuRu);
-
-		if (mView != null) { mView.showDataUpdatedSnack(); }
 	}
 
 	private void parseMenuForAdapter(MenuRu menuRu) {
@@ -119,9 +124,11 @@ final class MenuRuPresenter implements Presenter<MenuRuMvpView>, DataPresenter {
 		mView.showProgressBar(false);
 		mView.showRecyclerView(true);
 
-		if (isLoadingData()) {
-			mParserTask = null;
-			Timber.d("MenuRu updated successfully");
+		mParserTask = null;
+
+		if (mFetchingData) {
+			mView.showDataUpdatedSnack();
+			mFetchingData = false;
 		}
 	}
 
@@ -137,7 +144,7 @@ final class MenuRuPresenter implements Presenter<MenuRuMvpView>, DataPresenter {
 
 	/* Private Helper Methods */
 
-	private boolean isLoadingData() {
+	private boolean isParsingData() {
 		return mParserTask != null;
 	}
 

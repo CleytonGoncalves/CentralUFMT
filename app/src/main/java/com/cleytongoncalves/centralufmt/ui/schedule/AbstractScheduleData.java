@@ -34,7 +34,7 @@ public abstract class AbstractScheduleData {
 		return getSchedule().size();
 	}
 
-	boolean containsData() {
+	boolean isEmpty() {
 		return getSchedule().size() > getAmountOfDays();
 	}
 
