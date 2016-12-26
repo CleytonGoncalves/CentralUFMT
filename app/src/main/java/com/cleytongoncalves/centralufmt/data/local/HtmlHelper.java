@@ -152,6 +152,7 @@ public final class HtmlHelper {
 	public static Map<String, String> createFormParams(String html) {
 		Map<String, String> map = new HashMap<>();
 
+		final String verifImgUrl = "http://academico-siga.ufmt.br/www-siga/dll/pdf/Imagem";
 		final String submitButton = "Submit2";
 		final String loginField = "txt_login";
 		final String passwordField = "txt_senha";
@@ -161,9 +162,7 @@ public final class HtmlHelper {
 
 		Element loginForm = doc.getElementsByAttributeValue("name", "form1").first();
 		Element imgVerif = loginForm
-				                   .getElementsByAttributeValueStarting("src", "http://siga.ufmt" +
-						                                                               ".br/www-siga/dll/pdf/Imagem")
-
+				                   .getElementsByAttributeValueStarting("src", verifImgUrl)
 				                   .first();
 		String verifNumber = imgVerif.absUrl("src").replaceAll("[^0-9]", "");
 

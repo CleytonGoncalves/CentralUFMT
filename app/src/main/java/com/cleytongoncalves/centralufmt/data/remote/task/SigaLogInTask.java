@@ -22,11 +22,10 @@ import timber.log.Timber;
 
 public final class SigaLogInTask extends AsyncTask<Void, Void, LogInEvent> implements LogInTask {
 	private static final String TAG = SigaLogInTask.class.getSimpleName();
-	private static final String BASE_SIGA_URL = "http://sia.ufmt.br/www-siga/dll/";
-	private static final String GET_SIGA_URL = "autenticacao_unica/LoginUnicoIDBUFMT" +
-			                                           ".dll/chamalogin";
-	private static final String POST_SIGA_URL = "autenticacao_unica/LoginUnicoIDBUFMT.dll/logar";
-	private static final String EXACAO_SIGA_URL = "PConferencia_EXACAO.exe/consultaExacao";
+	private static final String BASE_SIGA_URL = "http://academico-siga.ufmt.br/www-siga/dll/";
+	private static final String GET_SIGA_URL = "LoginUnicoIDBUFMT.dll/chamalogin";
+	private static final String POST_SIGA_URL = "LoginUnicoIDBUFMT.dll/logar";
+	private static final String EXACAO_SIGA_URL = "PConferencia_EXACAO.dll/listaEstrutura";
 
 	private final Lazy<NetworkService> mNetworkService;
 	private final String mRga;
