@@ -137,7 +137,6 @@ public class DataManager {
 				mStudent = (Student) obj;
 				mPreferencesHelper.putLoggedInStudent(mStudent);
 				Timber.d("Student saved successfully");
-				triggerMoodleLogIn();
 			} else if (obj.getClass() == Cookie.class) {
 				mMoodleCookie = (Cookie) obj;
 				Timber.d("Cookie saved successfully");
