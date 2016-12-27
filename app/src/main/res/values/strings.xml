@@ -83,5 +83,6 @@
     <!-- Uncategorized-->
     <string name="strings.xml_placeholder"/>
     <string name="snack_success_schedule">Horário atualizado!</string>
+    <string name="title_activity_settings">Configurações</string>
 
 </resources>

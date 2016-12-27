@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="pref_mealTypeList">
+        <item>Almoço</item>
+        <item>Janta</item>
+    </string-array>
+
+    <string-array name="empty"/>
+
+    <!-- 0: Disabled, 1: Enabled -->
+    <integer-array name="pref_mealTypeListValue">
+        <item>0</item>
+        <item>1</item>
+    </integer-array>
+</resources>

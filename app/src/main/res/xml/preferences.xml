@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="pref_auto_ava_login"
+        android:summary="Melhora consideralvemente o tempo de inicialização do AVA"
+        android:title="Logar no AVA ao iniciar"/>
+
+    <MultiSelectListPreference
+        android:defaultValue="@array/empty"
+        android:entries="@array/pref_mealTypeList"
+        android:entryValues="@array/pref_mealTypeListValue"
+        android:key="pref_meal_notification"
+        android:summary="Notifica antes da refeição qual será o cardápio"
+        android:title="Notificação diária do cardápio"/>
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="pref_omelette_notification"
+        android:summary="Notifica sempre que detectar omelete no RU"
+        android:title="Notificação de omelete"/>
+
+
+    <Preference
+        android:title="Trocar de conta">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:launchMode="singleTask"
+            android:targetPackage="com.cleytongoncalves.centralufmt"
+            android:targetClass="com.cleytongoncalves.centralufmt.ui.login.LogInActivity"/>
+    </Preference>
+</PreferenceScreen>

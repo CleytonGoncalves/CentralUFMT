@@ -29,6 +29,7 @@ import com.cleytongoncalves.centralufmt.ui.map.MapFragment;
 import com.cleytongoncalves.centralufmt.ui.menuru.MenuRuFragment;
 import com.cleytongoncalves.centralufmt.ui.moodle.MoodleFragment;
 import com.cleytongoncalves.centralufmt.ui.schedule.ScheduleFragment;
+import com.cleytongoncalves.centralufmt.ui.settings.SettingsActivity;
 import com.cleytongoncalves.centralufmt.util.NetworkUtil;
 import com.google.android.gms.maps.MapView;
 
@@ -198,8 +199,7 @@ public class MainActivity extends BaseActivity
 				fragment = new MapFragment();
 				break;
 			case R.id.nav_manage:
-				fragment = null;
-				break;
+				mPendingRunnable = () -> startActivity(SettingsActivity.getStartIntent(this));
 			default:
 				fragment = null; //TODO: SET THE MAIN FRAGMENT AS DEFAULT
 		}
