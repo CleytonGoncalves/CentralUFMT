@@ -66,7 +66,8 @@ public class DataManager {
 	public void logIn(String rga, char[] password, int platform) {
 		if (platform == LOGIN_MOODLE) {
 			mLogInTask = new MoodleLogInTask(rga, password, mNetworkService);
-		} else {
+		}
+		else {
 			mPreferencesHelper.putCredentials(rga, password);
 			mLogInTask = new SigaLogInTask(rga, password, mNetworkService);
 		}
@@ -137,10 +138,12 @@ public class DataManager {
 				mStudent = (Student) obj;
 				mPreferencesHelper.putLoggedInStudent(mStudent);
 				Timber.d("Student saved successfully");
-			} else if (obj.getClass() == Cookie.class) {
+			}
+			else if (obj.getClass() == Cookie.class) {
 				mMoodleCookie = (Cookie) obj;
 				Timber.d("Cookie saved successfully");
-			} else {
+			}
+			else {
 				Timber.wtf("LogInEvent object unknown: %s", obj.getClass());
 			}
 		}
@@ -151,10 +154,16 @@ public class DataManager {
 		mScheduleTask = null;
 
 		if (scheduleEvent.isSuccessful()) {
-			Course newCourse = Course.copyOf(mStudent.getCourse())
-			                         .withEnrolledDisciplines(scheduleEvent.getResult());
+			Course newCourse = Course.builder()
+			                         .from(mStudent.getCourse())
+			                         .enrolledDisciplines(scheduleEvent.getResult())
+			                         .build();
 
-			mStudent = Student.copyOf(mStudent).withCourse(newCourse);
+			mStudent = Student.builder()
+			                  .from(mStudent)
+			                  .course(newCourse)
+			                  .build();
+
 			mPreferencesHelper.putLoggedInStudent(mStudent);
 			Timber.d("Enrolled disciplines saved successfully");
 		}

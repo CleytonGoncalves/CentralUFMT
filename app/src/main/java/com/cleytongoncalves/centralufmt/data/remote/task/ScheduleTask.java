@@ -4,7 +4,7 @@ import android.os.AsyncTask;
 
 import com.cleytongoncalves.centralufmt.data.events.ScheduleFetchEvent;
 import com.cleytongoncalves.centralufmt.data.local.HtmlHelper;
-import com.cleytongoncalves.centralufmt.data.model.Discipline;
+import com.cleytongoncalves.centralufmt.data.model.EnrolledDiscipline;
 import com.cleytongoncalves.centralufmt.data.remote.NetworkOperation;
 import com.cleytongoncalves.centralufmt.data.remote.NetworkService;
 
@@ -36,7 +36,7 @@ public final class ScheduleTask extends AsyncTask<Void, Void, Void> {
 		if (! scheduleGet.isSuccessful()) {
 			event = new ScheduleFetchEvent(ScheduleFetchEvent.GENERAL_ERROR);
 		} else {
-			List<Discipline> disciplineList =
+			List<EnrolledDiscipline> disciplineList =
 					HtmlHelper.parseSchedule(scheduleGet.getResponseBody());
 
 			event = new ScheduleFetchEvent(disciplineList);

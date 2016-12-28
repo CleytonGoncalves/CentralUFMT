@@ -2,6 +2,7 @@ package com.cleytongoncalves.centralufmt.data.local;
 
 import com.cleytongoncalves.centralufmt.data.model.Course;
 import com.cleytongoncalves.centralufmt.data.model.Discipline;
+import com.cleytongoncalves.centralufmt.data.model.EnrolledDiscipline;
 import com.cleytongoncalves.centralufmt.data.model.Student;
 import com.cleytongoncalves.centralufmt.util.TextUtil;
 
@@ -51,8 +52,9 @@ public final class HtmlHelper {
 		String[] infoTermSplit = infoTerm.split(":")[1].split(" ");
 		String term = infoTermSplit[0];
 
+		List<EnrolledDiscipline> emptyEnrolled = Collections.emptyList();
 		List<Discipline> emptyList = Collections.emptyList();
-		return Course.of(title, code, type, term, emptyList);
+		return Course.of(title, code, type, term, emptyEnrolled, emptyList);
 	}
 
 	private static Student extractStudent(List<TextNode> alunoInfoNodes, Course course) {
@@ -65,7 +67,7 @@ public final class HtmlHelper {
 		return Student.of(nomeCompleto, rga, course);
 	}
 	
-	public static List<Discipline> parseSchedule(String html) {
+	public static List<EnrolledDiscipline> parseSchedule(String html) {
 		Element body = Jsoup.parse(html).body();
 		Elements planilha = body.getElementsByTag("form");
 		Elements tables = planilha.select("table");
@@ -77,7 +79,7 @@ public final class HtmlHelper {
 		//0=cabecalho tabela, 1..n=displicinas
 		Elements rows = horarioTable.getElementsByTag("tr");
 
-		List<Discipline> disciplinas = new ArrayList<>();
+		List<EnrolledDiscipline> disciplinas = new ArrayList<>();
 
 		//0=cod. disc., 1=nome, 2=primeiro dia, 3=primeiro horario, 4=turma, 5=sala, 6=crd?,
 		//7=cargaHor, 8=tipo, 9=per. oferta
@@ -138,9 +140,17 @@ public final class HtmlHelper {
 				}
 			}
 
-			//(nome, cod, turma, sala, crd, carga, tipo, periodo, aulas);
-			Discipline disc =
-					Discipline.of(nome, cod, turma, sala, crd, carga, tipo, periodo, aulas);
+			EnrolledDiscipline disc = EnrolledDiscipline.builder()
+			                                            .title(nome)
+			                                            .code(cod)
+			                                            .group(turma)
+			                                            .room(sala)
+			                                            .crd(crd)
+			                                            .type(tipo)
+			                                            .term(periodo)
+			                                            .classTimes(aulas)
+			                                            .build();
+
 			disciplinas.add(disc);
 		}
 		

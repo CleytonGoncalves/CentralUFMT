@@ -6,7 +6,7 @@ import android.util.SparseArray;
 
 import com.cleytongoncalves.centralufmt.data.DataManager;
 import com.cleytongoncalves.centralufmt.data.events.ScheduleFetchEvent;
-import com.cleytongoncalves.centralufmt.data.model.Discipline;
+import com.cleytongoncalves.centralufmt.data.model.EnrolledDiscipline;
 import com.cleytongoncalves.centralufmt.ui.base.Presenter;
 import com.cleytongoncalves.centralufmt.util.TextUtil;
 
@@ -105,7 +105,7 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 		parseDisciplinesForAdapter(event.getResult());
 	}
 
-	private void parseDisciplinesForAdapter(List<Discipline> disciplineList) {
+	private void parseDisciplinesForAdapter(List<EnrolledDiscipline> disciplineList) {
 		if (mView == null) { return; }
 
 		mParserTask = new DataParserTask(disciplineList);
@@ -156,11 +156,11 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 	}
 
 	private static class DataParserTask extends AsyncTask<Void, Void, Void> {
-		private final List<Discipline> mEnrolled;
+		private final List<EnrolledDiscipline> mEnrolled;
 		private int mAmountOfDays;
 		private int mMaxDailyClasses;
 
-		DataParserTask(List<Discipline> enrolled) {
+		DataParserTask(List<EnrolledDiscipline> enrolled) {
 			mEnrolled = enrolled;
 		}
 
@@ -192,7 +192,7 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 			mAmountOfDays = MINIMUM_AMOUNT_OF_DAYS;
 			mMaxDailyClasses = 0;
 			for (int i = 0, discListSize = mEnrolled.size(); i < discListSize; i++) {
-				Discipline disc = mEnrolled.get(i);
+				EnrolledDiscipline disc = mEnrolled.get(i);
 				List<Interval> classTimes = disc.getClassTimes();
 
 				for (int j = 0, classTimesSize = classTimes.size(); j < classTimesSize; j++) {
