@@ -154,15 +154,10 @@ public class DataManager {
 		mScheduleTask = null;
 
 		if (scheduleEvent.isSuccessful()) {
-			Course newCourse = Course.builder()
-			                         .from(mStudent.getCourse())
-			                         .enrolledDisciplines(scheduleEvent.getResult())
-			                         .build();
+			Course newCourse = mStudent.getCourse()
+			                           .withEnrolledDisciplines(scheduleEvent.getResult());
 
-			mStudent = Student.builder()
-			                  .from(mStudent)
-			                  .course(newCourse)
-			                  .build();
+			mStudent = mStudent.withCourse(newCourse);
 
 			mPreferencesHelper.putLoggedInStudent(mStudent);
 			Timber.d("Enrolled disciplines saved successfully");
