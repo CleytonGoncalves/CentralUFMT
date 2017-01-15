@@ -29,17 +29,17 @@ public class DataManager {
 	//TODO: Login before other net operations when operating from cache
 	public static final int LOGIN_SIGA = 0;
 	private static final int LOGIN_MOODLE = - 1;
-
+	
 	private final Lazy<NetworkService> mNetworkService;
 	private final PreferencesHelper mPreferencesHelper;
-
+	
 	private LogInTask mLogInTask;
 	private ScheduleTask mScheduleTask;
 	private MenuRuTask mMenuRuTask;
-
+	
 	private Student mStudent;
 	private Cookie mMoodleCookie;
-
+	
 	@Inject
 	public DataManager(final PreferencesHelper preferencesHelper,
 	                   final Lazy<NetworkService> networkService) {
@@ -48,21 +48,21 @@ public class DataManager {
 		mStudent = preferencesHelper.getLoggedInStudent();
 		EventBus.getDefault().register(this);
 	}
-
+	
 	public PreferencesHelper getPreferencesHelper() {
 		return mPreferencesHelper;
 	}
-
+	
 	public Student getStudent() {
 		return mStudent;
 	}
-
+	
 	public Cookie getMoodleCookie() {
 		return mMoodleCookie;
 	}
 
 	/* ----- LogIn ----- */
-
+	
 	public void logIn(String rga, char[] password, int platform) {
 		if (platform == LOGIN_MOODLE) {
 			mLogInTask = new MoodleLogInTask(rga, password, mNetworkService);
@@ -70,69 +70,69 @@ public class DataManager {
 			mPreferencesHelper.putCredentials(rga, password);
 			mLogInTask = new SigaLogInTask(rga, password, mNetworkService);
 		}
-
+		
 		Timber.d("LogIn - %s", platform == LOGIN_MOODLE ? "Moodle" : "Siga");
 		mLogInTask.start();
 	}
-
+	
 	public void triggerMoodleLogIn() {
 		final String rga = mPreferencesHelper.getRga();
 		final char[] password = mPreferencesHelper.getAuth();
 		logIn(rga, password, DataManager.LOGIN_MOODLE);
 	}
-
+	
 	public void cancelLogIn() {
 		Timber.d("Cancel LogIn");
 		if (mLogInTask != null) {
 			mLogInTask.cancelTask();
 		}
 	}
-
+	
 	public boolean isLogInHappening() {
 		return mLogInTask != null;
 	}
-
+	
 	public boolean isLoggedInSiga() {
 		return mStudent != null;
 	}
-
+	
 	public boolean isLoggedInMoodle() {
 		return mMoodleCookie != null;
 	}
 
 	/* ----- Schedule ----- */
-
+	
 	public void fetchSchedule() {
 		Timber.d("Fetching Schedule");
 		mScheduleTask = new ScheduleTask(mNetworkService);
 		mScheduleTask.execute();
 	}
-
+	
 	public boolean isFetchingSchedule() {
 		return mScheduleTask != null;
 	}
 
 	/* ----- Menu RU ----- */
-
+	
 	public void fetchMenuRu() {
 		Timber.d("Fetching Menu Ru");
 		mMenuRuTask = new MenuRuTask(mNetworkService);
 		mMenuRuTask.execute();
 	}
-
+	
 	public boolean isFetchingMenuRu() {
 		return mMenuRuTask != null;
 	}
 
 	/* ----- EventBus Listeners ----- */
-
+	
 	@Subscribe(threadMode = ThreadMode.MAIN, priority = 1)
 	public void onLogInCompleted(LogInEvent logInEvent) {
 		mLogInTask = null;
-
+		
 		if (logInEvent.isSuccessful()) {
 			Object obj = logInEvent.getResult();
-
+			
 			if (Student.class.isAssignableFrom(obj.getClass())) {
 				mStudent = (Student) obj;
 				mPreferencesHelper.putLoggedInStudent(mStudent);
@@ -145,25 +145,26 @@ public class DataManager {
 			}
 		}
 	}
-
+	
 	@Subscribe(threadMode = ThreadMode.MAIN, priority = 1)
 	public void onScheduleFetched(ScheduleFetchEvent scheduleEvent) {
 		mScheduleTask = null;
-
+		
 		if (scheduleEvent.isSuccessful()) {
-			Course newCourse = Course.copyOf(mStudent.getCourse())
-			                         .withEnrolledDisciplines(scheduleEvent.getResult());
-
-			mStudent = Student.copyOf(mStudent).withCourse(newCourse);
+			Course newCourse = mStudent.getCourse()
+			                           .withEnrolledDisciplines(scheduleEvent.getResult());
+			
+			mStudent = mStudent.withCourse(newCourse);
+			
 			mPreferencesHelper.putLoggedInStudent(mStudent);
 			Timber.d("Enrolled disciplines saved successfully");
 		}
 	}
-
+	
 	@Subscribe(threadMode = ThreadMode.MAIN, priority = 1)
 	public void onMenuRuFetched(MenuRuFetchEvent menuRuEvent) {
 		mMenuRuTask = null;
-
+		
 		if (menuRuEvent.isSuccessful()) {
 			Timber.d("Menu RU received successfully");
 		}

@@ -79,8 +79,8 @@ public final class SigaLogInTask extends AsyncTask<Void, Void, LogInEvent> imple
 		} else if (! exacaoPageGet.isSuccessful()) {
 			return generalFailure();
 		}
-
-		Student student = HtmlHelper.parseBasicStudent(exacaoPageGet.getResponseBody());
+		
+		Student student = HtmlHelper.parseStudent(exacaoPageGet.getResponseBody());
 		return new LogInEvent(student);
 	}
 

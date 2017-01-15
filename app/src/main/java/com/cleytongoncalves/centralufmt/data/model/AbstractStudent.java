@@ -3,12 +3,12 @@ package com.cleytongoncalves.centralufmt.data.model;
 import org.immutables.value.Value;
 
 @Value.Immutable
-public abstract class AbstractStudent {
+abstract class AbstractStudent {
 	public abstract String getFullName();
 
 	public abstract String getRga();
-
-	public abstract AbstractCourse getCourse();
+	
+	public abstract Course getCourse();
 
 	@Value.Auxiliary
 	public String getFirstName() {

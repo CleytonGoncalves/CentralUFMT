@@ -13,6 +13,6 @@ public abstract class AbstractCourse {
 	public abstract String getType();
 
 	public abstract String getCurrentTerm();
-
-	public abstract List<AbstractDiscipline> getEnrolledDisciplines();
+	
+	public abstract List<Discipline> getEnrolledDisciplines();
 }
