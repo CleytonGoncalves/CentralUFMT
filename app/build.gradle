@@ -17,7 +17,7 @@ android {
     }
 
     compileSdkVersion 25
-    buildToolsVersion "24.0.3"
+    buildToolsVersion '25.0.0'
     compileOptions.incremental = false //Remove and see if Dagger still bugs
 
     defaultConfig {
