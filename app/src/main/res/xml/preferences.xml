@@ -3,31 +3,30 @@
     >
     <SwitchPreference
         android:defaultValue="true"
-        android:key="pref_auto_ava_login"
+        android:key="PREF_AUTO_MOODLE_LOGIN"
         android:summary="Melhora consideralvemente o tempo de inicialização do AVA"
         android:title="Logar no AVA ao iniciar"/>
 
-    <MultiSelectListPreference
-        android:defaultValue="@array/empty"
-        android:entries="@array/pref_mealTypeList"
-        android:entryValues="@array/pref_mealTypeListValue"
-        android:key="pref_meal_notification"
-        android:summary="Notifica antes da refeição qual será o cardápio"
-        android:title="Notificação diária do cardápio"/>
+    <!-- Future updates \/ -->
+    
+    <!--<MultiSelectListPreference-->
+        <!--android:defaultValue="@array/empty"-->
+        <!--android:entries="@array/pref_mealTypeList"-->
+        <!--android:entryValues="@array/pref_mealTypeListValue"-->
+        <!--android:key="pref_meal_notification"-->
+        <!--android:summary="Notifica antes da refeição qual será o cardápio"-->
+        <!--android:title="Notificação diária do cardápio"/>-->
 
-    <SwitchPreference
+    <!--<SwitchPreference
         android:defaultValue="false"
         android:key="pref_omelette_notification"
         android:summary="Notifica sempre que detectar omelete no RU"
-        android:title="Notificação de omelete"/>
+        android:title="Notificação de omelete"/>-->
 
-
+    <!-- Future updates /\ -->
+    
     <Preference
-        android:title="Trocar de conta">
-        <intent
-            android:action="android.intent.action.VIEW"
-            android:launchMode="singleTask"
-            android:targetPackage="com.cleytongoncalves.centralufmt"
-            android:targetClass="com.cleytongoncalves.centralufmt.ui.login.LogInActivity"/>
-    </Preference>
+        android:title="Sair da conta"
+        android:key="LEAVEACCOUNT"/>
+    
 </PreferenceScreen>

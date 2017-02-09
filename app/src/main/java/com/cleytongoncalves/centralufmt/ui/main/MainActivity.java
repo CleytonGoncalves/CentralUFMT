@@ -92,11 +92,17 @@ public class MainActivity extends BaseActivity
 		mTitle = mDefaultTitle = getTitle();
 	}
 
+	//Startups and optimizations here
 	@Override
 	protected void onPostCreate(@Nullable Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
 		mDrawerToggle.syncState();
-
+		
+		if (NetworkUtil.isNetworkConnected(this) && mDataManager.getPreferencesHelper().getAutoMoodleLogIn()) {
+			//Sign in ahead of time. It is a very slow process.
+			mDataManager.triggerMoodleLogIn();
+		}
+		
 		//Hacky way to pre-load the Play Services and Map data
 		new Thread(() -> {
 			try {
@@ -110,11 +116,6 @@ public class MainActivity extends BaseActivity
 				//This hack works regardless
 			}
 		}).start();
-
-		if (NetworkUtil.isNetworkConnected(this)) {
-			//Sign in ahead of time. Webview is already slow enough by itself.
-			mDataManager.triggerMoodleLogIn();
-		}
 	}
 
 	@Override
