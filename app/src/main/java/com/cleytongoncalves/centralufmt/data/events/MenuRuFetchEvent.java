@@ -3,8 +3,6 @@ package com.cleytongoncalves.centralufmt.data.events;
 import com.cleytongoncalves.centralufmt.data.model.MenuRu;
 
 public final class MenuRuFetchEvent implements BusEvent<MenuRu> {
-	public static final String GENERAL_ERROR = "Network/IO Error";
-
 	private MenuRu mMenuRu;
 	private String mFailureReason;
 
