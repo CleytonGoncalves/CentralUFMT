@@ -27,7 +27,7 @@ import javax.inject.Inject;
 public class PreferencesHelper {
 	//View Constants
 	public static final String PREF_FILE_NAME = "central_ufmt_pref_file";
-	private static final String PREF_KEY_LOGGED_IN = "PREF_KEY_LOGGED_IN";
+	private static final String PREF_KEY_STUDENT = "PREF_KEY_STUDENT";
 	private static final String PREF_KEY_RGA = "PREF_KEY_RGA";
 	private static final String PREF_KEY_AUTH = "PREF_KEY_AUTH";
 	private static final String PREF_KEY_ANONYMOUS_LOGIN = "PREF_KEY_ANONYMOUS_LOGIN";
@@ -35,9 +35,6 @@ public class PreferencesHelper {
 	private static final String PREF_KEY_ROUTE_OPTION = "PREF_KEY_ROUTE_OPTION";
 	private static final String PREF_KEY_POI_OPTION = "PREF_KEY_POI_OPTION";
 	private static final String PREF_KEY_MENURU = "PREF_KEY_MENURU";
-	
-	//Settings Constants (set on preferences.xml)
-	private static final String PREF_AUTO_MOODLE_LOGIN = "PREF_AUTO_MOODLE_LOGIN";
 	
 	private final SharedPreferences mSharedPref;
 	private final Gson mGson;
@@ -53,6 +50,10 @@ public class PreferencesHelper {
 		                         .registerTypeAdapterFactory(new GsonAdaptersModel())
 		                         .registerTypeAdapterFactory(new GsonAdaptersAbstractScheduleData())
 		                         .create();
+	}
+	
+	public void clear() {
+		mSharedPref.edit().clear().apply();
 	}
 	
 	public void putCredentials(String rga, char[] password) {
@@ -72,12 +73,12 @@ public class PreferencesHelper {
 	}
 
 	public void putLoggedInStudent(Student student) {
-		mSharedPref.edit().putString(PREF_KEY_LOGGED_IN, mGson.toJson(student)).apply();
+		mSharedPref.edit().putString(PREF_KEY_STUDENT, mGson.toJson(student)).apply();
 	}
 
 	@Nullable
 	public Student getLoggedInStudent() {
-		String studentJson = mSharedPref.getString(PREF_KEY_LOGGED_IN, null);
+		String studentJson = mSharedPref.getString(PREF_KEY_STUDENT, null);
 
 		if (studentJson == null) {
 			return null;
@@ -131,11 +132,5 @@ public class PreferencesHelper {
 		if (menuRuJson == null) { return null; }
 
 		return mGson.fromJson(menuRuJson, MenuRu.class);
-	}
-	
-	/* Settings Screen */
-	
-	public boolean getAutoMoodleLogIn() {
-		return mSharedPref.getBoolean(PREF_AUTO_MOODLE_LOGIN, true);
 	}
 }
