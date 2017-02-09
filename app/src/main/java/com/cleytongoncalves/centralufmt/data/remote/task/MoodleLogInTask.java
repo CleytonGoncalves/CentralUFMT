@@ -16,7 +16,7 @@ import okhttp3.Cookie;
 import okhttp3.FormBody;
 import timber.log.Timber;
 
-public final class MoodleLogInTask extends AsyncTask<Void, Void, LogInEvent> implements LogInTask {
+public final class MoodleLogInTask extends AsyncTask<Void, Void, Void> implements LogInTask {
 	private static final String BASE_AVA_URL = "http://www.ava.ufmt.br";
 	private static final String POST_AVA_URL = "/index.php?pag=login";
 
@@ -42,11 +42,15 @@ public final class MoodleLogInTask extends AsyncTask<Void, Void, LogInEvent> imp
 	}
 
 	@Override
-	protected LogInEvent doInBackground(Void... voids) {
+	protected Void doInBackground(Void... voids) {
 		NetworkService networkService = mNetworkService.get();
-
+		
+		if (isCancelled()) { return null; }
 		FormBody params = createAvaFormParams();
+		
+		if (isCancelled()) { return null; }
 		NetworkOperation logInPost = networkService.post(BASE_AVA_URL + POST_AVA_URL, params);
+		if (isCancelled()) { return null; }
 
 		LogInEvent event;
 		if (! logInPost.isSuccessful()) {
@@ -60,15 +64,13 @@ public final class MoodleLogInTask extends AsyncTask<Void, Void, LogInEvent> imp
 				event = new LogInEvent(cookies.get(0));
 			}
 		}
-
-		return event;
-	}
-
-	@Override
-	protected void onPostExecute(LogInEvent event) {
+		
+		if (isCancelled()) { return null; }
+		
 		Timber.d("LogIn on Moodle - Successful: %s, Error: %s", event.isSuccessful(),
 		         event.getFailureReason());
 		EventBus.getDefault().post(event);
+		return null;
 	}
 
 	private FormBody createAvaFormParams() {

@@ -29,9 +29,11 @@ public final class ScheduleTask extends AsyncTask<Void, Void, Void> {
 	@Override
 	protected Void doInBackground(Void... params) {
 		NetworkService networkService = mNetworkService.get();
-
+		
+		if (isCancelled()) { return null; }
 		NetworkOperation scheduleGet = networkService.get(URL, NetworkService.CHARSET_ISO);
-
+		if (isCancelled()) { return null; }
+		
 		ScheduleFetchEvent event;
 		if (! scheduleGet.isSuccessful()) {
 			event = new ScheduleFetchEvent(ScheduleFetchEvent.GENERAL_ERROR);
@@ -41,7 +43,9 @@ public final class ScheduleTask extends AsyncTask<Void, Void, Void> {
 
 			event = new ScheduleFetchEvent(disciplineList);
 		}
-
+		
+		if (isCancelled()) { return null; }
+		
 		Timber.d("Schedule Fetch - Successful: %s, Error: %s", event.isSuccessful(),
 		         event.getFailureReason());
 		EventBus.getDefault().post(event);

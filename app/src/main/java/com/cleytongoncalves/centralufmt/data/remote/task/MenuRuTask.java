@@ -26,9 +26,11 @@ public final class MenuRuTask extends AsyncTask<Void, Void, Void> {
 	@Override
 	protected Void doInBackground(Void... voids) {
 		NetworkService networkService = mLazyNetworkService.get();
-
+		
+		if (isCancelled()) { return null; }
 		NetworkOperation menuGet = networkService.get(CARDAPIO_URL, NetworkService.CHARSET_UTF8);
-
+		if (isCancelled()) { return null; }
+		
 		MenuRuFetchEvent event;
 		if (menuGet.isSuccessful()) {
 			MenuRu menu = MenuParser.parse(menuGet.getResponseBody());
@@ -36,7 +38,9 @@ public final class MenuRuTask extends AsyncTask<Void, Void, Void> {
 		} else {
 			event = new MenuRuFetchEvent(MenuRuFetchEvent.GENERAL_ERROR);
 		}
-
+		
+		if (isCancelled()) { return null; }
+		
 		Timber.d("Menu RU Fetch - Successful: %s, Error: %s", event.isSuccessful(),
 		         event.getFailureReason());
 		EventBus.getDefault().post(event);
