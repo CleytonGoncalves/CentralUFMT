@@ -30,7 +30,6 @@ public class PreferencesHelper {
 	private static final String PREF_KEY_STUDENT = "PREF_KEY_STUDENT";
 	private static final String PREF_KEY_RGA = "PREF_KEY_RGA";
 	private static final String PREF_KEY_AUTH = "PREF_KEY_AUTH";
-	private static final String PREF_KEY_ANONYMOUS_LOGIN = "PREF_KEY_ANONYMOUS_LOGIN";
 	private static final String PREF_KEY_SCHEDULE_DATA = "PREF_KEY_SCHEDULE_DATA";
 	private static final String PREF_KEY_ROUTE_OPTION = "PREF_KEY_ROUTE_OPTION";
 	private static final String PREF_KEY_POI_OPTION = "PREF_KEY_POI_OPTION";
@@ -84,14 +83,6 @@ public class PreferencesHelper {
 			return null;
 		}
 		return mGson.fromJson(studentJson, Student.class);
-	}
-
-	public void setAnonymousLogIn(boolean enabled) {
-		mSharedPref.edit().putBoolean(PREF_KEY_ANONYMOUS_LOGIN, enabled).apply();
-	}
-
-	public boolean getAnonymousLogIn() {
-		return mSharedPref.getBoolean(PREF_KEY_ANONYMOUS_LOGIN, false);
 	}
 
 	public void putSchedule(ScheduleData schedule) {

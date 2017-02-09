@@ -21,8 +21,6 @@ public class LauncherActivity extends BaseActivity {
 		Intent intent;
 		if (mDataManager.isLoggedInSiga()) {
 			intent = MainActivity.getStartIntent(this, true);
-		} else if (mDataManager.getPreferencesHelper().getAnonymousLogIn()) {
-			intent = MainActivity.getStartIntent(this, true);
 		} else {
 			intent = LogInActivity.getStartIntent(this, true);
 		}

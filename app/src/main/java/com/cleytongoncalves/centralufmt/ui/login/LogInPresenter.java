@@ -17,76 +17,74 @@ import timber.log.Timber;
 public final class LogInPresenter implements Presenter<LogInMvpView> {
 	private final DataManager mDataManager;
 	@Nullable private LogInMvpView mView;
-
+	
 	@Inject
 	LogInPresenter(DataManager dataManager) {
 		mDataManager = dataManager;
 	}
-
+	
 	@Override
 	public void attachView(LogInMvpView mvpView) {
 		mView = mvpView;
 	}
-
+	
 	@Override
 	public void detachView() {
 		mView = null;
 		if (EventBus.getDefault().isRegistered(this)) { EventBus.getDefault().unregister(this); }
 	}
-
+	
 	void doAnonymousLogIn() {
-		if (mView != null) {
-			mView.setLogInButtonEnabled(false);
-			mView.setAnonymousLogInEnabled(false);
-			mView.showProgress(true);
-		}
-
-		onLogInSuccess(true); //Goes directly to the result
+		if (mView == null) { return; }
+		
+		mView.setLogInButtonEnabled(false);
+		mView.setAnonymousLogInEnabled(false);
+		mView.showProgress(true);
+		
+		onLogInSuccess(); //Goes directly to the result
 		Timber.d("Anonymous LogIn");
 	}
-
+	
 	void doLogIn(String rga, char[] password) {
 		if (mView != null) {
 			mView.setLogInButtonEnabled(false);
 			mView.setAnonymousLogInEnabled(false);
 			mView.showProgress(true);
 		}
-
+		
 		EventBus.getDefault().register(this);
 		mDataManager.logIn(rga, password, DataManager.LOGIN_SIGA);
 	}
-
+	
 	void cancelLogin() {
 		mDataManager.cancelLogIn();
 	}
-
+	
 	@Subscribe(threadMode = ThreadMode.MAIN)
 	public void onLogInEvent(LogInEvent event) {
 		EventBus.getDefault().unregister(this);
-
+		
 		if (event.isSuccessful()) {
-			onLogInSuccess(false);
+			onLogInSuccess();
 		} else {
 			onLogInFailure(event.getFailureReason());
 		}
 	}
-
-	private void onLogInSuccess(boolean anonymous) {
-		//mDataManager.getPreferencesHelper().setAnonymousLogIn(anonymous);
-
-		if (mView != null) {
-			mView.showProgress(false);
-			mView.onLogInSuccessful();
-		}
+	
+	private void onLogInSuccess() {
+		if (mView == null) { return; }
+		
+		mView.showProgress(false);
+		mView.onLogInSuccessful();
 	}
-
+	
 	private void onLogInFailure(String reason) {
 		if (mView == null) { return; }
-
+		
 		mView.showProgress(false);
 		mView.setLogInButtonEnabled(true);
 		mView.setAnonymousLogInEnabled(true);
-
+		
 		switch (reason) {
 			case LogInEvent.ACCESS_DENIED:
 				mView.showAccessDenied();
@@ -98,7 +96,7 @@ public final class LogInPresenter implements Presenter<LogInMvpView> {
 				mView.showGeneralLogInError();
 		}
 	}
-
+	
 	boolean isLogInHappening() {
 		return mDataManager.isLogInHappening();
 	}
