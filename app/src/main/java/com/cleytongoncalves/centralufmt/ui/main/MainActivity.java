@@ -99,7 +99,7 @@ public class MainActivity extends BaseActivity
 		mDrawerToggle.syncState();
 		
 		if (NetworkUtil.isNetworkConnected(this) && mDataManager.getPreferencesHelper().getAutoMoodleLogIn()) {
-			//Sign in ahead of time. It is a very slow process.
+			//Sign in ahead of time, given that it has a slow response.
 			mDataManager.triggerMoodleLogIn();
 		}
 		
