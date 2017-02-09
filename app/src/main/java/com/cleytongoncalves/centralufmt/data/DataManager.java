@@ -85,6 +85,7 @@ public class DataManager {
 		Timber.d("Cancel LogIn");
 		if (mLogInTask != null) {
 			mLogInTask.cancelTask();
+			mLogInTask = null;
 		}
 	}
 	
@@ -111,6 +112,14 @@ public class DataManager {
 	public boolean isFetchingSchedule() {
 		return mScheduleTask != null;
 	}
+	
+	private void cancelScheduleFetch() {
+		Timber.d("Cancel Schedule Fetch");
+		if (mScheduleTask != null) {
+			mScheduleTask.cancel(true);
+			mScheduleTask = null;
+		}
+	}
 
 	/* ----- Menu RU ----- */
 	
@@ -122,6 +131,27 @@ public class DataManager {
 	
 	public boolean isFetchingMenuRu() {
 		return mMenuRuTask != null;
+	}
+	
+	private void cancelMenuRuFetch() {
+		Timber.d("Cancel MenuRu Fetch");
+		if (mMenuRuTask != null) {
+			mMenuRuTask.cancel(true);
+			mMenuRuTask = null;
+		}
+	}
+	
+	/* ----- Settings - Logout ----- */
+	
+	public void logOut() {
+		cancelLogIn();
+		cancelScheduleFetch();
+		cancelMenuRuFetch();
+		
+		mStudent = null;
+		mMoodleCookie = null;
+		
+		mPreferencesHelper.clear();
 	}
 
 	/* ----- EventBus Listeners ----- */

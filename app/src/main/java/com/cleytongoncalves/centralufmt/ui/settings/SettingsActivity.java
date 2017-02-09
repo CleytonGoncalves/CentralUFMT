@@ -8,9 +8,12 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 
 import com.cleytongoncalves.centralufmt.R;
+import com.cleytongoncalves.centralufmt.data.DataManager;
 import com.cleytongoncalves.centralufmt.data.local.PreferencesHelper;
 import com.cleytongoncalves.centralufmt.ui.base.BaseActivity;
 import com.cleytongoncalves.centralufmt.ui.login.LogInActivity;
+
+import javax.inject.Inject;
 
 public class SettingsActivity extends BaseActivity {
 
@@ -29,18 +32,22 @@ public class SettingsActivity extends BaseActivity {
 
 	public static class SettingsFragment extends PreferenceFragment {
 		
+		@Inject DataManager mDataManager;
+		
 		@Override
 		public void onCreate(final Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
+			
+			((BaseActivity) getActivity()).activityComponent().inject(this);
 			
 			//Sets the SharedPref to be the same as the one already in use (PreferencesHelper one)
 			PreferenceManager prefMgr = getPreferenceManager();
 			prefMgr.setSharedPreferencesName(PreferencesHelper.PREF_FILE_NAME);
 			prefMgr.setSharedPreferencesMode(MODE_PRIVATE);
 			
-			createLeaveAccountButton(prefMgr);
-			
 			addPreferencesFromResource(R.xml.preferences);
+			
+			createLeaveAccountButton(prefMgr);
 		}
 		
 		private void createLeaveAccountButton(PreferenceManager prefMgr) {
@@ -49,9 +56,10 @@ public class SettingsActivity extends BaseActivity {
 			if (leaveButton != null) {
 				leaveButton.setOnPreferenceClickListener(
 						pref -> {
-							pref.getEditor().clear().apply(); //ALL preferences (PrefHelper as well)
+							mDataManager.logOut();
 							Intent intent = LogInActivity.getStartIntent(getActivity(), true);
 							startActivity(intent);
+							getActivity().finish();
 							return true;
 						});
 			}
