@@ -72,7 +72,7 @@ public final class LogInPresenter implements Presenter<LogInMvpView> {
 	}
 
 	private void onLogInSuccess(boolean anonymous) {
-		mDataManager.getPreferencesHelper().setAnonymousLogIn(anonymous);
+		//mDataManager.getPreferencesHelper().setAnonymousLogIn(anonymous);
 
 		if (mView != null) {
 			mView.showProgress(false);
