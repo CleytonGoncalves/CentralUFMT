@@ -98,8 +98,8 @@ public class MainActivity extends BaseActivity
 		super.onPostCreate(savedInstanceState);
 		mDrawerToggle.syncState();
 		
-		if (NetworkUtil.isNetworkConnected(this) && mDataManager.getPreferencesHelper().getAutoMoodleLogIn()) {
-			//Sign in ahead of time, given that it has a slow response.
+		if (NetworkUtil.isNetworkConnected(this) && mDataManager.isLoggedInSiga()) {
+			//Sign in on Moodle ahead of time, given that it has a slow response time.
 			mDataManager.triggerMoodleLogIn();
 		}
 		
