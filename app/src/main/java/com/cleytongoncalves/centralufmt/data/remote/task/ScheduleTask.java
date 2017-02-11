@@ -31,22 +31,21 @@ public final class ScheduleTask extends AsyncTask<Void, Void, Void> {
 		
 		if (isCancelled()) { return null; }
 		NetworkOperation scheduleGet = networkService.get(URL, NetworkService.CHARSET_ISO);
-		if (isCancelled()) { return null; }
 		
-		ScheduleFetchEvent event;
-		if (! scheduleGet.isSuccessful()) {
-			event = new ScheduleFetchEvent(ScheduleFetchEvent.GENERAL_ERROR);
-		} else {
-			List<Discipline> disciplineList =
-					HtmlHelper.parseSchedule(scheduleGet.getResponseBody());
-
-			event = new ScheduleFetchEvent(disciplineList);
+		ScheduleFetchEvent event = null;
+		if (scheduleGet.isSuccessful() && !isCancelled()) {
+			try {
+				List<Discipline> disciplineList = HtmlHelper.parseSchedule(scheduleGet.getResponseBody());
+				event = new ScheduleFetchEvent(disciplineList);
+			} catch (Exception e) {
+				Timber.w(e, "*** Error parsing Schedule ***");
+			}
 		}
 		
 		if (isCancelled()) { return null; }
+		else if (event == null) { event = new ScheduleFetchEvent(ScheduleFetchEvent.GENERAL_ERROR); }
 		
-		Timber.d("Schedule Fetch - Successful: %s, Error: %s", event.isSuccessful(),
-		         event.getFailureReason());
+		Timber.d("Schedule Fetch - Successful: %s", event.isSuccessful());
 		EventBus.getDefault().post(event);
 		return null;
 	}

@@ -23,10 +23,12 @@ import java.util.Locale;
 import java.util.Map;
 
 public final class HtmlHelper {
-	private static final String TAG = HtmlHelper.class.getSimpleName();
 	private static final Locale LOCALE_PTBR = new Locale("pt", "BR");
 	private static final String NBSP_CODE = "\u00a0";
-	//TODO: ENSURE THAT ANY FIELD CAN BE EMPTY WITHOUT CRASHING
+	
+	private static final String ACCESS_DENIED_ERROR = "Acesso Negado";
+	
+	//TODO: ENSURE THAT ANY FIELD CAN FAIL WITHOUT CRASHING
 	
 	private HtmlHelper() {
 	}
@@ -65,7 +67,7 @@ public final class HtmlHelper {
 		return Student.of(nomeCompleto, rga, course);
 	}
 	
-	private static void parseCurriculum(Element body) {
+	private static void parseCurriculum(Element body) throws Exception {
 		List<Discipline> curriculum = new ArrayList<>();
 		
 		//1st Tb = Carga horaria curso, 2nd = carga horaria cursada, 3rd = grade
@@ -106,8 +108,13 @@ public final class HtmlHelper {
 		}
 	}
 	
-	public static List<Discipline> parseSchedule(String html) {
+	public static List<Discipline> parseSchedule(String html) throws Exception {
 		Element body = Jsoup.parse(html).body();
+		
+		if (body.text().contains(ACCESS_DENIED_ERROR)) {
+			throw new UnsupportedOperationException("Siga Access Denied");
+		}
+		
 		Elements tables = body.getElementsByTag("table");
 		
 		//17=tabela horarios, 18=total creditos/carga horaria
