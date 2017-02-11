@@ -35,7 +35,7 @@ public abstract class AbstractScheduleData {
 	}
 
 	boolean isEmpty() {
-		return getSchedule().size() > getAmountOfDays();
+		return getSchedule().size() < getAmountOfDays();
 	}
 
 	@Value.Immutable
