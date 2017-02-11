@@ -45,30 +45,24 @@ public final class MoodleLogInTask extends AsyncTask<Void, Void, Void> implement
 	protected Void doInBackground(Void... voids) {
 		NetworkService networkService = mNetworkService.get();
 		
+		//MUST have this check before params, bcs the password is cleared from memory when cancelled
 		if (isCancelled()) { return null; }
 		FormBody params = createAvaFormParams();
 		
 		if (isCancelled()) { return null; }
 		NetworkOperation logInPost = networkService.post(BASE_AVA_URL + POST_AVA_URL, params);
-		if (isCancelled()) { return null; }
 
-		LogInEvent event;
-		if (! logInPost.isSuccessful()) {
-			event = new LogInEvent(LogInEvent.GENERAL_ERROR);
-		} else {
+		LogInEvent event = null;
+		if (logInPost.isSuccessful() && ! isCancelled()) {
 			List<Cookie> cookies = networkService.getCookieFromJar(BASE_AVA_URL);
-
-			if (cookies.isEmpty()) {
-				event = new LogInEvent(LogInEvent.GENERAL_ERROR);
-			} else {
-				event = new LogInEvent(cookies.get(0));
-			}
+			
+			if (! cookies.isEmpty()) { event = new LogInEvent(cookies.get(0)); }
 		}
 		
 		if (isCancelled()) { return null; }
+		else if (event == null) { event = new LogInEvent(LogInEvent.GENERAL_ERROR); }
 		
-		Timber.d("LogIn on Moodle - Successful: %s, Error: %s", event.isSuccessful(),
-		         event.getFailureReason());
+		Timber.d("LogIn on Moodle - Successful: %s", event.isSuccessful());
 		EventBus.getDefault().post(event);
 		return null;
 	}
