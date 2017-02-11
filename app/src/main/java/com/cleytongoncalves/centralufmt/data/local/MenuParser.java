@@ -4,6 +4,7 @@ import com.cleytongoncalves.centralufmt.data.model.Meal;
 import com.cleytongoncalves.centralufmt.data.model.MenuRu;
 import com.cleytongoncalves.centralufmt.util.TimeInterval;
 
+import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -13,7 +14,6 @@ import org.jsoup.select.Elements;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,7 +27,7 @@ public class MenuParser {
 	private MenuParser() {
 	}
 
-	public static MenuRu parse(String pageHtml) {
+	public static MenuRu parse(String pageHtml) throws Exception {
 		Element mealSection = getMealSection(pageHtml);
 		LocalDate date = parseDate(mealSection);
 		
@@ -41,27 +41,14 @@ public class MenuParser {
 		final int dinnerTableIdx = 2;
 		final int saturdayLunchTableIdx = 3;
 		
-		List<String> breakfast;
-		Meal lunch, dinner;
-		try {
-			breakfast = parseBreakfast(tables.get(breakfastTableIdx));
-			if (date.toString("EEE").equals("sáb")) {
-				lunch = parseMeal(tables.get(saturdayLunchTableIdx), MenuRu.HORARIO_ALMOCO_SABADO);
-				dinner = Meal.emptyMeal(MenuRu.HORARIO_JANTA);
-			} else {
-				lunch = parseMeal(tables.get(lunchTableIdx), MenuRu.HORARIO_ALMOCO);
-				dinner = parseMeal(tables.get(dinnerTableIdx), MenuRu.HORARIO_JANTA);
-			}
-		} catch (IndexOutOfBoundsException e) {
-			Timber.e("Error parsing menu (defaulted to Empty): %s", e.getMessage());
-			breakfast = Collections.emptyList();
-			lunch = Meal.emptyMeal(MenuRu.HORARIO_ALMOCO);
-			dinner = Meal.emptyMeal(MenuRu.HORARIO_JANTA);
-		}
+		menuBuilder.breakfast(parseBreakfast(tables.get(breakfastTableIdx)));
 		
-		menuBuilder.breakfast(breakfast);
-		menuBuilder.lunch(lunch);
-		menuBuilder.dinner(dinner);
+		if (date.getDayOfWeek() != DateTimeConstants.SATURDAY) {
+			menuBuilder.lunch(parseMeal(tables.get(lunchTableIdx), MenuRu.LUNCH_TIME));
+			menuBuilder.dinner(parseMeal(tables.get(dinnerTableIdx), MenuRu.DINNER_TIME));
+		} else {
+			menuBuilder.lunch(parseMeal(tables.get(saturdayLunchTableIdx), MenuRu.LUNCH_TIME_SATURDAY));
+		}
 		
 		return menuBuilder.build();
 	}
@@ -70,18 +57,26 @@ public class MenuParser {
 		return Jsoup.parse(pageHtml).getElementById("secao");
 	}
 	
-	private static LocalDate parseDate(Element mealSection) {
+	private static LocalDate parseDate(Element mealSection){
 		LocalDate date;
-		final int dateTagIndex = 4;
-		DateTimeFormatter fmt = DateTimeFormat.forPattern("dd/MM/yyyy");
+		
+		final int dateTagIndex;
+		if (LocalDate.now().getDayOfWeek() != DateTimeConstants.SATURDAY) {
+			dateTagIndex = 4;
+		} else {
+			dateTagIndex = 21;
+		}
+		
+		DateTimeFormatter fmt = DateTimeFormat.forPattern("ddMMyyyy");
 		
 		String dateStr = null;
 		try {
-			String dateLine = mealSection.child(dateTagIndex).text().replaceAll(" ", "");
+			String dateLine = mealSection.child(dateTagIndex).text();
 
-			Pattern pattern = Pattern.compile("\\d\\d/\\d\\d/\\d\\d\\d\\d"); //e.g. 11/12/2016
+			Pattern pattern = Pattern.compile("[0-9]+"); //e.g. 11122016
 			Matcher matcher = pattern.matcher(dateLine);
-
+			
+			
 			if (matcher.find()) { dateStr = matcher.group(); }
 			date = fmt.parseLocalDate(dateStr);
 		} catch (Exception e) {
@@ -92,7 +87,7 @@ public class MenuParser {
 		return date;
 	}
 	
-	private static Meal parseMeal(Element mealTable, TimeInterval time) {
+	private static Meal parseMeal(Element mealTable, TimeInterval time) throws Exception {
 		Elements tdTags = mealTable.getElementsByTag("td");
 		if (tdTags.isEmpty()) { return Meal.emptyMeal(time); }
 
@@ -107,7 +102,6 @@ public class MenuParser {
 		final int sobremesaTd = 11;
 		final int sucoTd = 13;
 		
-		try {
 			List<String> salada = parseFood(tdTags.get(saladaTd));
 			mealBuilder.salad(salada);
 			List<String> mistura = parseFood(tdTags.get(misturaTd));
@@ -122,14 +116,11 @@ public class MenuParser {
 			mealBuilder.dessert(sobremesa);
 			List<String> suco = parseFood(tdTags.get(sucoTd));
 			mealBuilder.juice(suco);
-		} catch (IndexOutOfBoundsException e) {
-			Timber.e("Meal Parsing Error - <td> index not found: %s", e.getMessage());
-		}
 		
 		return mealBuilder.build();
 	}
 	
-	private static List<String> parseBreakfast(Element bfTable) {
+	private static List<String> parseBreakfast(Element bfTable) throws Exception {
 		Elements textElements = bfTable.getElementsByTag("p");
 		
 		List<String> bf = new ArrayList<>();
@@ -140,7 +131,7 @@ public class MenuParser {
 		return bf;
 	}
 	
-	private static List<String> parseFood(Element element) {
+	private static List<String> parseFood(Element element) throws Exception {
 		List<String> foodList = new ArrayList<>();
 		
 		if (element == null || ! element.hasText()) { return foodList; }
@@ -150,17 +141,13 @@ public class MenuParser {
 			String str = each.text();
 			List<String> parsedFood = toFoodList(str);
 			
-			try {
-				foodList.addAll(parsedFood);
-			} catch (Exception e) {
-				Timber.e("Error parsing food: %s - %s", parsedFood, e.getMessage());
-			}
+			foodList.addAll(parsedFood);
 		}
 		
 		return foodList;
 	}
 	
-	private static List<String> toFoodList(String str) {
+	private static List<String> toFoodList(String str) throws Exception {
 		List<String> list = new ArrayList<>();
 		if (str == null || str.length() <= 1) { return list; } //Empty or with NBSP
 		

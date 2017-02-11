@@ -29,20 +29,21 @@ public final class MenuRuTask extends AsyncTask<Void, Void, Void> {
 		
 		if (isCancelled()) { return null; }
 		NetworkOperation menuGet = networkService.get(CARDAPIO_URL, NetworkService.CHARSET_UTF8);
-		if (isCancelled()) { return null; }
 		
-		MenuRuFetchEvent event;
-		if (menuGet.isSuccessful()) {
-			MenuRu menu = MenuParser.parse(menuGet.getResponseBody());
-			event = new MenuRuFetchEvent(menu);
-		} else {
-			event = new MenuRuFetchEvent(MenuRuFetchEvent.GENERAL_ERROR);
+		MenuRuFetchEvent event = null;
+		if (menuGet.isSuccessful() && !isCancelled()) {
+			try {
+				MenuRu menu = MenuParser.parse(menuGet.getResponseBody());
+				event = new MenuRuFetchEvent(menu);
+			} catch (Exception e) {
+				Timber.w(e, "*** Error parsing MenuRu ***");
+			}
 		}
 		
 		if (isCancelled()) { return null; }
-		
-		Timber.d("Menu RU Fetch - Successful: %s, Error: %s", event.isSuccessful(),
-		         event.getFailureReason());
+		else if (event == null) { event = new MenuRuFetchEvent(MenuRuFetchEvent.GENERAL_ERROR); }
+			
+		Timber.d("Menu RU Fetch - Successful: %s", event.isSuccessful());
 		EventBus.getDefault().post(event);
 		return null;
 	}
