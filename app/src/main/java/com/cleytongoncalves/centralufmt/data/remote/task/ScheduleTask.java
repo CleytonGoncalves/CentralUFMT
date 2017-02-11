@@ -17,8 +17,7 @@ import timber.log.Timber;
 
 public final class ScheduleTask extends AsyncTask<Void, Void, Void> {
 	private static final String URL =
-			"http://sia.ufmt.br/www-siga/WebSnap/C_PlanilhaHorario/planilhaHorariodoAluno" +
-					".dll/HorarioAluno";
+			"http://academico-siga.ufmt.br/www-siga/dll/PlanilhaRgaAutenticada.dll/listaalunos";
 
 	private final Lazy<NetworkService> mNetworkService;
 

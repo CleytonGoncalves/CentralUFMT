@@ -26,7 +26,7 @@ public final class HtmlHelper {
 	private static final String TAG = HtmlHelper.class.getSimpleName();
 	private static final Locale LOCALE_PTBR = new Locale("pt", "BR");
 	private static final String NBSP_CODE = "\u00a0";
-	//TODO: ENSURE THAT ANY FIELD CAN BE EMPTY WITHOUT TROWING EXCEPTION
+	//TODO: ENSURE THAT ANY FIELD CAN BE EMPTY WITHOUT CRASHING
 	
 	private HtmlHelper() {
 	}
@@ -108,59 +108,60 @@ public final class HtmlHelper {
 	
 	public static List<Discipline> parseSchedule(String html) {
 		Element body = Jsoup.parse(html).body();
-		Elements planilha = body.getElementsByTag("form");
-		Elements tables = planilha.select("table");
+		Elements tables = body.getElementsByTag("table");
 		
-		//0=empty, 1=periodo, 2=curso, 3=aluno outer, 4=aluno inner, 5=horarios
-		final int horariosTable = 5;
-		Element horarioTable = tables.get(horariosTable);
-		
-		//0=cabecalho tabela, 1..n=displicinas
+		//17=tabela horarios, 18=total creditos/carga horaria
+		final int scheduleTable = 17;
+		Element horarioTable = tables.get(scheduleTable);
 		Elements rows = horarioTable.getElementsByTag("tr");
 		
 		List<Discipline> disciplinas = new ArrayList<>();
 		
-		//0=cod. disc., 1=nome, 2=primeiro dia, 3=primeiro horario, 4=turma, 5=sala, 6=crd?,
-		//7=cargaHor, 8=tipo, 9=per. oferta
-		for (int i = 1; i < rows.size(); i++) {
+		//0=header, 1..n=disciplinas
+		for (int i = 1, rowsSize = rows.size(); i < rowsSize; i++) {
 			Element currRow = rows.get(i);
-			Elements content = currRow.getElementsByTag("div");
+			Elements content = currRow.children();
 			
-			String nome = TextUtil.capsWordsFirstLetter(content.get(1).ownText());
-			String cod = content.get(0).ownText();
-			String turma = content.get(4).ownText();
-			String sala = content.get(5).ownText();
-			String crd = content.get(6).ownText();
-			String carga = content.get(7).ownText();
-			String tipo = content.get(8).ownText();
-			String periodo = content.get(9).ownText();
+			Discipline.Builder discBuilder = Discipline.builder();
 			
+			//0="cod-nome disc", 1=primeiro dia, 2=hora inicio, 3=hora fim, 4=turma, 5=sala, 6=crd?, 7=cargaHor,
+			//8=tipo, 9=per. oferta
+			String titleAndCode[] = content.get(0).ownText().split("-");
+			discBuilder.code(titleAndCode[0]);
+			discBuilder.title(TextUtil.capsWordsFirstLetter(titleAndCode[1]));
+			
+			discBuilder.group(content.get(4).ownText());
+			discBuilder.room(content.get(5).ownText());
+			discBuilder.crd(content.get(6).ownText());
+			discBuilder.courseLoad(content.get(7).ownText());
+			discBuilder.type(content.get(8).ownText());
+			
+			String periodo = content.get(9).ownText(); //TODO PERIODO != TERM?
 			switch (periodo) {
 				case "1":
-					periodo = "1º Semestre";
+					discBuilder.term("1º Semestre");
 					break;
 				case "2":
-					periodo = "2º Semestre";
+					discBuilder.term("2º Semestre");
 					break;
 				case "3":
-					periodo = "Anual";
+					discBuilder.term("Anual");
 					break;
 				case "4":
-					periodo = "Modular";
+					discBuilder.term("Modular");
 					break;
 			}
 			
-			DateTimeFormatter fmt = DateTimeFormat.forPattern("EEEEHH:mm").withLocale(LOCALE_PTBR);
 			List<Interval> aulas = new ArrayList<>();
+			
+			DateTimeFormatter fmt = DateTimeFormat.forPattern("EEEEHH:mm").withLocale(LOCALE_PTBR);
 			boolean keepGoing = true;
 			for (int index = i; keepGoing; index++) {
-				String dia = content.get(2).ownText();
-				String horario = content.get(3).getElementsByTag("span").text();
-				String[] horArr = horario.split("_às_");
+				String dia = content.get(1).ownText();
+				String horaInicio = content.get(2).ownText();
+				String horaFim = content.get(3).ownText();
 				
-				String horaInicio = horArr[0].replace(",", ":");
-				String horaFim = horArr[1].replace(",", ":");
-				
+				//Format WED14:30
 				DateTime start = fmt.parseDateTime(dia + horaInicio);
 				DateTime end = fmt.parseDateTime(dia + horaFim);
 				
@@ -168,8 +169,8 @@ public final class HtmlHelper {
 				aulas.add(interval);
 				
 				if (index + 1 < rows.size()) {
-					content = rows.get(index + 1).getElementsByTag("div");
-					if (content.get(0).ownText().contains(NBSP_CODE)) { //is not a continuation
+					content = rows.get(index + 1).children();
+					if (content.get(0).ownText().contains(NBSP_CODE)) { //is a continuation
 						i++;
 					} else {
 						keepGoing = false;
@@ -179,19 +180,8 @@ public final class HtmlHelper {
 				}
 			}
 			
-			Discipline disc = Discipline.builder()
-			                            .title(nome)
-			                            .code(cod)
-			                            .group(turma)
-			                            .room(sala)
-			                            .crd(crd)
-			                            .courseLoad(carga)
-			                            .type(tipo)
-			                            .term(periodo)
-			                            .classTimes(aulas)
-			                            .build();
-			
-			disciplinas.add(disc);
+			discBuilder.classTimes(aulas);
+			disciplinas.add(discBuilder.build());
 		}
 		
 		return disciplinas;
