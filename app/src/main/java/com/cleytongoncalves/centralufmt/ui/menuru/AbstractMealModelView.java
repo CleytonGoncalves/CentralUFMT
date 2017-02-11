@@ -10,21 +10,45 @@ import org.immutables.value.Value;
              defaults = @Value.Immutable(copy = false))
 @Value.Immutable
 abstract class AbstractMealModelView {
-	public abstract String getHeader();
-
-	public abstract String getTimeDate();
-
-	public abstract String getMainCourse();
+	@Value.Default
+	public String getHeader() {
+		return "";
+	}
 	
-	public abstract String getVegetarian();
-
-	public abstract String getGarnish();
-
-	public abstract String getSalad();
-
-	public abstract String getAcompaniment();
-
-	public abstract String getDessert();
+	@Value.Default
+	public String getTimeDate() {
+		return "";
+	}
+	
+	@Value.Default
+	public String getMainCourse() {
+		return "";
+	}
+	
+	@Value.Default
+	public String getVegetarian() {
+		return "";
+	}
+	
+	@Value.Default
+	public String getGarnish() {
+		return "";
+	}
+	
+	@Value.Default
+	public String getSalad() {
+		return "";
+	}
+	
+	@Value.Default
+	public String getAcompaniment() {
+		return "";
+	}
+	
+	@Value.Default
+	public String getDessert() {
+		return "";
+	}
 
 	@Value.Default
 	public boolean isEmpty() {

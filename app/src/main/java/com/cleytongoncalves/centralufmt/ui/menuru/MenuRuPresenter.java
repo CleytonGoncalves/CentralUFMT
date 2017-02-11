@@ -13,6 +13,7 @@ import com.cleytongoncalves.centralufmt.util.TextUtil;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
@@ -165,16 +166,23 @@ final class MenuRuPresenter implements Presenter<MenuRuMvpView>, DataPresenter {
 
 			final String lunchHeader = "ALMOÇO";
 			final String dinnerHeader = "JANTA";
-
+			
+			if (isCancelled()) { return null; }
+			
 			MealModelView lunch = parseToModelView(lunchHeader, mMenuRu.getLunch());
-			MealModelView dinner = parseToModelView(dinnerHeader, mMenuRu.getDinner());
-
 			mealList.add(lunch);
-			mealList.add(dinner);
-
-			Timber.d("MealModelViews parsed - Size: %s - Cancelled: %s", mealList.size(),
-			         isCancelled());
-			if (! isCancelled()) { EventBus.getDefault().post(mealList); }
+			
+			if (isCancelled()) { return null; }
+			
+			if (mMenuRu.getDate().getDayOfWeek() != DateTimeConstants.SATURDAY) { //SAT isn't serving dinner
+				MealModelView dinner = parseToModelView(dinnerHeader, mMenuRu.getDinner());
+				mealList.add(dinner);
+			}
+			
+			if (isCancelled()) { return null; }
+			
+			Timber.d("MealModelViews parsed - Size: %s", mealList.size());
+			 EventBus.getDefault().post(mealList);
 			return null;
 		}
 
