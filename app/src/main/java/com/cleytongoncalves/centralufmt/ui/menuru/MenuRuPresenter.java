@@ -33,8 +33,6 @@ final class MenuRuPresenter implements Presenter<MenuRuMvpView>, DataPresenter {
 
 	private boolean mFetchingData;
 
-	//TODO: SERVICE TO AUTO-UPDATE AT CERTAIN TIME OF THE DAY, AND TO PUSH A NOTIFICATION
-
 	@Inject
 	MenuRuPresenter(DataManager dataManager) {
 		mDataManager = dataManager;
