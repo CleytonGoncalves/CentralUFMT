@@ -33,7 +33,7 @@ public final class HtmlHelper {
 	private HtmlHelper() {
 	}
 	
-	public static Student parseStudent(String exacaoHtml) {
+	public static Student parseStudent(String exacaoHtml) throws Exception {
 		Element body = Jsoup.parse(exacaoHtml).body();
 		List<TextNode> alunoInfoNodes = body.getElementsByTag("div").get(0).textNodes();
 		
@@ -41,7 +41,7 @@ public final class HtmlHelper {
 		return extractStudent(alunoInfoNodes, course);
 	}
 	
-	private static Course extractCurso(List<TextNode> alunoInfoNodes) {
+	private static Course extractCurso(List<TextNode> alunoInfoNodes) throws Exception {
 		String infoCursoRaw = alunoInfoNodes.get(0).text();
 		String[] infoCurso = infoCursoRaw.split(":")[1].split("-");
 		
@@ -57,7 +57,7 @@ public final class HtmlHelper {
 		return Course.of(title, code, type, term, emptyList);
 	}
 	
-	private static Student extractStudent(List<TextNode> alunoInfoNodes, Course course) {
+	private static Student extractStudent(List<TextNode> alunoInfoNodes, Course course) throws Exception {
 		String infoAlunoRaw = alunoInfoNodes.get(1).text();
 		String[] infoAluno = infoAlunoRaw.split(":")[1].split("-");
 		
@@ -196,7 +196,7 @@ public final class HtmlHelper {
 
 	/* ----- Static Helper Methods ----- */
 	
-	public static Map<String, String> createFormParams(String html) {
+	public static Map<String, String> parseSigaFormParams(String html) {
 		Map<String, String> map = new HashMap<>();
 		
 		final String verifImgUrl = "http://academico-siga.ufmt.br/www-siga/dll/pdf/Imagem";
