@@ -69,13 +69,12 @@ final class MenuRuPresenter implements Presenter<MenuRuMvpView>, DataPresenter {
 			mView.showRecyclerView(false);
 			mView.showProgressBar(true);
 		}
-
+		
 		EventBus.getDefault().register(this);
-		if (menuRu == null || ! isTodaysMenu(menuRu)) {
+		if (menuRu == null || ! isTodayMenu(menuRu)) {
 			mDataManager.fetchMenuRu();
 			mFetchingData = true;
-		}
-		else {
+		} else {
 			parseMenuForAdapter(menuRu);
 		}
 	}
@@ -149,8 +148,8 @@ final class MenuRuPresenter implements Presenter<MenuRuMvpView>, DataPresenter {
 		return mParserTask != null;
 	}
 
-	private boolean isTodaysMenu(MenuRu menuRu) {
-		return ! menuRu.getDate().isEqual(LocalDate.now());
+	private boolean isTodayMenu(MenuRu menuRu) {
+		return menuRu.getDate().equals(LocalDate.now());
 	}
 
 	private static class DataParserTask extends AsyncTask<Void, Void, Void> {
