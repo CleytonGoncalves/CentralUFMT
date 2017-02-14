@@ -4,21 +4,20 @@ import java.util.List;
 import java.util.Map;
 
 public final class NetworkOperation {
-	static final String NETWORK_ERROR = "Network Error";
-	static final String IO_ERROR = "I/O Error";
+	static final int NETWORK_IO_ERROR = -1;
 
 	private String mResponseBody;
 	private Map<String, List<String>> mResponseHeaders;
 
-	private String mFailureReason;
+	private int mErrorCode;
 
 	NetworkOperation(String responseBody, Map<String, List<String>> responseHeaders) {
 		mResponseBody = responseBody;
 		mResponseHeaders = responseHeaders;
 	}
 
-	NetworkOperation(String failureReason) {
-		this.mFailureReason = failureReason;
+	NetworkOperation(int errorCode) {
+		this.mErrorCode = errorCode;
 	}
 
 	public boolean isSuccessful() {
@@ -32,8 +31,8 @@ public final class NetworkOperation {
 	public Map<String, List<String>> getResponseHeaders() {
 		return mResponseHeaders;
 	}
-
-	public String getFailureReason() {
-		return mFailureReason;
+	
+	public int getErrorCode() {
+		return mErrorCode;
 	}
 }
