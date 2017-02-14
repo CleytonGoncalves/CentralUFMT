@@ -26,10 +26,6 @@ import timber.log.Timber;
 
 @Singleton
 public class DataManager {
-	//TODO: Login before other net operations when operating from cache
-	public static final int LOGIN_SIGA = 0;
-	private static final int LOGIN_MOODLE = - 1;
-	
 	private final Lazy<NetworkService> mNetworkService;
 	private final PreferencesHelper mPreferencesHelper;
 	
@@ -40,12 +36,15 @@ public class DataManager {
 	private Student mStudent;
 	private Cookie mMoodleCookie;
 	
+	private boolean mLoggedInSiga;
+	
 	@Inject
-	public DataManager(final PreferencesHelper preferencesHelper,
-	                   final Lazy<NetworkService> networkService) {
+	public DataManager(PreferencesHelper preferencesHelper, Lazy<NetworkService> networkService) {
 		mPreferencesHelper = preferencesHelper;
 		mNetworkService = networkService;
-		mStudent = preferencesHelper.getLoggedInStudent();
+		
+		mStudent = preferencesHelper.getStudent();
+		
 		EventBus.getDefault().register(this);
 	}
 	
@@ -63,48 +62,93 @@ public class DataManager {
 
 	/* ----- LogIn ----- */
 	
-	public void logIn(String rga, char[] password, int platform) {
-		if (platform == LOGIN_MOODLE) {
-			mLogInTask = new MoodleLogInTask(rga, password, mNetworkService);
-		} else {
-			mPreferencesHelper.putCredentials(rga, password);
-			mLogInTask = new SigaLogInTask(rga, password, mNetworkService);
-		}
+	/**
+	 * Initial App LogIn
+	 *
+	 * @param rga      Registration number
+	 * @param password Siga password
+	 */
+	public void initialLogIn(String rga, char[] password) {
+		mPreferencesHelper.putCredentials(rga, password);
+		mLogInTask = new SigaLogInTask(rga, password, mNetworkService);
 		
-		Timber.d("LogIn - %s", platform == LOGIN_MOODLE ? "Moodle" : "Siga");
+		Timber.d("Starting Initial App LogIn");
 		mLogInTask.start();
 	}
 	
-	public void triggerMoodleLogIn() {
+	/**
+	 * Must be called <b>once per app execution</b> before doing any update on Student info from
+	 * Siga
+	 */
+	private void sigaLogIn() {
 		final String rga = mPreferencesHelper.getRga();
 		final char[] password = mPreferencesHelper.getAuth();
-		logIn(rga, password, DataManager.LOGIN_MOODLE);
+		mLogInTask = new SigaLogInTask(rga, password, mNetworkService);
+		
+		Timber.d("Starting Siga LogIn");
+		mLogInTask.start();
 	}
 	
+	/**
+	 * Must be called <b>once per app execution</b> before executing anything Moodle-related
+	 */
+	public void moodleLogIn() {
+		final String rga = mPreferencesHelper.getRga();
+		final char[] password = mPreferencesHelper.getAuth();
+		mLogInTask = new MoodleLogInTask(rga, password, mNetworkService);
+		
+		Timber.d("Starting Moodle LogIn");
+		mLogInTask.start();
+	}
+	
+	/**
+	 * Cancels whichever login is occuring at the moment
+	 */
 	public void cancelLogIn() {
-		Timber.d("Cancel LogIn");
+		Timber.d("Cancelling LogIn");
 		if (mLogInTask != null) {
 			mLogInTask.cancelTask();
 			mLogInTask = null;
 		}
 	}
 	
+	/**
+	 * @return true, if there is any login occurring
+	 */
 	public boolean isLogInHappening() {
 		return mLogInTask != null;
 	}
 	
-	public boolean isLoggedInSiga() {
+	/**
+	 * @return true, if there is a fetched Student
+	 */
+	public boolean hasStudent() {
 		return mStudent != null;
 	}
 	
+	/**
+	 * @return true, if it is currently logged in on Moodle
+	 */
 	public boolean isLoggedInMoodle() {
 		return mMoodleCookie != null;
+	}
+	
+	/**
+	 * @return true, if it is currently logged in on Siga
+	 */
+	private boolean isLoggedInSiga() {
+		return mLoggedInSiga;
 	}
 
 	/* ----- Schedule ----- */
 	
 	public void fetchSchedule() {
 		Timber.d("Fetching Schedule");
+		
+		if (! isLoggedInSiga()) {
+			sigaLogIn();
+		}
+		
 		mScheduleTask = new ScheduleTask(mNetworkService);
 		mScheduleTask.execute();
 	}
@@ -165,7 +209,8 @@ public class DataManager {
 			
 			if (Student.class.isAssignableFrom(obj.getClass())) {
 				mStudent = (Student) obj;
-				mPreferencesHelper.putLoggedInStudent(mStudent);
+				mPreferencesHelper.putStudent(mStudent);
+				mLoggedInSiga = true;
 				Timber.d("Student saved successfully");
 			} else if (obj.getClass() == Cookie.class) {
 				mMoodleCookie = (Cookie) obj;
@@ -186,7 +231,7 @@ public class DataManager {
 			
 			mStudent = mStudent.withCourse(newCourse);
 			
-			mPreferencesHelper.putLoggedInStudent(mStudent);
+			mPreferencesHelper.putStudent(mStudent);
 			Timber.d("Enrolled disciplines saved successfully");
 		}
 	}

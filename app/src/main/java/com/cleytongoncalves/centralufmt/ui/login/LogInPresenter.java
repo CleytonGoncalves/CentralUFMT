@@ -53,7 +53,7 @@ public final class LogInPresenter implements Presenter<LogInMvpView> {
 		}
 		
 		EventBus.getDefault().register(this);
-		mDataManager.logIn(rga, password, DataManager.LOGIN_SIGA);
+		mDataManager.initialLogIn(rga, password);
 	}
 	
 	void cancelLogin() {

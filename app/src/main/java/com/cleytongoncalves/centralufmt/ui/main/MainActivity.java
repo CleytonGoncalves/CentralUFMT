@@ -98,9 +98,9 @@ public class MainActivity extends BaseActivity
 		super.onPostCreate(savedInstanceState);
 		mDrawerToggle.syncState();
 		
-		if (NetworkUtil.isNetworkConnected(this) && mDataManager.isLoggedInSiga()) {
+		if (NetworkUtil.isNetworkConnected(this) && mDataManager.hasStudent()) {
 			//Sign in on Moodle ahead of time, given that it has a slow response time.
-			mDataManager.triggerMoodleLogIn();
+			mDataManager.moodleLogIn();
 		}
 		
 		//Hacky way to pre-load the Play Services and Map data
@@ -226,7 +226,7 @@ public class MainActivity extends BaseActivity
 		TextView mainText = (TextView) headerView.findViewById(R.id.nav_header_name);
 		TextView secondaryText = (TextView) headerView.findViewById(R.id.nav_header_rga);
 
-		if (mDataManager.isLoggedInSiga()) {
+		if (mDataManager.hasStudent()) {
 			Student student = mDataManager.getStudent();
 			mainText.setText(student.getFirstName() + " " + student.getLastName());
 			secondaryText.setText(student.getRga());

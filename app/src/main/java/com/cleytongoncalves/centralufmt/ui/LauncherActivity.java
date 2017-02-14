@@ -19,7 +19,7 @@ public class LauncherActivity extends BaseActivity {
 		activityComponent().inject(this);
 
 		Intent intent;
-		if (mDataManager.isLoggedInSiga()) {
+		if (mDataManager.hasStudent()) {
 			intent = MainActivity.getStartIntent(this, true);
 		} else {
 			intent = LogInActivity.getStartIntent(this, true);

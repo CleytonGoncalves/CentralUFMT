@@ -54,7 +54,7 @@ public final class MoodlePresenter implements Presenter<MoodleMvpView> {
 		}
 
 		EventBus.getDefault().register(this);
-		mDataManager.triggerMoodleLogIn();
+		mDataManager.moodleLogIn();
 	}
 
 	@Subscribe(threadMode = ThreadMode.MAIN)
