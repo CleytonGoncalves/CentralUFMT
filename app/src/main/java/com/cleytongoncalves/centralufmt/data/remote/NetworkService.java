@@ -59,7 +59,7 @@ public final class NetworkService {
 			         url);
 		} catch (IOException e) {
 			result = new NetworkOperation(NETWORK_IO_ERROR);
-			Timber.w(e, "Failed GET operation on %s - I/O Error", url);
+			Timber.i(e, "Failed GET operation on %s - I/O Error", url);
 		} catch (IllegalStateException e) {
 			result = new NetworkOperation(NETWORK_IO_ERROR);
 			Timber.w(e, "Failed GET operation on %s - IllegalState Error", url);
@@ -90,11 +90,11 @@ public final class NetworkService {
 			response.close();
 		} catch (UnknownHostException e) {
 			result = new NetworkOperation(NETWORK_IO_ERROR);
-			Timber.i(e, "Failed POST operation on %s - Network Error (Probably not connected)",
+			Timber.i(e, "Failed POST operation on %s - Network Error",
 			         url);
 		} catch (IOException e) {
 			result = new NetworkOperation(NETWORK_IO_ERROR);
-			Timber.w(e, "Failed POST operation on %s - I/O Error", url);
+			Timber.i(e, "Failed POST operation on %s - I/O Error", url);
 		} catch (IllegalStateException e) {
 			result = new NetworkOperation(NETWORK_IO_ERROR);
 			Timber.w(e, "Failed POST operation on %s - IllegalState Error", url);
