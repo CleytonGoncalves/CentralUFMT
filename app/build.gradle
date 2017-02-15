@@ -75,6 +75,7 @@ dependencies {
     final LEAKCANARY_VERSION = '1.5'
     final BUGSNAG_VERSION = '3.4.0'
     final IMMUTABLES_VERSION = '2.3.9'
+    final JOBQUEUE_VERSION = '2.0.1'
 
     //compile fileTree(include: ['*.jar'], dir: 'libs')
     compile "com.android.support:appcompat-v7:$SUPPORT_LIBRARY_VERSION"
@@ -116,4 +117,6 @@ dependencies {
     provided "org.immutables:gson:$IMMUTABLES_VERSION:annotations"
 
     compile "com.android.support:cardview-v7:$SUPPORT_LIBRARY_VERSION"
+
+    compile "com.birbit:android-priority-jobqueue:$JOBQUEUE_VERSION"
 }

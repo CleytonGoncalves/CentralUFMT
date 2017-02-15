@@ -57,7 +57,7 @@ public final class LogInPresenter implements Presenter<LogInMvpView> {
 	}
 	
 	void cancelLogin() {
-		mDataManager.cancelLogIn();
+		mDataManager.cancelSigaLogIn();
 	}
 	
 	@Subscribe(threadMode = ThreadMode.MAIN)
@@ -98,6 +98,6 @@ public final class LogInPresenter implements Presenter<LogInMvpView> {
 	}
 	
 	boolean isLogInHappening() {
-		return mDataManager.isLogInHappening();
+		return mDataManager.isSigaLogInHappening();
 	}
 }

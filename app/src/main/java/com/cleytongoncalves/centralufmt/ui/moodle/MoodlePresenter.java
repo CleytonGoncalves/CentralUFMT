@@ -31,7 +31,7 @@ public final class MoodlePresenter implements Presenter<MoodleMvpView> {
 		if (mDataManager.isLoggedInMoodle()) {
 			//Already logged in before by self, or after the app login screen.
 			onLogInSuccessful(mDataManager.getMoodleCookie());
-		} else if (mDataManager.isLogInHappening()) {
+		} else if (mDataManager.isMoodleLogInHappening()) {
 			//The app login screen fired the Moodle LogIn,
 			//but this got instantiated before its conclusion.
 			EventBus.getDefault().register(this);

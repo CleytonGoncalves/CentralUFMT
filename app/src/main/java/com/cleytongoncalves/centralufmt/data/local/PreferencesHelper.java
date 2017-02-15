@@ -71,12 +71,12 @@ public class PreferencesHelper {
 		return auth.length > 0 ? auth : null;
 	}
 
-	public void putLoggedInStudent(Student student) {
+	public void putStudent(Student student) {
 		mSharedPref.edit().putString(PREF_KEY_STUDENT, mGson.toJson(student)).apply();
 	}
 
 	@Nullable
-	public Student getLoggedInStudent() {
+	public Student getStudent() {
 		String studentJson = mSharedPref.getString(PREF_KEY_STUDENT, null);
 
 		if (studentJson == null) {
