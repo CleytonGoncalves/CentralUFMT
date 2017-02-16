@@ -7,6 +7,7 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 
+import com.cleytongoncalves.centralufmt.CentralUfmt;
 import com.cleytongoncalves.centralufmt.R;
 import com.cleytongoncalves.centralufmt.data.DataManager;
 import com.cleytongoncalves.centralufmt.data.local.PreferencesHelper;
@@ -63,6 +64,12 @@ public class SettingsActivity extends BaseActivity {
 							return true;
 						});
 			}
+		}
+		
+		@Override
+		public void onDestroy() {
+			super.onDestroy();
+			CentralUfmt.getRefWatcher(getActivity()).watch(this);
 		}
 	}
 }
