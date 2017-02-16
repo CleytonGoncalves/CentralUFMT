@@ -17,7 +17,7 @@ android {
     }
 
     compileSdkVersion 25
-    buildToolsVersion '25.0.0'
+    buildToolsVersion '25.0.2'
     compileOptions.incremental = false //Remove and see if Dagger still bugs
 
     defaultConfig {
@@ -60,14 +60,14 @@ android {
 }
 
 dependencies {
-    final SUPPORT_LIBRARY_VERSION = '25.0.1'
+    final SUPPORT_LIBRARY_VERSION = '25.1.1'
     final BUTTERKNIFE_VERSION = '8.4.0'
     final EVENTBUS_VERSION = '3.0.0'
     final OKHTTP_VERSION = '3.4.1'
     final JSOUP_VERSION = '1.10.1'
     final DAGGER_VERSION = '2.7'
     final GSON_VERSION = '2.7'
-    final GMAPS_VERSION = '10.0.1'
+    final GMAPS_VERSION = '10.2.0'
     final GMAPS_UTILS_VERSION = '0.4.4'
     final JODA_TIME_VERSION = '2.9.4.3'
     final AUTOFITTEXTVIEW_VERSION = '0.2.1'
@@ -82,6 +82,7 @@ dependencies {
     compile "com.android.support:support-v4:$SUPPORT_LIBRARY_VERSION"
     compile "com.android.support:design:$SUPPORT_LIBRARY_VERSION"
     compile "com.android.support:gridlayout-v7:$SUPPORT_LIBRARY_VERSION"
+    compile "com.android.support:cardview-v7:$SUPPORT_LIBRARY_VERSION"
 
     compile "com.jakewharton:butterknife:$BUTTERKNIFE_VERSION"
     apt "com.jakewharton:butterknife-compiler:$BUTTERKNIFE_VERSION"
@@ -115,8 +116,6 @@ dependencies {
     provided "org.immutables:value:$IMMUTABLES_VERSION:annotations"
     provided "org.immutables:builder:$IMMUTABLES_VERSION"
     provided "org.immutables:gson:$IMMUTABLES_VERSION:annotations"
-
-    compile "com.android.support:cardview-v7:$SUPPORT_LIBRARY_VERSION"
 
     compile "com.birbit:android-priority-jobqueue:$JOBQUEUE_VERSION"
 }
