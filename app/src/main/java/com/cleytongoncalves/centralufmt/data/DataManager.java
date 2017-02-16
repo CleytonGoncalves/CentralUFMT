@@ -2,15 +2,15 @@ package com.cleytongoncalves.centralufmt.data;
 
 import com.birbit.android.jobqueue.JobManager;
 import com.birbit.android.jobqueue.TagConstraint;
-import com.cleytongoncalves.centralufmt.data.events.LogInEvent;
+import com.cleytongoncalves.centralufmt.data.events.SigaLogInEvent;
 import com.cleytongoncalves.centralufmt.data.events.MenuRuFetchEvent;
+import com.cleytongoncalves.centralufmt.data.events.MoodleLogInEvent;
 import com.cleytongoncalves.centralufmt.data.events.ScheduleFetchEvent;
 import com.cleytongoncalves.centralufmt.data.jobs.MenuRuFetchJob;
 import com.cleytongoncalves.centralufmt.data.jobs.MoodleLogInJob;
 import com.cleytongoncalves.centralufmt.data.jobs.ScheduleFetchJob;
 import com.cleytongoncalves.centralufmt.data.jobs.SigaLogInJob;
 import com.cleytongoncalves.centralufmt.data.local.PreferencesHelper;
-import com.cleytongoncalves.centralufmt.data.model.Course;
 import com.cleytongoncalves.centralufmt.data.model.Student;
 
 import org.greenrobot.eventbus.EventBus;
@@ -62,8 +62,8 @@ public class DataManager {
 	
 	/**
 	 * Initial App LogIn
-	 * @param rga      Registration number
-	 * @param authKey  Siga authentication key
+	 * @param rga     Registration number
+	 * @param authKey Siga authentication key
 	 */
 	public void initialLogIn(String rga, char[] authKey) {
 		mPreferencesHelper.putCredentials(rga, authKey);
@@ -78,10 +78,6 @@ public class DataManager {
 		final char[] password = mPreferencesHelper.getAuth();
 		
 		mJobManager.addJobInBackground(new SigaLogInJob(rga, password));
-	}
-	
-	public boolean isSigaLogInHappening() {
-		return false;
 	}
 	
 	public void cancelSigaLogIn() {
@@ -107,10 +103,6 @@ public class DataManager {
 		mJobManager.addJobInBackground(new MoodleLogInJob(rga, authKey));
 	}
 	
-	public boolean isMoodleLogInHappening() {
-		return false;
-	}
-	
 	private void cancelMoodleLogIn() {
 		mJobManager.cancelJobsInBackground(null, TagConstraint.ANY, MoodleLogInJob.TAG);
 	}
@@ -126,13 +118,9 @@ public class DataManager {
 	/* ----- Schedule ----- */
 	
 	public void fetchSchedule() {
-		if (!isLoggedInSiga()) { sigaLogIn(); }
+		if (! isLoggedInSiga()) { sigaLogIn(); }
 		
 		mJobManager.addJobInBackground(new ScheduleFetchJob());
-	}
-	
-	public boolean isFetchingSchedule() {
-		return false;
 	}
 	
 	private void cancelScheduleFetch() {
@@ -143,10 +131,6 @@ public class DataManager {
 	
 	public void fetchMenuRu() {
 		mJobManager.addJobInBackground(new MenuRuFetchJob());
-	}
-	
-	public boolean isFetchingMenuRu() {
-		return false;
 	}
 	
 	private void cancelMenuRuFetch() {
@@ -170,40 +154,46 @@ public class DataManager {
 	/* ----- EventBus Listeners ----- */
 	
 	@Subscribe(threadMode = ThreadMode.MAIN, priority = 1)
-	public void onLogInCompleted(LogInEvent logInEvent) {
-		if (logInEvent.isSuccessful()) {
-			Object obj = logInEvent.getResult();
+	public void onSigaLogInCompleted(SigaLogInEvent sigaEvent) {
+		if (sigaEvent.isSuccessful()) {
 			
-			if (Student.class.isAssignableFrom(obj.getClass())) {
-				mStudent = (Student) obj;
-				mPreferencesHelper.putStudent(mStudent);
-				mLoggedInSiga = true;
-				Timber.d("Student saved successfully");
-			} else if (obj.getClass() == Cookie.class) {
-				mMoodleCookie = (Cookie) obj;
-				Timber.d("Cookie saved successfully");
-			} else {
-				Timber.wtf("LogInEvent object unknown: %s", obj.getClass());
-			}
+			mStudent = sigaEvent.getResult();
+			mPreferencesHelper.putStudent(mStudent);
+			mLoggedInSiga = true;
+			
+			//If there is more on the queue, cancel them (special case on Single Instance Jobs)
+			cancelSigaLogIn();
+			Timber.d("Student saved successfully");
 		}
 	}
 	
-	@Subscribe(threadMode = ThreadMode.MAIN, priority = 1)
+	@Subscribe(threadMode = ThreadMode.MAIN)
+	public void onMoodleLogInCompleted(MoodleLogInEvent moodleEvent) {
+		if (moodleEvent.isSuccessful()) {
+			cancelMoodleLogIn();
+			mMoodleCookie = moodleEvent.getResult();
+			Timber.d("Cookie saved successfully");
+		}
+	}
+	
+	@Subscribe(threadMode = ThreadMode.MAIN)
 	public void onScheduleFetched(ScheduleFetchEvent scheduleEvent) {
 		if (scheduleEvent.isSuccessful()) {
+			/* - Not used for now -
 			Course newCourse = mStudent.getCourse()
 			                           .withEnrolledDisciplines(scheduleEvent.getResult());
 			
 			mStudent = mStudent.withCourse(newCourse);
 			
 			mPreferencesHelper.putStudent(mStudent);
+			*/
+			
 			Timber.d("Enrolled disciplines saved successfully");
 		}
 	}
 	
-	@Subscribe(threadMode = ThreadMode.MAIN, priority = 1)
+	@Subscribe(threadMode = ThreadMode.MAIN)
 	public void onMenuRuFetched(MenuRuFetchEvent menuRuEvent) {
-		//TODO: Move save menuru to prefs here
 		if (menuRuEvent.isSuccessful()) {
 			Timber.d("Menu RU received successfully");
 		}
