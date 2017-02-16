@@ -40,8 +40,7 @@ public final class ScheduleFetchJob extends NetworkJob {
 		super(new Params(BACKGROUND)
 				      .addTags(TAG)
 				      .singleInstanceBy(TAG)
-				      .groupBy(SIGA)
-				      .requireNetwork());
+				      .groupBy(SIGA));
 	}
 	
 	@Override
@@ -56,6 +55,7 @@ public final class ScheduleFetchJob extends NetworkJob {
 	
 	@Override
 	public void onRun() throws Throwable {
+		assertNetworkConnected();
 		NetworkService networkService = mNetworkService.get();
 		
 		assertNotCancelled();

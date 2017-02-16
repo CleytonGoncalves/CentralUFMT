@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
-import com.cleytongoncalves.centralufmt.data.events.LogInEvent;
+import com.cleytongoncalves.centralufmt.data.events.SigaLogInEvent;
 import com.cleytongoncalves.centralufmt.data.local.HtmlHelper;
 import com.cleytongoncalves.centralufmt.data.model.Student;
 import com.cleytongoncalves.centralufmt.data.remote.NetworkOperation;
@@ -44,13 +44,13 @@ public final class SigaLogInJob extends NetworkJob {
 	@Inject Lazy<NetworkService> mLazyNetworkService;
 	private final String mRga;
 	private char[] mAuthKey;
+	private boolean mAccessDenied;
 	
 	public SigaLogInJob(String rga, char[] authKey) {
 		super(new Params(BACKGROUND_HIGH)
 				      .addTags(TAG)
 				      .singleInstanceBy(TAG)
-				      .groupBy(SIGA)
-				      .requireNetwork());
+				      .groupBy(SIGA));
 		
 		mRga = rga;
 		mAuthKey = authKey;
@@ -68,6 +68,7 @@ public final class SigaLogInJob extends NetworkJob {
 	
 	@Override
 	public void onRun() throws Throwable {
+		assertNetworkConnected();
 		NetworkService networkService = mLazyNetworkService.get();
 		
 		assertNotCancelled();
@@ -83,14 +84,15 @@ public final class SigaLogInJob extends NetworkJob {
 		assertLoginSuccess(logInPost);
 		
 		assertNotCancelled();
-		NetworkOperation exacaoGet = networkService.get(BASE_SIGA_URL + EXACAO_SIGA_URL, CHARSET_ISO);
+		NetworkOperation exacaoGet =
+				networkService.get(BASE_SIGA_URL + EXACAO_SIGA_URL, CHARSET_ISO);
 		assertNetworkSuccess(exacaoGet);
 		
 		Student student = parseStudent(exacaoGet);
 		
 		assertNotCancelled();
 		clearAuthKey();
-		EventBus.getDefault().post(new LogInEvent(student));
+		EventBus.getDefault().post(new SigaLogInEvent(student));
 		Timber.d("Siga login successful");
 	}
 	
@@ -101,14 +103,20 @@ public final class SigaLogInJob extends NetworkJob {
 		String msg = "Siga login cancelled";
 		switch (cancelReason) {
 			case REACHED_RETRY_LIMIT:
-				EventBus.getDefault().post(new LogInEvent(LogInEvent.GENERAL_ERROR));
+				EventBus.getDefault().post(new SigaLogInEvent(SigaLogInEvent.GENERAL_ERROR));
 				Timber.d("%s - Reached Retry Limit", msg);
 				break;
 			case CANCELLED_VIA_SHOULD_RE_RUN:
-				EventBus.getDefault().post(new LogInEvent(LogInEvent.GENERAL_ERROR));
-				Timber.d("%s - HTTP Status 400 (Client Error)", msg);
+				if (mAccessDenied) {
+					Timber.d("%s - Access Denied (Wrong User/Auth)", msg);
+					EventBus.getDefault().post(new SigaLogInEvent(SigaLogInEvent.ACCESS_DENIED));
+				} else {
+					Timber.d("%s - HTTP Status 400 (Client Error)", msg);
+					EventBus.getDefault().post(new SigaLogInEvent(SigaLogInEvent.GENERAL_ERROR));
+				}
 				break;
 			case CANCELLED_WHILE_RUNNING:
+				EventBus.getDefault().post(new SigaLogInEvent(SigaLogInEvent.USER_CANCELLED));
 				Timber.d("%s - Job Cancelled", msg);
 				break;
 		}
@@ -117,15 +125,15 @@ public final class SigaLogInJob extends NetworkJob {
 	@Override
 	protected RetryConstraint shouldReRunOnThrowable(@NonNull Throwable throwable, int runCount,
 	                                                 int maxRunCount) {
-		if (shouldRetry(throwable)) {
-			//exponential delay in ms before trying again
-			RetryConstraint constraint = RetryConstraint
-					                             .createExponentialBackoff(runCount, RETRY_DELAY);
-			constraint.setApplyNewDelayToGroup(true);
-			return constraint;
+		if (mAccessDenied || ! shouldRetry(throwable)) {
+			return RetryConstraint.CANCEL;
 		}
 		
-		return RetryConstraint.CANCEL;
+		//exponential delay in ms before trying again
+		RetryConstraint constraint = RetryConstraint
+				                             .createExponentialBackoff(runCount, RETRY_DELAY);
+		constraint.setApplyNewDelayToGroup(true);
+		return constraint;
 	}
 	
 	@Override
@@ -151,7 +159,7 @@ public final class SigaLogInJob extends NetworkJob {
 				Timber.wtf(e, "*** Encoding error on Siga LogIn Form Params ***");
 			}
 		}
-
+		
 		paramsMap.clear();
 		
 		return formBody.build();
@@ -167,6 +175,7 @@ public final class SigaLogInJob extends NetworkJob {
 	
 	private void assertLoginSuccess(NetworkOperation operation) {
 		if (! operation.getResponseHeaders().containsKey("Set-Cookie")) {
+			mAccessDenied = true;
 			throw new AuthenticationErrorException();
 		}
 	}

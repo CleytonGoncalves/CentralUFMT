@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
-import com.cleytongoncalves.centralufmt.data.events.LogInEvent;
+import com.cleytongoncalves.centralufmt.data.events.MoodleLogInEvent;
 import com.cleytongoncalves.centralufmt.data.remote.NetworkOperation;
 import com.cleytongoncalves.centralufmt.data.remote.NetworkService;
 import com.cleytongoncalves.centralufmt.injection.component.ApplicationComponent;
@@ -41,8 +41,7 @@ public final class MoodleLogInJob extends NetworkJob {
 	public MoodleLogInJob(String rga, char[] authKey) {
 		super(new Params(BACKGROUND)
 		     .addTags(TAG)
-		     .singleInstanceBy(TAG)
-		     .requireNetwork());
+		     .singleInstanceBy(TAG));
 		
 		mRga = rga;
 		mAuthKey = authKey;
@@ -60,6 +59,7 @@ public final class MoodleLogInJob extends NetworkJob {
 	
 	@Override
 	public void onRun() throws Throwable {
+		assertNetworkConnected();
 		NetworkService networkService = mLazyNetworkService.get();
 		
 		FormBody params = createAvaFormParams();
@@ -75,7 +75,7 @@ public final class MoodleLogInJob extends NetworkJob {
 		
 		assertNotCancelled();
 		clearAuthKey();
-		EventBus.getDefault().post(new LogInEvent(cookies.get(0)));
+		EventBus.getDefault().post(new MoodleLogInEvent(cookies.get(0)));
 		Timber.d("Moodle login successful");
 	}
 	
@@ -86,11 +86,11 @@ public final class MoodleLogInJob extends NetworkJob {
 		String msg = "Moodle login cancelled";
 		switch (cancelReason) {
 			case REACHED_RETRY_LIMIT:
-				EventBus.getDefault().post(new LogInEvent(LogInEvent.GENERAL_ERROR));
+				EventBus.getDefault().post(new MoodleLogInEvent(MoodleLogInEvent.GENERAL_ERROR));
 				Timber.d("%s - Reached Retry Limit", msg);
 				break;
 			case CANCELLED_VIA_SHOULD_RE_RUN:
-				EventBus.getDefault().post(new LogInEvent(LogInEvent.GENERAL_ERROR));
+				EventBus.getDefault().post(new MoodleLogInEvent(MoodleLogInEvent.GENERAL_ERROR));
 				Timber.d("%s - HTTP Status 400 (Client Error)", msg);
 				break;
 			case CANCELLED_WHILE_RUNNING:

@@ -7,6 +7,7 @@ import com.birbit.android.jobqueue.Job;
 import com.birbit.android.jobqueue.Params;
 import com.cleytongoncalves.centralufmt.data.remote.NetworkOperation;
 import com.cleytongoncalves.centralufmt.injection.component.ApplicationComponent;
+import com.cleytongoncalves.centralufmt.util.NetworkUtil;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -30,6 +31,12 @@ public abstract class NetworkJob extends Job {
 	
 	public abstract void inject(ApplicationComponent appComponent);
 	
+	/**
+	 * Checks if the throwable is a NetworkFailedException, so it can call
+	 * {@link NetworkFailedException#shouldRetry()}
+	 * @param throwable throwable to check
+	 * @return true, if it should try again
+	 */
 	boolean shouldRetry(Throwable throwable) {
 		if (throwable instanceof NetworkFailedException) {
 			NetworkFailedException exception = (NetworkFailedException) throwable;
@@ -41,17 +48,6 @@ public abstract class NetworkJob extends Job {
 	/* Convenience Assertions */
 	
 	/**
-	 * Convenience method that checks if the NetworkOperation has failed and throws a
-	 * NetworkFailedException if it has.
-	 * @param operation the NetworkOperation obtained
-	 */
-	void assertNetworkSuccess(NetworkOperation operation) {
-		if (!operation.isSuccessful()) {
-			throw new NetworkFailedException(operation.getErrorCode());
-		}
-	}
-	
-	/**
 	 * Convenience method that checks if the job is cancelled and throws a JobCancelledException
 	 * if it is.
 	 */
@@ -59,6 +55,26 @@ public abstract class NetworkJob extends Job {
 	public void assertNotCancelled() {
 		if (isCancelled()) {
 			throw new JobCancelledException();
+		}
+	}
+	
+	/**
+	 * Checks if there is a network connection available (so it can fast-fail)
+	 */
+	void assertNetworkConnected() {
+		if (!NetworkUtil.isNetworkConnected(getApplicationContext())) {
+			throw new NetworkFailedException();
+		}
+	}
+	
+	/**
+	 * Convenience method that checks if the NetworkOperation has failed and throws a
+	 * NetworkFailedException if it has.
+	 * @param operation the NetworkOperation obtained
+	 */
+	void assertNetworkSuccess(NetworkOperation operation) {
+		if (!operation.isSuccessful()) {
+			throw new NetworkFailedException(operation.getErrorCode());
 		}
 	}
 	
@@ -79,10 +95,18 @@ public abstract class NetworkJob extends Job {
 	private static final class NetworkFailedException extends JobExitingException {
 		private final int mErrorCode;
 		
+		private NetworkFailedException() {
+			this(-1);
+		}
+		
 		private NetworkFailedException(int errorCode) {
+			super("HTTP Status Code: " + errorCode);
 			mErrorCode = errorCode;
 		}
 		
+		/**
+		 * @return true, if it did not failed because of client error (HTTP Status 400)
+		 */
 		private boolean shouldRetry() {
 			return mErrorCode < 400 || mErrorCode > 499; //HTTP status 400 range = client error
 		}
@@ -90,7 +114,7 @@ public abstract class NetworkJob extends Job {
 	}
 	
 	private static final class JobCancelledException extends JobExitingException {
-		public JobCancelledException() {
+		private JobCancelledException() {
 			super("The job has been cancelled");
 		}
 	}

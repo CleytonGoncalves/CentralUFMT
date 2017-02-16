@@ -37,8 +37,7 @@ public final class MenuRuFetchJob extends NetworkJob {
 	public MenuRuFetchJob() {
 		super(new Params(BACKGROUND)
 				      .addTags(TAG)
-				      .singleInstanceBy(TAG)
-				      .requireNetwork());
+				      .singleInstanceBy(TAG));
 	}
 	
 	@Override
@@ -53,6 +52,7 @@ public final class MenuRuFetchJob extends NetworkJob {
 	
 	@Override
 	public void onRun() throws Throwable {
+		assertNetworkConnected();
 		NetworkService networkService = mLazyNetworkService.get();
 		
 		assertNotCancelled();
