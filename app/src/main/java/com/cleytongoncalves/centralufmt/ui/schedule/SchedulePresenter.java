@@ -63,7 +63,7 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 	}
 
 	void loadSchedule(boolean forceUpdate) {
-		if (isLoadingData() || mDataManager.isFetchingSchedule()) { return; }
+		if (isLoadingData()) { return; }
 
 		ScheduleData schedule = null;
 		if (! forceUpdate) { schedule = mDataManager.getPreferencesHelper().getSchedule(); }
@@ -74,9 +74,11 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 		}
 
 		if (schedule == null) {
+			//Fetch -> Parse -> Show
 			EventBus.getDefault().register(this);
 			mDataManager.fetchSchedule();
 		} else {
+			//Show (already parsed)
 			onDataChanged(schedule);
 		}
 	}
@@ -128,8 +130,7 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 
 		if (schedule.isEmpty()) {
 			mView.showEmptyScheduleSnack();
-		}
-		else if (isLoadingData()) {
+		} else if (isLoadingData()) {
 			mView.showDataUpdatedSnack();
 			mDataManager.getPreferencesHelper().putSchedule(schedule);
 		}
@@ -150,11 +151,15 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 	}
 
 	/* Private Helper Methods */
-
+	
+	/**
+	 * @return true, when fetching OR parsing data
+	 */
 	private boolean isLoadingData() {
 		return EventBus.getDefault().isRegistered(this);
 	}
 
+	
 	private static class DataParserTask extends AsyncTask<Void, Void, Void> {
 		private final List<Discipline> mEnrolled;
 		private int mAmountOfDays;

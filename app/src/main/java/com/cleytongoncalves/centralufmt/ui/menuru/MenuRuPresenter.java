@@ -58,7 +58,7 @@ final class MenuRuPresenter implements Presenter<MenuRuMvpView>, DataPresenter {
 	}
 
 	void loadMenuRu(boolean forceUpdate) {
-		if (isParsingData() || mDataManager.isFetchingMenuRu()) { return; }
+		if (isParsingData() || isFetchingData()) { return; }
 
 		MenuRu menuRu = null;
 		if (! forceUpdate) { menuRu = mDataManager.getPreferencesHelper().getMenuRu(); }
@@ -70,9 +70,11 @@ final class MenuRuPresenter implements Presenter<MenuRuMvpView>, DataPresenter {
 		
 		EventBus.getDefault().register(this);
 		if (menuRu == null || ! isTodayMenu(menuRu)) {
+			//Fetch -> Parse -> Show
 			mDataManager.fetchMenuRu();
 			mFetchingData = true;
 		} else {
+			//Parse -> Show
 			parseMenuForAdapter(menuRu);
 		}
 	}
@@ -124,7 +126,7 @@ final class MenuRuPresenter implements Presenter<MenuRuMvpView>, DataPresenter {
 
 		mParserTask = null;
 
-		if (mFetchingData) {
+		if (isFetchingData()) {
 			mView.showDataUpdatedSnack();
 			mFetchingData = false;
 		}
@@ -141,7 +143,11 @@ final class MenuRuPresenter implements Presenter<MenuRuMvpView>, DataPresenter {
 	}
 
 	/* Private Helper Methods */
-
+	
+	private boolean isFetchingData() {
+		return mFetchingData;
+	}
+	
 	private boolean isParsingData() {
 		return mParserTask != null;
 	}
@@ -149,7 +155,8 @@ final class MenuRuPresenter implements Presenter<MenuRuMvpView>, DataPresenter {
 	private boolean isTodayMenu(MenuRu menuRu) {
 		return menuRu.getDate().equals(LocalDate.now());
 	}
-
+	
+	
 	private static class DataParserTask extends AsyncTask<Void, Void, Void> {
 		private final MenuRu mMenuRu;
 
