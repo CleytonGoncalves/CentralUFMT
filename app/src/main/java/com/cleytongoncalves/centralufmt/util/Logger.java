@@ -51,20 +51,22 @@ public final class Logger {
 		return new CustomLogger() {
 			@Override
 			public boolean isDebugEnabled() {
-				return false;
+				return false; //Too much text pollution
 			}
 			
 			@Override
 			public void d(String text, Object... args) {
-				//Timber.d(text, args);
+				//Timber.d(text, args); //Too much text pollution
 			}
 			
 			@Override
 			public void e(Throwable t, String text, Object... args) {
-				//prevents from printing an error on expected Job exceptions
-				if (t instanceof JobExitingException) { return; }
-				
-				Timber.e(t, text, args);
+				if (t instanceof JobExitingException) {
+					//prevents from printing an error on expected Job exceptions
+					Timber.i(t, text, args);
+				} else {
+					Timber.e(t, text, args);
+				}
 			}
 			
 			@Override
