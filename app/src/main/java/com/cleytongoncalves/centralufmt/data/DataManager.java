@@ -2,10 +2,10 @@ package com.cleytongoncalves.centralufmt.data;
 
 import com.birbit.android.jobqueue.JobManager;
 import com.birbit.android.jobqueue.TagConstraint;
-import com.cleytongoncalves.centralufmt.data.events.SigaLogInEvent;
 import com.cleytongoncalves.centralufmt.data.events.MenuRuFetchEvent;
 import com.cleytongoncalves.centralufmt.data.events.MoodleLogInEvent;
 import com.cleytongoncalves.centralufmt.data.events.ScheduleFetchEvent;
+import com.cleytongoncalves.centralufmt.data.events.SigaLogInEvent;
 import com.cleytongoncalves.centralufmt.data.jobs.MenuRuFetchJob;
 import com.cleytongoncalves.centralufmt.data.jobs.MoodleLogInJob;
 import com.cleytongoncalves.centralufmt.data.jobs.ScheduleFetchJob;
@@ -37,8 +37,11 @@ public class DataManager {
 		mPreferencesHelper = preferencesHelper;
 		mJobManager = jobManager;
 		
-		mStudent = preferencesHelper.getStudent();
-		
+		init();
+	}
+	
+	private void init() {
+		mStudent = mPreferencesHelper.getStudent();
 		EventBus.getDefault().register(this);
 	}
 	
