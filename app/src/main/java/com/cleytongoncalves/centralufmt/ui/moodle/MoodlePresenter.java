@@ -3,7 +3,7 @@ package com.cleytongoncalves.centralufmt.ui.moodle;
 import android.support.annotation.Nullable;
 
 import com.cleytongoncalves.centralufmt.data.DataManager;
-import com.cleytongoncalves.centralufmt.data.events.LogInEvent;
+import com.cleytongoncalves.centralufmt.data.events.MoodleLogInEvent;
 import com.cleytongoncalves.centralufmt.ui.base.Presenter;
 
 import org.greenrobot.eventbus.EventBus;
@@ -24,21 +24,11 @@ public final class MoodlePresenter implements Presenter<MoodleMvpView> {
 		mDataManager = dataManager;
 	}
 
+	/* View Methods */
+	
 	@Override
 	public void attachView(MoodleMvpView mvpView) {
 		mView = mvpView;
-
-		if (mDataManager.isLoggedInMoodle()) {
-			//Already logged in before by self, or after the app login screen.
-			onLogInSuccessful(mDataManager.getMoodleCookie());
-		} else if (mDataManager.isMoodleLogInHappening()) {
-			//The app login screen fired the Moodle LogIn,
-			//but this got instantiated before its conclusion.
-			EventBus.getDefault().register(this);
-		} else {
-			//First time instantiating this
-			doLogIn();
-		}
 	}
 
 	@Override
@@ -46,8 +36,17 @@ public final class MoodlePresenter implements Presenter<MoodleMvpView> {
 		mView = null;
 		if (EventBus.getDefault().isRegistered(this)) { EventBus.getDefault().unregister(this); }
 	}
+	
+	void init() {
+		if (mDataManager.isLoggedInMoodle()) {
+			//Already logged in before by self, or after the app login screen.
+			onLogInSuccessful(mDataManager.getMoodleCookie());
+		} else {
+			logIn();
+		}
+	}
 
-	void doLogIn() {
+	void logIn() {
 		if (mView != null) {
 			mView.showProgressBar(true);
 			mView.showWebView(false);
@@ -57,13 +56,14 @@ public final class MoodlePresenter implements Presenter<MoodleMvpView> {
 		mDataManager.moodleLogIn();
 	}
 
+	/* Data Methods */
+	
 	@Subscribe(threadMode = ThreadMode.MAIN)
-	public void onLogInEvent(LogInEvent event) {
+	public void onMoodleLogInEvent(MoodleLogInEvent event) {
 		EventBus.getDefault().unregister(this);
 
 		if (event.isSuccessful()) {
-			Cookie cookie = (Cookie) event.getResult();
-			onLogInSuccessful(cookie);
+			onLogInSuccessful(event.getResult());
 		} else {
 			onLogInFailure(event.getFailureReason());
 		}
@@ -78,7 +78,7 @@ public final class MoodlePresenter implements Presenter<MoodleMvpView> {
 	}
 
 	@SuppressWarnings("UnusedParameters")
-	private void onLogInFailure(String reason) {
+	private void onLogInFailure(int reason) {
 		if (mView == null) { return; }
 
 		mView.showGeneralLogInError();
@@ -86,6 +86,8 @@ public final class MoodlePresenter implements Presenter<MoodleMvpView> {
 		mView.showProgressBar(false);
 	}
 
+	/* Private Helper Methods */
+	
 	private String getCookieString(Cookie cookie) {
 		return cookie.name() + "=" + cookie.value() + "; domain=" + cookie.domain();
 	}

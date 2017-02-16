@@ -2,30 +2,13 @@ package com.cleytongoncalves.centralufmt.data.events;
 
 import com.cleytongoncalves.centralufmt.data.model.MenuRu;
 
-public final class MenuRuFetchEvent implements BusEvent<MenuRu> {
-	private MenuRu mMenuRu;
-	private String mFailureReason;
-
-	public MenuRuFetchEvent(MenuRu menuRu) {
-		mMenuRu = menuRu;
+public final class MenuRuFetchEvent extends BusEvent<MenuRu> {
+	
+	public MenuRuFetchEvent(MenuRu result) {
+		super(result);
 	}
-
-	public MenuRuFetchEvent(String failureReason) {
-		mFailureReason = failureReason;
-	}
-
-	@Override
-	public boolean isSuccessful() {
-		return mMenuRu != null;
-	}
-
-	@Override
-	public MenuRu getResult() {
-		return mMenuRu;
-	}
-
-	@Override
-	public String getFailureReason() {
-		return mFailureReason;
+	
+	public MenuRuFetchEvent(int failureReason) {
+		super(failureReason);
 	}
 }

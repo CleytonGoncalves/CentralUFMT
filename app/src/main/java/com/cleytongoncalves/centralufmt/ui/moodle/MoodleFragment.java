@@ -69,7 +69,9 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 		mRootView = inflater.inflate(R.layout.fragment_moodle, container, false);
 
 		mUnbinder = ButterKnife.bind(this, mRootView);
+		
 		mPresenter.attachView(this);
+		mPresenter.init();
 
 		showProgressBar(true); //Will stop at MyBrowser.onPageFinished() or onLogInFailure()
 		return mRootView;
@@ -202,7 +204,7 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 		mSnackbar = Snackbar.make(mRootView, getString(R.string.error_generic_log_in),
 		                          Snackbar.LENGTH_INDEFINITE)
 		                    .setAction(getString(R.string.snack_retry_login_moodle),
-		                               v -> mPresenter.doLogIn());
+		                               v -> mPresenter.logIn());
 		mSnackbar.show();
 	}
 

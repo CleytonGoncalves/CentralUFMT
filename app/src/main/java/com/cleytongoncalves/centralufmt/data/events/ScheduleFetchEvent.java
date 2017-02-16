@@ -4,27 +4,13 @@ import com.cleytongoncalves.centralufmt.data.model.Discipline;
 
 import java.util.List;
 
-public final class ScheduleFetchEvent implements BusEvent<List<Discipline>> {
-	private List<Discipline> mDisciplineList;
-	private String mFailureReason;
-
-	public ScheduleFetchEvent(List<Discipline> disciplineList) {
-		mDisciplineList = disciplineList;
+public final class ScheduleFetchEvent extends BusEvent<List<Discipline>> {
+	
+	public ScheduleFetchEvent(List<Discipline> result) {
+		super(result);
 	}
-
-	public ScheduleFetchEvent(String failureReason) {
-		mFailureReason = failureReason;
-	}
-
-	public boolean isSuccessful() {
-		return mDisciplineList != null;
-	}
-
-	public List<Discipline> getResult() {
-		return mDisciplineList;
-	}
-
-	public String getFailureReason() {
-		return mFailureReason;
+	
+	public ScheduleFetchEvent(int failureReason) {
+		super(failureReason);
 	}
 }

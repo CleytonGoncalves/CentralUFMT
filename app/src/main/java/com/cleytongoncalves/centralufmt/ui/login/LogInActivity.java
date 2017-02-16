@@ -92,7 +92,7 @@ public final class LogInActivity extends BaseActivity implements LogInMvpView {
 	@Override
 	public void onBackPressed() {
 		if (mPresenter.isLogInHappening()) {
-			mPresenter.cancelLogin();
+			mPresenter.cancelLogIn();
 		} else {
 			super.onBackPressed();
 		}
@@ -153,13 +153,13 @@ public final class LogInActivity extends BaseActivity implements LogInMvpView {
 			// form field with an error.
 			focusView.requestFocus();
 		} else {
-			mPresenter.doLogIn(rga, password);
+			mPresenter.logIn(rga, password);
 		}
 	}
 
 	@OnClick(R.id.button_anonymous_log_in)
 	protected void onAnonymousLogInClick() {
-		mPresenter.doAnonymousLogIn();
+		mPresenter.anonymousLogIn();
 	}
 
 	/* MVP Methods */
