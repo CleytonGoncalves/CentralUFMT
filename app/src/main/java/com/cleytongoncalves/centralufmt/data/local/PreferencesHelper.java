@@ -25,7 +25,6 @@ import org.joda.time.LocalTime;
 import javax.inject.Inject;
 
 public class PreferencesHelper {
-	//View Constants
 	public static final String PREF_FILE_NAME = "central_ufmt_pref_file";
 	private static final String PREF_KEY_STUDENT = "PREF_KEY_STUDENT";
 	private static final String PREF_KEY_RGA = "PREF_KEY_RGA";
@@ -51,13 +50,17 @@ public class PreferencesHelper {
 		                         .create();
 	}
 	
+	/* LogOut*/
+	
 	public void clear() {
 		mSharedPref.edit().clear().apply();
 	}
 	
-	public void putCredentials(String rga, char[] password) {
+	/* Credentials */
+	
+	public void putCredentials(String rga, char[] authKey) {
 		mSharedPref.edit().putString(PREF_KEY_RGA, rga).apply();
-		mSharedPref.edit().putString(PREF_KEY_AUTH, String.valueOf(password)).apply();
+		mSharedPref.edit().putString(PREF_KEY_AUTH, String.valueOf(authKey)).apply();
 	}
 
 	@Nullable
@@ -66,10 +69,12 @@ public class PreferencesHelper {
 	}
 
 	@Nullable
-	public char[] getAuth() {
+	public char[] getAuthKey() {
 		char[] auth = mSharedPref.getString(PREF_KEY_AUTH, "").toCharArray();
 		return auth.length > 0 ? auth : null;
 	}
+	
+	/* Student */
 
 	public void putStudent(Student student) {
 		mSharedPref.edit().putString(PREF_KEY_STUDENT, mGson.toJson(student)).apply();
@@ -84,6 +89,8 @@ public class PreferencesHelper {
 		}
 		return mGson.fromJson(studentJson, Student.class);
 	}
+	
+	/* Schedule */
 
 	public void putSchedule(ScheduleData schedule) {
 		mSharedPref.edit().putString(PREF_KEY_SCHEDULE_DATA, mGson.toJson(schedule)).apply();
@@ -96,22 +103,8 @@ public class PreferencesHelper {
 
 		return mGson.fromJson(scheduleJson, ScheduleData.class);
 	}
-
-	public void putMapBusRouteDisplayState(boolean enabled) {
-		mSharedPref.edit().putBoolean(PREF_KEY_ROUTE_OPTION, enabled).apply();
-	}
-
-	public boolean getMapRouteDisplayState() {
-		return mSharedPref.getBoolean(PREF_KEY_ROUTE_OPTION, true);
-	}
-
-	public void putMapPoiDisplayState(boolean enabled) {
-		mSharedPref.edit().putBoolean(PREF_KEY_POI_OPTION, enabled).apply();
-	}
-
-	public boolean getMapPoiDisplayState() {
-		return mSharedPref.getBoolean(PREF_KEY_POI_OPTION, true);
-	}
+	
+	/* MenuRu */
 
 	public void putMenuRu(MenuRu menuRu) {
 		mSharedPref.edit().putString(PREF_KEY_MENURU, mGson.toJson(menuRu)).apply();
@@ -123,5 +116,23 @@ public class PreferencesHelper {
 		if (menuRuJson == null) { return null; }
 
 		return mGson.fromJson(menuRuJson, MenuRu.class);
+	}
+	
+	/* Map Preferences */
+	
+	public void putMapBusRouteDisplayState(boolean enabled) {
+		mSharedPref.edit().putBoolean(PREF_KEY_ROUTE_OPTION, enabled).apply();
+	}
+	
+	public boolean getMapRouteDisplayState() {
+		return mSharedPref.getBoolean(PREF_KEY_ROUTE_OPTION, true);
+	}
+	
+	public void putMapPoiDisplayState(boolean enabled) {
+		mSharedPref.edit().putBoolean(PREF_KEY_POI_OPTION, enabled).apply();
+	}
+	
+	public boolean getMapPoiDisplayState() {
+		return mSharedPref.getBoolean(PREF_KEY_POI_OPTION, true);
 	}
 }

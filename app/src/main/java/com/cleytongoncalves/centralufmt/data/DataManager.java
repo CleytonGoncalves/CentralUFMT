@@ -72,9 +72,9 @@ public class DataManager {
 	 */
 	private void sigaLogIn() {
 		final String rga = mPreferencesHelper.getRga();
-		final char[] password = mPreferencesHelper.getAuth();
+		final char[] authKey = mPreferencesHelper.getAuthKey();
 		
-		mJobManager.addJobInBackground(new SigaLogInJob(rga, password));
+		mJobManager.addJobInBackground(new SigaLogInJob(rga, authKey));
 	}
 	
 	public void cancelSigaLogIn() {
@@ -95,7 +95,7 @@ public class DataManager {
 	 */
 	public void moodleLogIn() {
 		final String rga = mPreferencesHelper.getRga();
-		final char[] authKey = mPreferencesHelper.getAuth();
+		final char[] authKey = mPreferencesHelper.getAuthKey();
 		
 		mJobManager.addJobInBackground(new MoodleLogInJob(rga, authKey));
 	}
