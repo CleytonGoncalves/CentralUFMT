@@ -6,6 +6,7 @@ import android.util.SparseArray;
 
 import com.cleytongoncalves.centralufmt.data.DataManager;
 import com.cleytongoncalves.centralufmt.data.events.ScheduleFetchEvent;
+import com.cleytongoncalves.centralufmt.data.local.PreferencesHelper;
 import com.cleytongoncalves.centralufmt.data.model.Discipline;
 import com.cleytongoncalves.centralufmt.ui.base.Presenter;
 import com.cleytongoncalves.centralufmt.util.TextUtil;
@@ -32,6 +33,7 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 	static final int MINIMUM_AMOUNT_OF_DAYS = 5;
 
 	private final DataManager mDataManager;
+	private final PreferencesHelper mPreferencesHelper;
 
 	@Nullable private ScheduleMvpView mView;
 	@Nullable private ScheduleAdapter mAdapter;
@@ -39,8 +41,9 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 	@Nullable private DataParserTask mParserTask;
 
 	@Inject
-	SchedulePresenter(DataManager dataManager) {
+	SchedulePresenter(DataManager dataManager, PreferencesHelper preferencesHelper) {
 		mDataManager = dataManager;
+		mPreferencesHelper = preferencesHelper;
 	}
 
 	/* View Methods */
@@ -66,7 +69,7 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 		if (isLoadingData()) { return; }
 
 		ScheduleData schedule = null;
-		if (! forceUpdate) { schedule = mDataManager.getPreferencesHelper().getSchedule(); }
+		if (! forceUpdate) { schedule = mPreferencesHelper.getSchedule(); }
 
 		if (mView != null) {
 			mView.showRecyclerView(false);
@@ -132,7 +135,7 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 			mView.showEmptyScheduleSnack();
 		} else if (isLoadingData()) {
 			mView.showDataUpdatedSnack();
-			mDataManager.getPreferencesHelper().putSchedule(schedule);
+			mPreferencesHelper.putSchedule(schedule);
 		}
 
 		if (isLoadingData()) {

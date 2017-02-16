@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 
 import com.cleytongoncalves.centralufmt.data.DataManager;
 import com.cleytongoncalves.centralufmt.data.events.MenuRuFetchEvent;
+import com.cleytongoncalves.centralufmt.data.local.PreferencesHelper;
 import com.cleytongoncalves.centralufmt.data.model.Meal;
 import com.cleytongoncalves.centralufmt.data.model.MenuRu;
 import com.cleytongoncalves.centralufmt.ui.base.Presenter;
@@ -25,6 +26,7 @@ import timber.log.Timber;
 
 final class MenuRuPresenter implements Presenter<MenuRuMvpView>, DataPresenter {
 	private final DataManager mDataManager;
+	private final PreferencesHelper mPreferencesHelper;
 
 	@Nullable private MenuRuMvpView mView;
 	@Nullable private MenuRuAdapter mAdapter;
@@ -34,8 +36,9 @@ final class MenuRuPresenter implements Presenter<MenuRuMvpView>, DataPresenter {
 	private boolean mFetchingData;
 
 	@Inject
-	MenuRuPresenter(DataManager dataManager) {
+	MenuRuPresenter(DataManager dataManager, PreferencesHelper preferencesHelper) {
 		mDataManager = dataManager;
+		mPreferencesHelper = preferencesHelper;
 	}
 
 	/* View Methods */
@@ -61,7 +64,7 @@ final class MenuRuPresenter implements Presenter<MenuRuMvpView>, DataPresenter {
 		if (isParsingData() || isFetchingData()) { return; }
 
 		MenuRu menuRu = null;
-		if (! forceUpdate) { menuRu = mDataManager.getPreferencesHelper().getMenuRu(); }
+		if (! forceUpdate) { menuRu = mPreferencesHelper.getMenuRu(); }
 
 		if (mView != null) {
 			mView.showRecyclerView(false);
@@ -102,7 +105,7 @@ final class MenuRuPresenter implements Presenter<MenuRuMvpView>, DataPresenter {
 
 		MenuRu menuRu = event.getResult();
 		parseMenuForAdapter(menuRu);
-		mDataManager.getPreferencesHelper().putMenuRu(menuRu);
+		mPreferencesHelper.putMenuRu(menuRu);
 	}
 
 	private void parseMenuForAdapter(MenuRu menuRu) {

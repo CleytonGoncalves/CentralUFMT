@@ -30,7 +30,6 @@ public class DataManager {
 	
 	private Student mStudent;
 	private Cookie mMoodleCookie;
-	
 	private boolean mLoggedInSiga;
 	
 	@Inject
@@ -43,9 +42,7 @@ public class DataManager {
 		EventBus.getDefault().register(this);
 	}
 	
-	public PreferencesHelper getPreferencesHelper() {
-		return mPreferencesHelper;
-	}
+	/* ----- Student ----- */
 	
 	public Student getStudent() {
 		return mStudent;

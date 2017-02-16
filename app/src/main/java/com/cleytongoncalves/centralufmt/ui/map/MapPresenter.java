@@ -5,7 +5,6 @@ import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 
 import com.cleytongoncalves.centralufmt.R;
-import com.cleytongoncalves.centralufmt.data.DataManager;
 import com.cleytongoncalves.centralufmt.data.local.PreferencesHelper;
 import com.cleytongoncalves.centralufmt.ui.base.Presenter;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -22,7 +21,6 @@ import javax.inject.Inject;
 
 import timber.log.Timber;
 
-//Beware: Currently the Google Maps has a bug where it issues several StrictMode Warning.c
 public final class MapPresenter implements Presenter<MapMvpView> {
 	private static final double UFMT_LAT = - 15.611124;
 	private static final double UFMT_LNG = - 56.066220;
@@ -31,15 +29,15 @@ public final class MapPresenter implements Presenter<MapMvpView> {
 	private static final int POI_MARKERS_ID = R.raw.ufmt_poi_markers;
 	private static final int ROUTE_MARKERS_ID = R.raw.ufmt_route_markers;
 
-	private final DataManager mDataManager;
+	private final PreferencesHelper mPreferencesHelper;
 	@Nullable private MapMvpView mView;
 
 	@Nullable private GoogleMap mGoogleMap;
 	@Nullable private KmlLayerManager mKmlLayerManager;
 
 	@Inject
-	MapPresenter(DataManager dataManager) {
-		mDataManager = dataManager;
+	MapPresenter(PreferencesHelper preferencesHelper) {
+		mPreferencesHelper = preferencesHelper;
 	}
 
 	@Override
@@ -72,12 +70,10 @@ public final class MapPresenter implements Presenter<MapMvpView> {
 
 		mKmlLayerManager = kmlLayerManager;
 
-		PreferencesHelper prefsHelper = mDataManager.getPreferencesHelper();
-
-		if (prefsHelper.getMapRouteDisplayState()) {
+		if (mPreferencesHelper.getMapRouteDisplayState()) {
 			toggleBusRoute();
 		}
-		if (prefsHelper.getMapPoiDisplayState()) {
+		if (mPreferencesHelper.getMapPoiDisplayState()) {
 			togglePointsOfInterest();
 		}
 	}
@@ -91,7 +87,7 @@ public final class MapPresenter implements Presenter<MapMvpView> {
 		//Saves the user preference before realizing the operation,
 		//to ensure correct option in case of layer addition failure.
 		boolean newState = ! mKmlLayerManager.isBusRouteDisplayed();
-		mDataManager.getPreferencesHelper().putMapBusRouteDisplayState(newState);
+		mPreferencesHelper.putMapBusRouteDisplayState(newState);
 
 		boolean actualState = mKmlLayerManager.toggleBusRoute();
 		if (mView != null) { mView.setBusRouteMenuState(actualState); }
@@ -106,7 +102,7 @@ public final class MapPresenter implements Presenter<MapMvpView> {
 		//Saves the user preference before realizing the operation,
 		//to ensure correct option in case of layer addition failure.
 		boolean newState = ! mKmlLayerManager.isPoiDisplayed();
-		mDataManager.getPreferencesHelper().putMapPoiDisplayState(newState);
+		mPreferencesHelper.putMapPoiDisplayState(newState);
 
 		boolean actualState = mKmlLayerManager.togglePointsOfInterest();
 		if (mView != null) { mView.setPoiMenuState(actualState); }

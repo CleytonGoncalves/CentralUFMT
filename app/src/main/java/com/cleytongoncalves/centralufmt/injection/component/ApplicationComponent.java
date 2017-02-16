@@ -3,7 +3,6 @@ package com.cleytongoncalves.centralufmt.injection.component;
 import android.app.Application;
 import android.content.Context;
 
-import com.birbit.android.jobqueue.JobManager;
 import com.cleytongoncalves.centralufmt.CentralUfmt;
 import com.cleytongoncalves.centralufmt.data.DataManager;
 import com.cleytongoncalves.centralufmt.data.jobs.MenuRuFetchJob;
@@ -32,8 +31,6 @@ public interface ApplicationComponent {
 	NetworkService networkService();
 	
 	PreferencesHelper preferencesHelper();
-	
-	JobManager jobManager();
 	
 	DataManager dataManager();
 	
