@@ -38,21 +38,23 @@ public final class MoodlePresenter implements Presenter<MoodleMvpView> {
 	}
 	
 	void init() {
-		if (mDataManager.isLoggedInMoodle()) {
-			//Already logged in before by self, or after the app login screen.
-			onLogInSuccessful(mDataManager.getMoodleCookie());
+		MoodleLogInEvent stickyEvent = EventBus.getDefault().getStickyEvent(MoodleLogInEvent.class);
+		
+		if (stickyEvent != null) {
+			onMoodleLogInEvent(stickyEvent);
 		} else {
 			logIn();
 		}
 	}
 
 	void logIn() {
+		EventBus.getDefault().register(this);
+		
 		if (mView != null) {
 			mView.showProgressBar(true);
 			mView.showWebView(false);
 		}
 
-		EventBus.getDefault().register(this);
 		mDataManager.moodleLogIn();
 	}
 
@@ -60,7 +62,11 @@ public final class MoodlePresenter implements Presenter<MoodleMvpView> {
 	
 	@Subscribe(threadMode = ThreadMode.MAIN)
 	public void onMoodleLogInEvent(MoodleLogInEvent event) {
-		EventBus.getDefault().unregister(this);
+		EventBus eventBus = EventBus.getDefault();
+		if (eventBus.isRegistered(this)) {
+			mDataManager.cancelMoodleLogIn();
+			eventBus.unregister(this);
+		}
 
 		if (event.isSuccessful()) {
 			onLogInSuccessful(event.getResult());

@@ -2,9 +2,6 @@ package com.cleytongoncalves.centralufmt.data;
 
 import com.birbit.android.jobqueue.JobManager;
 import com.birbit.android.jobqueue.TagConstraint;
-import com.cleytongoncalves.centralufmt.data.events.MenuRuFetchEvent;
-import com.cleytongoncalves.centralufmt.data.events.MoodleLogInEvent;
-import com.cleytongoncalves.centralufmt.data.events.ScheduleFetchEvent;
 import com.cleytongoncalves.centralufmt.data.events.SigaLogInEvent;
 import com.cleytongoncalves.centralufmt.data.jobs.MenuRuFetchJob;
 import com.cleytongoncalves.centralufmt.data.jobs.MoodleLogInJob;
@@ -20,7 +17,6 @@ import org.greenrobot.eventbus.ThreadMode;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import okhttp3.Cookie;
 import timber.log.Timber;
 
 @Singleton
@@ -29,7 +25,6 @@ public class DataManager {
 	private final JobManager mJobManager;
 	
 	private Student mStudent;
-	private Cookie mMoodleCookie;
 	private boolean mLoggedInSiga;
 	
 	@Inject
@@ -103,16 +98,8 @@ public class DataManager {
 		mJobManager.addJobInBackground(new MoodleLogInJob(rga, authKey));
 	}
 	
-	private void cancelMoodleLogIn() {
+	public void cancelMoodleLogIn() {
 		mJobManager.cancelJobsInBackground(null, TagConstraint.ANY, MoodleLogInJob.TAG);
-	}
-	
-	public boolean isLoggedInMoodle() {
-		return mMoodleCookie != null;
-	}
-	
-	public Cookie getMoodleCookie() {
-		return mMoodleCookie;
 	}
 
 	/* ----- Schedule ----- */
@@ -146,7 +133,6 @@ public class DataManager {
 		cancelMenuRuFetch();
 		
 		mStudent = null;
-		mMoodleCookie = null;
 		
 		mPreferencesHelper.clear();
 	}
@@ -164,38 +150,6 @@ public class DataManager {
 			//If there is more on the queue, cancel them (special case on Single Instance Jobs)
 			cancelSigaLogIn();
 			Timber.d("Student saved successfully");
-		}
-	}
-	
-	@Subscribe(threadMode = ThreadMode.MAIN)
-	public void onMoodleLogInCompleted(MoodleLogInEvent moodleEvent) {
-		if (moodleEvent.isSuccessful()) {
-			cancelMoodleLogIn();
-			mMoodleCookie = moodleEvent.getResult();
-			Timber.d("Cookie saved successfully");
-		}
-	}
-	
-	@Subscribe(threadMode = ThreadMode.MAIN)
-	public void onScheduleFetched(ScheduleFetchEvent scheduleEvent) {
-		if (scheduleEvent.isSuccessful()) {
-			/* - Not used for now -
-			Course newCourse = mStudent.getCourse()
-			                           .withEnrolledDisciplines(scheduleEvent.getResult());
-			
-			mStudent = mStudent.withCourse(newCourse);
-			
-			mPreferencesHelper.putStudent(mStudent);
-			*/
-			
-			Timber.d("Enrolled disciplines saved successfully");
-		}
-	}
-	
-	@Subscribe(threadMode = ThreadMode.MAIN)
-	public void onMenuRuFetched(MenuRuFetchEvent menuRuEvent) {
-		if (menuRuEvent.isSuccessful()) {
-			Timber.d("Menu RU received successfully");
 		}
 	}
 }

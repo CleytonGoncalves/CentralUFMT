@@ -75,7 +75,7 @@ public final class MoodleLogInJob extends NetworkJob {
 		
 		assertNotCancelled();
 		clearAuthKey();
-		EventBus.getDefault().post(new MoodleLogInEvent(cookies.get(0)));
+		EventBus.getDefault().postSticky(new MoodleLogInEvent(cookies.get(0)));
 		Timber.d("Moodle login successful");
 	}
 	
