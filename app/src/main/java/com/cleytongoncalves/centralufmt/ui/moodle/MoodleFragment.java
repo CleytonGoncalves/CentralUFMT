@@ -6,6 +6,7 @@ import android.annotation.TargetApi;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
@@ -22,33 +23,30 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.CookieManager;
-import android.webkit.CookieSyncManager;
-import android.webkit.DownloadListener;
-import android.webkit.URLUtil;
-import android.webkit.WebChromeClient;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import android.webkit.*;
 import android.widget.Toast;
 
+import com.cleytongoncalves.centralufmt.BuildConfig;
 import com.cleytongoncalves.centralufmt.CentralUfmt;
 import com.cleytongoncalves.centralufmt.R;
 import com.cleytongoncalves.centralufmt.ui.base.BaseActivity;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import timber.log.Timber;
 
 @SuppressWarnings({"deprecation", "FieldCanBeLocal"})
 public final class MoodleFragment extends Fragment implements MoodleMvpView {
 	private static final String FRONT_PAGE_URL =
 			"http://www.ava.ufmt.br/index.php?pag=ambientevirtual";
-	private static final String AVA_BASE_URL = "www.ava.ufmt.br";
-	private static final String ALT_AVA_BASE_URL = "200.129.241.132";
+	private static final String AVA_BASE_HOST = "www.ava.ufmt.br";
+	private static final String ALT_AVA_BASE_HOST = "200.129.241"; //200.129.241.xxx
 	
 	@Inject MoodlePresenter mPresenter;
 	
@@ -72,6 +70,11 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 		mRootView = inflater.inflate(R.layout.fragment_moodle, container, false);
 		
 		mUnbinder = ButterKnife.bind(this, mRootView);
+		
+		//TODO: Remove this Webview Chrome Debugging on Release
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && BuildConfig.DEBUG) {
+			WebView.setWebContentsDebuggingEnabled(true);
+		}
 		
 		mPresenter.attachView(this);
 		mPresenter.init();
@@ -180,7 +183,7 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 	
 	@Override
 	public void setCookieString(String cookieString) {
-		CookieManager.getInstance().setCookie(AVA_BASE_URL, cookieString);
+		CookieManager.getInstance().setCookie(AVA_BASE_HOST, cookieString);
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
 			CookieSyncManager.getInstance().sync();
 		}
@@ -223,6 +226,28 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 	}
 	
 	private class MyBrowser extends WebViewClient {
+		private static final String ASSET_PATH = "moodle/discipline";
+		private static final String EMPTY_RESOURCE = "empty.js";
+		
+		private static final String MIME_JS = "text/javascript";
+		private static final String MIME_CSS = "text/css";
+		private static final String MIME_PNG = "image/png";
+		
+		private AssetManager mAssetManager;
+		private String[] mAssetList;
+		private String[] mResourceBlackList = {"barra.js"};
+		
+		private MyBrowser() {
+			mAssetManager = getActivity().getAssets();
+			
+			try {
+				mAssetList = mAssetManager.list(ASSET_PATH);
+			} catch (IOException e) {
+				mAssetList = new String[0];
+				Timber.w(e, "Error loading asset path: %s", ASSET_PATH);
+			}
+		}
+		
 		@SuppressWarnings("deprecation")
 		@Override
 		public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -238,7 +263,8 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 		private boolean handleUrl(Uri url) {
 			if (mPresenter == null) { return false; }
 			
-			if (! url.getHost().equals(AVA_BASE_URL) && ! url.getHost().equals(ALT_AVA_BASE_URL)) {
+			if (! url.getHost().startsWith(AVA_BASE_HOST) && ! url.getHost().startsWith(
+					ALT_AVA_BASE_HOST)) {
 				//Opens pages that aren't from Moodle in the browser
 				Intent intent = new Intent(Intent.ACTION_VIEW, url);
 				startActivity(intent);
@@ -261,6 +287,77 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 			if (mPresenter == null) { return; }
 			showProgressBar(false);
 			super.onPageFinished(view, url);
+		}
+		
+		@Override
+		public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+			return loadFromAssetsIfAvailable(url);
+		}
+		
+		@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+		@Override
+		public WebResourceResponse shouldInterceptRequest(WebView view,
+		                                                  WebResourceRequest request) {
+			String url = request.getUrl().toString();
+			return loadFromAssetsIfAvailable(url);
+		}
+		
+		private WebResourceResponse loadFromAssetsIfAvailable(String url) {
+			
+			WebResourceResponse response = isResourceBlackListed(url);
+			if (response != null || ! url.startsWith("http://" + ALT_AVA_BASE_HOST)) {
+				return response;
+			}
+			
+			boolean found = false;
+			for (int i = 0, length = mAssetList.length; i < length && ! found; i++) {
+				String asset = mAssetList[i];
+				
+				if (url.endsWith(asset)) {
+					found = true;
+					String mimeType;
+					if (asset.endsWith(".js")) {
+						mimeType = MIME_JS;
+					} else if (asset.endsWith(".png")) {
+						mimeType = MIME_PNG;
+					} else if (asset.endsWith(".css") || asset.endsWith(".php")) {
+						mimeType =
+								MIME_CSS; //it might have some fake php files that actually are css
+					} else {
+						Timber.wtf("Asset type not found: %s", url);
+						break;
+					}
+					
+					try {
+						InputStream input = mAssetManager.open(ASSET_PATH + "/" + asset);
+						response = new WebResourceResponse(mimeType, "", input);
+						Timber.d("Resource '%s' loaded from assets", asset);
+					} catch (IOException e) {
+						Timber.w(e, "Error loading %s from assets", asset);
+					}
+				}
+			}
+			
+			return response;
+		}
+		
+		private WebResourceResponse isResourceBlackListed(String url) {
+			WebResourceResponse response = null;
+			
+			for (String resource : mResourceBlackList) {
+				if (url.endsWith(resource)) {
+					try {
+						InputStream emptyInput =
+								mAssetManager.open(ASSET_PATH + "/" + EMPTY_RESOURCE);
+						response = new WebResourceResponse(MIME_JS, "", emptyInput);
+						Timber.d("Resource '%s' prevented from loading", resource);
+					} catch (IOException e) {
+						Timber.w(e, "Error loading 'empty.js' from assets");
+					}
+				}
+			}
+			
+			return response;
 		}
 	}
 	
