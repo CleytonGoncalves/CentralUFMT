@@ -45,8 +45,12 @@ import timber.log.Timber;
 public final class MoodleFragment extends Fragment implements MoodleMvpView {
 	private static final String FRONT_PAGE_URL =
 			"http://www.ava.ufmt.br/index.php?pag=ambientevirtual";
-	private static final String AVA_BASE_HOST = "www.ava.ufmt.br";
-	private static final String ALT_AVA_BASE_HOST = "200.129.241"; //200.129.241.xxx
+	
+	//AVA Front Page Host
+	private static final String AVA_FRONT_HOST = "www.ava.ufmt.br";
+	
+	//AVA Discipline Pages Host 200.129.241.xxx
+	private static final String AVA_DISCIPLINE_HOST = "200.129.241";
 	
 	@Inject MoodlePresenter mPresenter;
 	
@@ -183,7 +187,7 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 	
 	@Override
 	public void setCookieString(String cookieString) {
-		CookieManager.getInstance().setCookie(AVA_BASE_HOST, cookieString);
+		CookieManager.getInstance().setCookie(AVA_FRONT_HOST, cookieString);
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
 			CookieSyncManager.getInstance().sync();
 		}
@@ -226,24 +230,31 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 	}
 	
 	private class MyBrowser extends WebViewClient {
-		private static final String ASSET_PATH = "moodle/discipline";
-		private static final String EMPTY_RESOURCE = "empty.js";
+		private static final String ASSET_PATH = "moodle";
+		private static final String FRONT_PATH = "/front";
+		private static final String DISCIPLINE_PATH = "/discipline";
 		
 		private static final String MIME_JS = "text/javascript";
 		private static final String MIME_CSS = "text/css";
 		private static final String MIME_PNG = "image/png";
 		
+		//Used on the blacklist to substitute resources that should not load
+		private static final String EMPTY_RESOURCE = "empty.js";
+		
 		private AssetManager mAssetManager;
-		private String[] mAssetList;
+		private String[] mFrontAssetList;
+		private String[] mDisciplineAssetList;
 		private String[] mResourceBlackList = {"barra.js"};
 		
 		private MyBrowser() {
 			mAssetManager = getActivity().getAssets();
 			
 			try {
-				mAssetList = mAssetManager.list(ASSET_PATH);
+				mFrontAssetList = mAssetManager.list(ASSET_PATH + FRONT_PATH);
+				mDisciplineAssetList = mAssetManager.list(ASSET_PATH + DISCIPLINE_PATH);
 			} catch (IOException e) {
-				mAssetList = new String[0];
+				mFrontAssetList = new String[0];
+				mDisciplineAssetList = new String[0];
 				Timber.w(e, "Error loading asset path: %s", ASSET_PATH);
 			}
 		}
@@ -263,8 +274,8 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 		private boolean handleUrl(Uri url) {
 			if (mPresenter == null) { return false; }
 			
-			if (! url.getHost().startsWith(AVA_BASE_HOST) && ! url.getHost().startsWith(
-					ALT_AVA_BASE_HOST)) {
+			if (! url.getHost().startsWith(AVA_FRONT_HOST) && ! url.getHost().startsWith(
+					AVA_DISCIPLINE_HOST)) {
 				//Opens pages that aren't from Moodle in the browser
 				Intent intent = new Intent(Intent.ACTION_VIEW, url);
 				startActivity(intent);
@@ -303,15 +314,54 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 		}
 		
 		private WebResourceResponse loadFromAssetsIfAvailable(String url) {
-			
 			WebResourceResponse response = isResourceBlackListed(url);
-			if (response != null || ! url.startsWith("http://" + ALT_AVA_BASE_HOST)) {
-				return response;
+			if (response != null) { return response; }
+			
+			
+			if (url.contains(AVA_FRONT_HOST)) {
+				response = searchAssets(url, mFrontAssetList, ASSET_PATH + FRONT_PATH);
+			} else {
+				response = searchAssets(url, mDisciplineAssetList, ASSET_PATH + DISCIPLINE_PATH);
 			}
 			
+			return response;
+		}
+		
+		/**
+		 * @param url url containing the resource
+		 * @return if blacklisted, a resource to use instead of it. Otherwise, null.
+		 */
+		private WebResourceResponse isResourceBlackListed(String url) {
+			WebResourceResponse response = null;
+			
+			for (String resource : mResourceBlackList) {
+				if (url.endsWith(resource)) {
+					try {
+						InputStream emptyInput =
+								mAssetManager.open(EMPTY_RESOURCE);
+						response = new WebResourceResponse(MIME_JS, "", emptyInput);
+						Timber.d("Resource '%s' prevented from loading", resource);
+					} catch (IOException e) {
+						Timber.w(e, "Error loading 'empty.js' from assets");
+					}
+				}
+			}
+			
+			return response;
+		}
+		
+		/**
+		 * Looks if the resource being loaded is available on disk
+		 * @param url URL of the resource
+		 * @param assetList Array containing the assets available
+		 * @param path Path of the assets
+		 * @return The resource loaded from the disk, or null if not available.
+		 */
+		private WebResourceResponse searchAssets(String url, String[] assetList, String path) {
+			WebResourceResponse response = null;
 			boolean found = false;
-			for (int i = 0, length = mAssetList.length; i < length && ! found; i++) {
-				String asset = mAssetList[i];
+			for (int i = 0, length = assetList.length; i < length && ! found; i++) {
+				String asset = assetList[i];
 				
 				if (url.endsWith(asset)) {
 					found = true;
@@ -321,38 +371,18 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 					} else if (asset.endsWith(".png")) {
 						mimeType = MIME_PNG;
 					} else if (asset.endsWith(".css") || asset.endsWith(".php")) {
-						mimeType =
-								MIME_CSS; //it might have some fake php files that actually are css
+						mimeType = MIME_CSS; //it might have some php files that actually are css
 					} else {
 						Timber.wtf("Asset type not found: %s", url);
 						break;
 					}
 					
 					try {
-						InputStream input = mAssetManager.open(ASSET_PATH + "/" + asset);
+						InputStream input = mAssetManager.open(path + "/" + asset);
 						response = new WebResourceResponse(mimeType, "", input);
 						Timber.d("Resource '%s' loaded from assets", asset);
 					} catch (IOException e) {
 						Timber.w(e, "Error loading %s from assets", asset);
-					}
-				}
-			}
-			
-			return response;
-		}
-		
-		private WebResourceResponse isResourceBlackListed(String url) {
-			WebResourceResponse response = null;
-			
-			for (String resource : mResourceBlackList) {
-				if (url.endsWith(resource)) {
-					try {
-						InputStream emptyInput =
-								mAssetManager.open(ASSET_PATH + "/" + EMPTY_RESOURCE);
-						response = new WebResourceResponse(MIME_JS, "", emptyInput);
-						Timber.d("Resource '%s' prevented from loading", resource);
-					} catch (IOException e) {
-						Timber.w(e, "Error loading 'empty.js' from assets");
 					}
 				}
 			}
