@@ -2,7 +2,7 @@ package com.cleytongoncalves.centralufmt.data.events;
 
 import com.cleytongoncalves.centralufmt.data.model.MenuRu;
 
-public final class MenuRuFetchEvent extends BusEvent<MenuRu> {
+public final class MenuRuFetchEvent extends AbstractEvent<MenuRu> {
 	
 	public MenuRuFetchEvent(MenuRu result) {
 		super(result);

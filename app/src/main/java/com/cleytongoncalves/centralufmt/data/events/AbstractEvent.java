@@ -5,7 +5,7 @@ import android.support.annotation.IntDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-abstract class BusEvent<T> {
+abstract class AbstractEvent<T> {
 	@Retention(RetentionPolicy.SOURCE)
 	@IntDef({GENERAL_ERROR, USER_CANCELLED})
 	@interface FailureReason {}
@@ -15,11 +15,11 @@ abstract class BusEvent<T> {
 	private T mResult;
 	private int mFailureReason;
 	
-	BusEvent(T result) {
+	AbstractEvent(T result) {
 		mResult = result;
 	}
 	
-	BusEvent(int failureReason) {
+	AbstractEvent(int failureReason) {
 		mFailureReason = failureReason;
 	}
 	
