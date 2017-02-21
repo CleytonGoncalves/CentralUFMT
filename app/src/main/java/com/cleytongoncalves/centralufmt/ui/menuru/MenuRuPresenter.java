@@ -6,8 +6,8 @@ import android.support.annotation.Nullable;
 import com.cleytongoncalves.centralufmt.data.DataManager;
 import com.cleytongoncalves.centralufmt.data.events.MenuRuFetchEvent;
 import com.cleytongoncalves.centralufmt.data.local.PreferencesHelper;
-import com.cleytongoncalves.centralufmt.data.model.Meal;
-import com.cleytongoncalves.centralufmt.data.model.MenuRu;
+import com.cleytongoncalves.centralufmt.data.model.menuru.Meal;
+import com.cleytongoncalves.centralufmt.data.model.menuru.MenuRu;
 import com.cleytongoncalves.centralufmt.ui.base.Presenter;
 import com.cleytongoncalves.centralufmt.util.TextUtil;
 

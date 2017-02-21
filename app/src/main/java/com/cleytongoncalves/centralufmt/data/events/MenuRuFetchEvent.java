@@ -1,6 +1,6 @@
 package com.cleytongoncalves.centralufmt.data.events;
 
-import com.cleytongoncalves.centralufmt.data.model.MenuRu;
+import com.cleytongoncalves.centralufmt.data.model.menuru.MenuRu;
 
 public final class MenuRuFetchEvent extends AbstractEvent<MenuRu> {
 	

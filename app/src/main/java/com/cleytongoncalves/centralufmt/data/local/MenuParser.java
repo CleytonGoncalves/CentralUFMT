@@ -1,7 +1,7 @@
 package com.cleytongoncalves.centralufmt.data.local;
 
-import com.cleytongoncalves.centralufmt.data.model.Meal;
-import com.cleytongoncalves.centralufmt.data.model.MenuRu;
+import com.cleytongoncalves.centralufmt.data.model.menuru.Meal;
+import com.cleytongoncalves.centralufmt.data.model.menuru.MenuRu;
 import com.cleytongoncalves.centralufmt.util.TimeInterval;
 
 import org.joda.time.DateTimeConstants;

@@ -3,8 +3,8 @@ package com.cleytongoncalves.centralufmt.data.local;
 import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
 
-import com.cleytongoncalves.centralufmt.data.model.MenuRu;
 import com.cleytongoncalves.centralufmt.data.model.Student;
+import com.cleytongoncalves.centralufmt.data.model.menuru.MenuRu;
 import com.cleytongoncalves.centralufmt.ui.schedule.ScheduleData;
 import com.google.gson.Gson;
 

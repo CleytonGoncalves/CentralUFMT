@@ -1,4 +1,4 @@
-package com.cleytongoncalves.centralufmt.data.model;
+package com.cleytongoncalves.centralufmt.data.model.menuru;
 
 import com.cleytongoncalves.centralufmt.util.TimeInterval;
 

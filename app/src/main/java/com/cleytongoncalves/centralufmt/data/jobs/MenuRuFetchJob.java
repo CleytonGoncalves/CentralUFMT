@@ -8,7 +8,7 @@ import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
 import com.cleytongoncalves.centralufmt.data.events.MenuRuFetchEvent;
 import com.cleytongoncalves.centralufmt.data.local.MenuParser;
-import com.cleytongoncalves.centralufmt.data.model.MenuRu;
+import com.cleytongoncalves.centralufmt.data.model.menuru.MenuRu;
 import com.cleytongoncalves.centralufmt.data.remote.NetworkOperation;
 import com.cleytongoncalves.centralufmt.data.remote.NetworkService;
 import com.cleytongoncalves.centralufmt.injection.component.ApplicationComponent;
