@@ -67,21 +67,22 @@ public class MenuParser {
 			dateTagIndex = 21;
 		}
 		
-		DateTimeFormatter fmt = DateTimeFormat.forPattern("ddMMyyyy");
+		DateTimeFormatter fmt = DateTimeFormat.forPattern("dd/MM/yyyy");
 		
 		String dateStr = null;
 		try {
 			String dateLine = mealSection.child(dateTagIndex).text();
-
-			Pattern pattern = Pattern.compile("[0-9]+"); //e.g. 11122016
+			
+			Pattern pattern = Pattern.compile("[0-3]?\\d/[0-1]?\\d/\\d{2,4}");
 			Matcher matcher = pattern.matcher(dateLine);
 			
 			
 			if (matcher.find()) { dateStr = matcher.group(); }
 			date = fmt.parseLocalDate(dateStr);
 		} catch (Exception e) {
-			Timber.w("Error parsing date (defaulted to Today): %s - %s", dateStr, e.getMessage());
-			date = LocalDate.now();
+			Timber.w("Error parsing date (defaulted to 10/12/1970): %s - %s", dateStr,
+			         e.getMessage());
+			date = fmt.parseLocalDate("10/12/1970");
 		}
 		
 		return date;
