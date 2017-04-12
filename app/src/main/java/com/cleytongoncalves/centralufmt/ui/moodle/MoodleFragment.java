@@ -48,7 +48,7 @@ import timber.log.Timber;
 @SuppressWarnings({"deprecation", "FieldCanBeLocal"})
 public final class MoodleFragment extends Fragment implements MoodleMvpView {
 	private static final String FRONT_PAGE_URL =
-			"http://www.ava.ufmt.br/index.php?pag=ambientevirtual";
+			"https://www.ava.ufmt.br/index.php?pag=ambientevirtual";
 	
 	//AVA Front Page Host
 	private static final String AVA_FRONT_HOST = "www.ava.ufmt.br";
@@ -79,8 +79,8 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 		
 		mUnbinder = ButterKnife.bind(this, mRootView);
 		
-		//TODO: Remove this Webview Chrome Debugging on Release
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && BuildConfig.DEBUG) {
+		//Webview Chrome Debugging
+		if (BuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 			WebView.setWebContentsDebuggingEnabled(true);
 		}
 		
@@ -397,6 +397,8 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 		@Override
 		/* TEMPORARY WORKAROUND - Adds the AVA SSL Certificate as trusted on the webview */
 		public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+			Timber.d("Received SSL Error %s.", error.getPrimaryError());
+			
 			InputStream certStream = null;
 			try {
 				certStream = getContext().getResources().openRawResource(R.raw.ava_certificate);

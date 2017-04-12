@@ -31,7 +31,7 @@ public final class MoodleLogInJob extends NetworkJob {
 	private static final int RETRY_LIMIT = 2;
 	private static final int RETRY_DELAY = 150;
 	
-	private static final String BASE_AVA_URL = "http://www.ava.ufmt.br";
+	private static final String BASE_AVA_URL = "https://www.ava.ufmt.br";
 	private static final String POST_AVA_URL = "/index.php?pag=login";
 	
 	@Inject Lazy<NetworkService> mLazyNetworkService;
