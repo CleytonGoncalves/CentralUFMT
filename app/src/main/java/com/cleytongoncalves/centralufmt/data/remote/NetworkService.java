@@ -1,11 +1,25 @@
 package com.cleytongoncalves.centralufmt.data.remote;
 
+import android.content.Context;
+
+import com.cleytongoncalves.centralufmt.R;
+import com.cleytongoncalves.centralufmt.injection.ApplicationContext;
+
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.UnknownHostException;
+import java.security.KeyStore;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 
 import okhttp3.Cookie;
 import okhttp3.CookieJar;
@@ -112,17 +126,73 @@ public final class NetworkService {
 	 * Builder class that sets up a new network service
 	 *******/
 	public static class Builder {
-		public NetworkService build() {
-			OkHttpClient client = new OkHttpClient()
+		public NetworkService build(@ApplicationContext Context context) {
+			OkHttpClient.Builder clientBuilder = new OkHttpClient()
 					                      .newBuilder()
 					                      .cookieJar(new MyCookieJar())
 					                      .addNetworkInterceptor(chain -> chain.proceed(
 							                      chain.request().newBuilder()
 							                           .addHeader("Accept-Language", "pt-BR")
-							                           .build()))
-					                      .build();
+							                           .build()));
 			
-			return new NetworkService(client);
+			clientBuilder = addAvaSslCert(clientBuilder, context);
+			
+			return new NetworkService(clientBuilder.build());
+		}
+		
+		private static OkHttpClient.Builder addAvaSslCert(OkHttpClient.Builder clientBuilder,
+		                                                  Context context) {
+			InputStream cert = null;
+			try {
+				// loading CAs from an InputStream
+				CertificateFactory cf = CertificateFactory.getInstance("X.509");
+				cert = context.getResources().openRawResource(R.raw.ava_certificate);
+				Certificate ca = cf.generateCertificate(cert);
+				
+				// creating a KeyStore containing our trusted CAs
+				String keyStoreType = KeyStore.getDefaultType();
+				KeyStore keyStore = KeyStore.getInstance(keyStoreType);
+				keyStore.load(null, null);
+				keyStore.setCertificateEntry("ca", ca);
+				
+				// creating a TrustManager that trusts the CAs in our KeyStore
+				String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
+				TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
+				tmf.init(keyStore);
+				
+				// creating an SSLSocketFactory that uses our TrustManager
+				SSLContext sslContext = SSLContext.getInstance("TLS");
+				sslContext.init(null, tmf.getTrustManagers(), null);
+				
+				// Get hold of the default trust manager
+				X509TrustManager x509Tm = null;
+				for (TrustManager tm : tmf.getTrustManagers()) {
+					if (tm instanceof X509TrustManager) {
+						x509Tm = (X509TrustManager) tm;
+						break;
+					}
+				}
+				
+				if (x509Tm == null) {
+					//noinspection deprecation
+					clientBuilder.sslSocketFactory(sslContext.getSocketFactory()); //Uses
+					// reflection
+				} else {
+					clientBuilder.sslSocketFactory(sslContext.getSocketFactory(), x509Tm);
+				}
+			} catch (Exception e) {
+				Timber.wtf(e, "Failed to load AVA SSL Certificate.");
+			}
+			
+			if (cert != null) {
+				try {
+					cert.close();
+				} catch (IOException e) {
+					Timber.i(e, "AVA SSL Certificate InputStream closure error.");
+				}
+			}
+			
+			return clientBuilder;
 		}
 	}
 	

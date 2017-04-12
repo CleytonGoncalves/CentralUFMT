@@ -73,7 +73,7 @@ public class ApplicationModule {
 	@Provides
 	@Singleton
 	NetworkService provideNetworkService() {
-		return NetworkService.builder().build();
+		return NetworkService.builder().build(provideContext());
 	}
 	
 	@Provides
