@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.net.http.SslCertificate;
+import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -33,6 +35,8 @@ import com.cleytongoncalves.centralufmt.ui.base.BaseActivity;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 
 import javax.inject.Inject;
 
@@ -388,6 +392,34 @@ public final class MoodleFragment extends Fragment implements MoodleMvpView {
 			}
 			
 			return response;
+		}
+		
+		@Override
+		/* TEMPORARY WORKAROUND - Adds the AVA SSL Certificate as trusted on the webview */
+		public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+			InputStream certStream = null;
+			try {
+				certStream = getContext().getResources().openRawResource(R.raw.ava_certificate);
+				CertificateFactory cf = CertificateFactory.getInstance("X.509");
+				X509Certificate x509Cert = (X509Certificate) cf.generateCertificate(certStream);
+				SslCertificate sslCert = new SslCertificate(x509Cert);
+				
+				if (error.getCertificate().toString().equals(sslCert.toString())) {
+					handler.proceed();
+				} else {
+					handler.cancel();
+				}
+			} catch (Exception e) {
+				Timber.wtf(e, "Failed to load AVA SSL Certificate.");
+			}
+			
+			if (certStream != null) {
+				try {
+					certStream.close();
+				} catch (IOException e) {
+					Timber.i(e, "AVA SSL Certificate InputStream closure error.");
+				}
+			}
 		}
 	}
 	

@@ -140,6 +140,7 @@ public final class NetworkService {
 			return new NetworkService(clientBuilder.build());
 		}
 		
+		/* TEMPORARY WORKAROUND - Adds the AVA SSL Certificate as trusted within the application */
 		private static OkHttpClient.Builder addAvaSslCert(OkHttpClient.Builder clientBuilder,
 		                                                  Context context) {
 			InputStream cert = null;
