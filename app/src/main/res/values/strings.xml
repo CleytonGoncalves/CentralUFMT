@@ -32,7 +32,7 @@
     <string name="title_fragment_moodle">AVA</string>
     <string name="menu_refresh_moodle">Atualizar Página</string>
     <string name="toast_download_moodle">Baixando arquivo…</string>
-    <string name="snack_retry_login_moodle">Relogar</string>
+    <string name="snack_retry_login_moodle">Recarregar</string>
 
     <!-- Schedule Fragment -->
     <string name="title_fragment_schedule">Horários</string>
@@ -71,7 +71,7 @@
     <string name="error_invalid_rga">Número de Matrícula inválido</string>
     <string name="error_invalid_password">Senha inválida</string>
     <string name="error_access_denied">Acesso Negado. Por favor confira os dados informados.</string>
-    <string name="error_generic_log_in">Não foi possível entrar no momento. Por favor tente novamente mais tarde.</string>
+    <string name="error_generic_log_in">Não foi possível entrar no momento.</string>
     <string name="error_message_play_services">Desculpe, você precisa de um dispositivo que suporte o Google Play Services para utilizar este app.</string>
 
     <!-- Accessibility -->
