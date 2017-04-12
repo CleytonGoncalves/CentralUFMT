@@ -93,10 +93,10 @@ public abstract class NetworkJob extends Job {
 	}
 	
 	private static final class NetworkFailedException extends JobExitingException {
-		private final int mErrorCode;
+		private int mErrorCode;
 		
 		private NetworkFailedException() {
-			this(-1);
+			super("Failed to reach the server. Check connection.");
 		}
 		
 		private NetworkFailedException(int errorCode) {

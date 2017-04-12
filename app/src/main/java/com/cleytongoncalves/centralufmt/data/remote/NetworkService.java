@@ -42,7 +42,7 @@ public final class NetworkService {
 	}
 	
 	/**
-	 * Generated through this class Builder
+	 * Generated through NetworkService.Builder
 	 */
 	private NetworkService(OkHttpClient client) {
 		this.mClient = client;
