@@ -82,7 +82,7 @@ public class DataManager {
 	/**
 	 * @return true, if it is currently logged in on Siga
 	 */
-	private boolean isLoggedInSiga() {
+	public boolean isLoggedInSiga() {
 		return mLoggedInSiga;
 	}
 	

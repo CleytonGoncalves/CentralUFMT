@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
+import com.cleytongoncalves.centralufmt.data.DataManager;
 import com.cleytongoncalves.centralufmt.data.events.ScheduleFetchEvent;
 import com.cleytongoncalves.centralufmt.data.local.HtmlHelper;
 import com.cleytongoncalves.centralufmt.data.model.Discipline;
@@ -34,6 +35,7 @@ public final class ScheduleFetchJob extends NetworkJob {
 	private static final String URL =
 			"http://academico-siga.ufmt.br/www-siga/dll/PlanilhaRgaAutenticada.dll/listaalunos";
 	
+	@Inject DataManager mDataManager;
 	@Inject Lazy<NetworkService> mNetworkService;
 	
 	public ScheduleFetchJob() {
@@ -55,6 +57,7 @@ public final class ScheduleFetchJob extends NetworkJob {
 	
 	@Override
 	public void onRun() throws Throwable {
+		assertLoggedInSiga();
 		assertNetworkConnected();
 		NetworkService networkService = mNetworkService.get();
 		
@@ -82,6 +85,7 @@ public final class ScheduleFetchJob extends NetworkJob {
 	@Override
 	protected void onCancel(int cancelReason, @Nullable Throwable throwable) {
 		String msg = "Schedule fetch cancelled";
+		
 		switch (cancelReason) {
 			case REACHED_RETRY_LIMIT:
 				EventBus.getDefault()
@@ -91,7 +95,11 @@ public final class ScheduleFetchJob extends NetworkJob {
 			case CANCELLED_VIA_SHOULD_RE_RUN:
 				EventBus.getDefault()
 				        .post(new ScheduleFetchEvent(ScheduleFetchEvent.GENERAL_ERROR));
-				Timber.d("%s - HTTP Status 400 (Client Error)", msg);
+				if (isAuthenticationException(throwable)) {
+					Timber.d("%s - Not logged in on Siga", msg);
+				} else {
+					Timber.d("%s - HTTP Status 400 (Client Error)", msg);
+				}
 				break;
 			case CANCELLED_WHILE_RUNNING:
 				Timber.d("%s - Job Cancelled", msg);
@@ -102,19 +110,34 @@ public final class ScheduleFetchJob extends NetworkJob {
 	@Override
 	protected RetryConstraint shouldReRunOnThrowable(@NonNull Throwable throwable, int runCount,
 	                                                 int maxRunCount) {
-		if (shouldRetry(throwable)) {
-			//exponential delay in ms before trying again
-			RetryConstraint constraint = RetryConstraint
-					                             .createExponentialBackoff(runCount, RETRY_DELAY);
-			constraint.setApplyNewDelayToGroup(true);
-			return constraint;
+		if (! shouldRetry(throwable) || isAuthenticationException(throwable)) {
+			return RetryConstraint.CANCEL;
 		}
 		
-		return RetryConstraint.CANCEL;
+		RetryConstraint constraint = RetryConstraint
+				                             .createExponentialBackoff(runCount, RETRY_DELAY);
+		constraint.setApplyNewDelayToGroup(true);
+		return constraint;
 	}
 	
 	@Override
 	protected int getRetryLimit() {
 		return RETRY_LIMIT;
+	}
+	
+	private void assertLoggedInSiga() {
+		if (! mDataManager.isLoggedInSiga()) {
+			throw new AuthenticationErrorException();
+		}
+	}
+	
+	/**
+	 * Helper method to check if the throwable is caused by not being logged in on Siga
+	 *
+	 * @param throwable
+	 * @return True, if it is an AuthenticationError
+	 */
+	private boolean isAuthenticationException(Throwable throwable) {
+		return throwable instanceof AuthenticationErrorException;
 	}
 }
