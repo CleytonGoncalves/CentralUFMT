@@ -134,7 +134,6 @@ public final class ScheduleFetchJob extends NetworkJob {
 	/**
 	 * Helper method to check if the throwable is caused by not being logged in on Siga
 	 *
-	 * @param throwable
 	 * @return True, if it is an AuthenticationError
 	 */
 	private boolean isAuthenticationException(Throwable throwable) {

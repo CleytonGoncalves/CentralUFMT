@@ -43,7 +43,7 @@ import static android.support.v4.app.FragmentManager.OnBackStackChangedListener;
 
 public class MainActivity extends BaseActivity
 		implements OnNavigationItemSelectedListener, OnBackStackChangedListener {
-
+	
 	@Inject DataManager mDataManager;
 	@BindView(R.id.drawer_layout) DrawerLayout mDrawer;
 	@BindView(R.id.nav_view) NavigationView mNavigationView;
@@ -55,7 +55,7 @@ public class MainActivity extends BaseActivity
 
 	private CharSequence mDefaultTitle;
 	private CharSequence mTitle;
-
+	
 	private Unbinder mUnbinder;
 
 	public static Intent getStartIntent(Context context, boolean clearPreviousActivites) {
@@ -88,7 +88,12 @@ public class MainActivity extends BaseActivity
 
 		mFragmentManager = getSupportFragmentManager();
 		mFragmentManager.addOnBackStackChangedListener(this);
-
+		
+		if (savedInstanceState == null) {
+			//The first item on the drawer is the default fragment
+			onNavigationItemSelected(mNavigationView.getMenu().getItem(0));
+		}
+		
 		mTitle = mDefaultTitle = getTitle();
 	}
 
@@ -117,7 +122,7 @@ public class MainActivity extends BaseActivity
 			}
 		}).start();
 	}
-
+	
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
@@ -201,17 +206,29 @@ public class MainActivity extends BaseActivity
 				break;
 			case R.id.nav_manage:
 				mPendingRunnable = () -> startActivity(SettingsActivity.getStartIntent(this));
+				fragment = null;
+				break;
 			default:
-				fragment = null; //TODO: SET THE MAIN FRAGMENT AS DEFAULT
+				fragment = null;
 		}
-
+		
+		boolean hasChangedFragment = false;
 		if (fragment != null) {
-			mPendingRunnable = () -> goToFragment(fragment);
+			if (mDrawer.isDrawerVisible(GravityCompat.START)) {
+				//Necessary for a smooth transition. Resolved on onDrawerClosed()
+				mPendingRunnable = () -> goToFragment(fragment);
+			} else {
+				goToFragment(fragment);
+			}
+			
 			changeTitle(getFragmentTitle(fragment));
+			hasChangedFragment = true;
 		}
-
-		mDrawer.closeDrawer(GravityCompat.START);
-		return true;
+		
+		if (mDrawer.isDrawerVisible(GravityCompat.START)) {
+			mDrawer.closeDrawer(GravityCompat.START);
+		}
+		return hasChangedFragment;
 	}
 
 	@Override
@@ -244,26 +261,27 @@ public class MainActivity extends BaseActivity
 		}
 
 		mNavigationView.setNavigationItemSelectedListener(this);
-		//mNavigationView.getMenu().getItem(0).setChecked(true); //Checks the first item (default
-		// frag)
 	}
 
 	private void setUpDrawerToggle(Toolbar toolbar) {
 		mDrawerToggle = new ActionBarDrawerToggle(this, mDrawer, toolbar,
 		                                          R.string.navigation_drawer_open,
 		                                          R.string.navigation_drawer_close) {
-
 			@Override
 			public void onDrawerClosed(View drawerView) {
 				if (mPendingRunnable != null) {
-					mHandler.post(mPendingRunnable);
-					mPendingRunnable = null;
+					runPendingRunnable();
 				}
 				super.onDrawerClosed(drawerView);
 			}
 		};
 
 		mDrawer.addDrawerListener(mDrawerToggle);
+	}
+	
+	private void runPendingRunnable() {
+		mHandler.post(mPendingRunnable);
+		mPendingRunnable = null;
 	}
 
 	private void goToFragment(Fragment fragment) {
