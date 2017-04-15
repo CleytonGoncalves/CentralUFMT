@@ -107,11 +107,11 @@ public final class SigaLogInJob extends NetworkJob {
 				break;
 			case CANCELLED_VIA_SHOULD_RE_RUN:
 				if (isAuthenticationException(throwable)) {
-					Timber.d("%s - Access Denied (Wrong User/Auth)", msg);
 					EventBus.getDefault().post(new SigaLogInEvent(SigaLogInEvent.ACCESS_DENIED));
+					Timber.d("%s - Access Denied (Wrong User/Auth)", msg);
 				} else {
-					Timber.d("%s - HTTP Status 400 (Client Error)", msg);
 					EventBus.getDefault().post(new SigaLogInEvent(SigaLogInEvent.GENERAL_ERROR));
+					Timber.d("%s - HTTP Status 400 (Client Error)", msg);
 				}
 				break;
 			case CANCELLED_WHILE_RUNNING:
@@ -180,7 +180,6 @@ public final class SigaLogInJob extends NetworkJob {
 	
 	/**
 	 * Helper method to check if the throwable is caused by having the access denied on Siga
-	 * @param throwable
 	 * @return True, if it is an AuthenticationError
 	 */
 	private boolean isAuthenticationException(Throwable throwable) {

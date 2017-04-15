@@ -67,15 +67,15 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 
 	void loadSchedule(boolean forceUpdate) {
 		if (isLoadingData()) { return; }
-
-		ScheduleData schedule = null;
-		if (! forceUpdate) { schedule = mPreferencesHelper.getSchedule(); }
-
+		
 		if (mView != null) {
 			mView.showRecyclerView(false);
 			mView.showProgressBar(true);
 		}
-
+		
+		ScheduleData schedule = null;
+		if (! forceUpdate) { schedule = mPreferencesHelper.getSchedule(); }
+		
 		if (schedule == null) {
 			//Fetch -> Parse -> Show
 			EventBus.getDefault().register(this);
