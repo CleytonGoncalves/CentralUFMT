@@ -1,34 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
+    
     <group
         android:id="@+id/nav_group_logged_only"
         android:checkableBehavior="single">
-
-        <item
-            android:id="@+id/nav_menuru"
-            android:icon="@drawable/ic_dining"
-            android:title="@string/title_fragment_menuru"/>
+        
         <item
             android:id="@+id/nav_schedule"
             android:icon="@drawable/ic_schedule"
             android:title="@string/title_fragment_schedule"/>
         <item
-            android:id="@+id/nav_student"
-            android:icon="@drawable/ic_student"
-            android:title="@string/title_fragment_student"/>
-        <item
-            android:id="@+id/nav_curriculum"
-            android:icon="@drawable/ic_grid"
-            android:title="@string/title_fragment_curriculum"/>
-        <item
             android:id="@+id/nav_moodle"
             android:icon="@drawable/ic_ava"
             android:title="@string/title_fragment_moodle"/>
+        
+        <!-- Under Construction \/ -->
+        <item
+            android:id="@+id/nav_student"
+            android:icon="@drawable/ic_student"
+            android:title="@string/title_fragment_student"
+            android:enabled="false"/>
+        <item
+            android:id="@+id/nav_curriculum"
+            android:icon="@drawable/ic_grid"
+            android:title="@string/title_fragment_curriculum"
+            android:enabled="false"/>
     </group>
 
     <group
         android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_menuru"
+            android:icon="@drawable/ic_dining"
+            android:title="@string/title_fragment_menuru"/>
         <item
             android:id="@+id/nav_map"
             android:icon="@drawable/ic_menu_map"
