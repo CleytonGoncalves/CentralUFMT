@@ -105,7 +105,9 @@ public class DataManager {
 	/* ----- Schedule ----- */
 	
 	public void fetchSchedule() {
-		if (! isLoggedInSiga()) { sigaLogIn(); }
+		if (! isLoggedInSiga()) {
+			sigaLogIn();
+		}
 		
 		mJobManager.addJobInBackground(new ScheduleFetchJob());
 	}
@@ -142,14 +144,14 @@ public class DataManager {
 	@Subscribe(threadMode = ThreadMode.MAIN, priority = 1)
 	public void onSigaLogInCompleted(SigaLogInEvent sigaEvent) {
 		if (sigaEvent.isSuccessful()) {
+			mLoggedInSiga = true;
 			
 			mStudent = sigaEvent.getResult();
 			mPreferencesHelper.putStudent(mStudent);
-			mLoggedInSiga = true;
+			Timber.d("Student saved successfully");
 			
 			//If there is more on the queue, cancel them (special case on Single Instance Jobs)
 			cancelSigaLogIn();
-			Timber.d("Student saved successfully");
 		}
 	}
 }

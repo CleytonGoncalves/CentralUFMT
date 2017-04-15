@@ -57,12 +57,12 @@ public final class ScheduleFetchJob extends NetworkJob {
 	
 	@Override
 	public void onRun() throws Throwable {
-		assertLoggedInSiga();
 		assertNetworkConnected();
 		NetworkService networkService = mNetworkService.get();
 		
 		assertNotCancelled();
 		
+		assertLoggedInSiga();
 		NetworkOperation scheduleGet = networkService.get(URL, NetworkService.CHARSET_ISO);
 		assertNetworkSuccess(scheduleGet);
 		
@@ -110,7 +110,7 @@ public final class ScheduleFetchJob extends NetworkJob {
 	@Override
 	protected RetryConstraint shouldReRunOnThrowable(@NonNull Throwable throwable, int runCount,
 	                                                 int maxRunCount) {
-		if (! shouldRetry(throwable) || isAuthenticationException(throwable)) {
+		if (! shouldRetry(throwable)) {
 			return RetryConstraint.CANCEL;
 		}
 		
