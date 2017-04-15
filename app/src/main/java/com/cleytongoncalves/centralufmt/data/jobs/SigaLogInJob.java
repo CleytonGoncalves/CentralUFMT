@@ -29,7 +29,7 @@ import timber.log.Timber;
 import static com.birbit.android.jobqueue.CancelReason.CANCELLED_VIA_SHOULD_RE_RUN;
 import static com.birbit.android.jobqueue.CancelReason.CANCELLED_WHILE_RUNNING;
 import static com.birbit.android.jobqueue.CancelReason.REACHED_RETRY_LIMIT;
-import static com.cleytongoncalves.centralufmt.data.remote.NetworkService.*;
+import static com.cleytongoncalves.centralufmt.data.remote.NetworkService.CHARSET_ISO;
 
 public final class SigaLogInJob extends NetworkJob {
 	public static final String TAG = SigaLogInJob.class.getName();
@@ -44,7 +44,6 @@ public final class SigaLogInJob extends NetworkJob {
 	@Inject Lazy<NetworkService> mLazyNetworkService;
 	private final String mRga;
 	private char[] mAuthKey;
-	private boolean mAccessDenied;
 	
 	public SigaLogInJob(String rga, char[] authKey) {
 		super(new Params(BACKGROUND_HIGH)
@@ -107,7 +106,7 @@ public final class SigaLogInJob extends NetworkJob {
 				Timber.d("%s - Reached Retry Limit", msg);
 				break;
 			case CANCELLED_VIA_SHOULD_RE_RUN:
-				if (mAccessDenied) {
+				if (isAuthenticationException(throwable)) {
 					Timber.d("%s - Access Denied (Wrong User/Auth)", msg);
 					EventBus.getDefault().post(new SigaLogInEvent(SigaLogInEvent.ACCESS_DENIED));
 				} else {
@@ -125,7 +124,7 @@ public final class SigaLogInJob extends NetworkJob {
 	@Override
 	protected RetryConstraint shouldReRunOnThrowable(@NonNull Throwable throwable, int runCount,
 	                                                 int maxRunCount) {
-		if (mAccessDenied || ! shouldRetry(throwable)) {
+		if (! shouldRetry(throwable) || isAuthenticationException(throwable)) {
 			return RetryConstraint.CANCEL;
 		}
 		
@@ -175,13 +174,21 @@ public final class SigaLogInJob extends NetworkJob {
 	
 	private void assertLoginSuccess(NetworkOperation operation) {
 		if (! operation.getResponseHeaders().containsKey("Set-Cookie")) {
-			mAccessDenied = true;
 			throw new AuthenticationErrorException();
 		}
 	}
 	
 	/**
-	 * Should be called to free the AuthKey from memory after it is done using it
+	 * Helper method to check if the throwable is caused by having the access denied on Siga
+	 * @param throwable
+	 * @return True, if it is an AuthenticationError
+	 */
+	private boolean isAuthenticationException(Throwable throwable) {
+		return throwable instanceof AuthenticationErrorException;
+	}
+	
+	/**
+	 * Purges the AuthKey from memory for security reasons
 	 */
 	private void clearAuthKey() {
 		//Try to clear the password from memory after using it
