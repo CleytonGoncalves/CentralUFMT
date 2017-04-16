@@ -109,6 +109,7 @@ public final class ScheduleFragment extends Fragment implements ScheduleMvpView 
 	@Override
 	public void showProgressBar(boolean enabled) {
 		if (enabled) {
+			mProgressBar.setVisibility(View.VISIBLE); //Work-around ProgressBar not displaying bug
 			mProgressBar.show();
 		} else {
 			mProgressBar.hide();
