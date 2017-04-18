@@ -79,6 +79,7 @@ dependencies {
     final BUGSNAG_VERSION = '3.4.0'
     final IMMUTABLES_VERSION = '2.3.9'
     final JOBQUEUE_VERSION = '2.0.1'
+    final STETHO_VERSION = '1.5.0'
     final GREENDAO_VERSION = '3.2.2'
 
     //compile fileTree(include: ['*.jar'], dir: 'libs')
@@ -122,6 +123,9 @@ dependencies {
     provided "org.immutables:gson:$IMMUTABLES_VERSION:annotations"
 
     compile "com.birbit:android-priority-jobqueue:$JOBQUEUE_VERSION"
+
+    compile "com.facebook.stetho:stetho:$STETHO_VERSION"
+    compile "com.facebook.stetho:stetho-okhttp3:$STETHO_VERSION"
 
     compile "org.greenrobot:greendao:$GREENDAO_VERSION"
 }

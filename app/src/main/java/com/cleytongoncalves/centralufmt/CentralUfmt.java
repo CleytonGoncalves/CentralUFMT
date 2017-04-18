@@ -8,6 +8,7 @@ import com.cleytongoncalves.centralufmt.injection.component.ApplicationComponent
 import com.cleytongoncalves.centralufmt.injection.component.DaggerApplicationComponent;
 import com.cleytongoncalves.centralufmt.injection.module.ApplicationModule;
 import com.cleytongoncalves.centralufmt.util.Logger;
+import com.facebook.stetho.Stetho;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 
@@ -56,6 +57,8 @@ public class CentralUfmt extends Application {
 		mRefWatcher = LeakCanary.install(this);
 
 		JodaTimeAndroid.init(this);
+		
+		Stetho.initializeWithDefaults(this);
 	}
 
 	private void plantTrees() {

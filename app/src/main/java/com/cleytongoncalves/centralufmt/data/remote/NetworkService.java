@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.cleytongoncalves.centralufmt.R;
 import com.cleytongoncalves.centralufmt.injection.ApplicationContext;
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -128,9 +129,11 @@ public final class NetworkService {
 	public static class Builder {
 		public NetworkService build(@ApplicationContext Context context) {
 			OkHttpClient.Builder clientBuilder = new OkHttpClient()
-					                      .newBuilder()
-					                      .cookieJar(new MyCookieJar())
-					                      .addNetworkInterceptor(chain -> chain.proceed(
+					                                     .newBuilder()
+					                                     .cookieJar(new MyCookieJar())
+					                                     .addNetworkInterceptor(
+							                                     new StethoInterceptor())
+					                                     .addNetworkInterceptor(chain -> chain.proceed(
 							                      chain.request().newBuilder()
 							                           .addHeader("Accept-Language", "pt-BR")
 							                           .build()));
