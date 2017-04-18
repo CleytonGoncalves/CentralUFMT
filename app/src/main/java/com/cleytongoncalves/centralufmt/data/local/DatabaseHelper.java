@@ -4,12 +4,20 @@ package com.cleytongoncalves.centralufmt.data.local;
 import android.content.Context;
 import android.support.annotation.Nullable;
 
+import com.cleytongoncalves.centralufmt.BuildConfig;
+import com.cleytongoncalves.centralufmt.data.model.ClassTime;
+import com.cleytongoncalves.centralufmt.data.model.Course;
 import com.cleytongoncalves.centralufmt.data.model.DaoMaster;
 import com.cleytongoncalves.centralufmt.data.model.DaoSession;
 import com.cleytongoncalves.centralufmt.data.model.Student;
+import com.cleytongoncalves.centralufmt.data.model.Subject;
+import com.cleytongoncalves.centralufmt.data.model.SubjectClass;
 import com.cleytongoncalves.centralufmt.injection.ApplicationContext;
 
 import org.greenrobot.greendao.AbstractDao;
+import org.greenrobot.greendao.query.QueryBuilder;
+
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -21,6 +29,12 @@ public final class DatabaseHelper {
 	@Inject
 	public DatabaseHelper(DaoSession daoSession) {
 		mDaoSession = daoSession;
+		
+		//TODO: Remove query log on release
+		if (BuildConfig.DEBUG) {
+			QueryBuilder.LOG_SQL = true;
+			QueryBuilder.LOG_VALUES = true;
+		}
 	}
 	
 	public void insertStudent(final Student student) {
@@ -30,6 +44,41 @@ public final class DatabaseHelper {
 	@Nullable
 	public Student getStudent() {
 		return mDaoSession.getStudentDao().queryBuilder().unique();
+	}
+	
+	public void insertCourse(final Course course) {
+		mDaoSession.getCourseDao().insertOrReplace(course);
+	}
+	
+	@Nullable
+	public Course getCourse() {
+		return mDaoSession.getCourseDao().queryBuilder().unique();
+	}
+	
+	public void insertSubject(final Subject subject) {
+		mDaoSession.getSubjectDao().insertOrReplace(subject);
+	}
+	
+	@Nullable
+	public List<Subject> getSubject() {
+		return mDaoSession.getSubjectDao().queryBuilder().list();
+	}
+	
+	public void insertSubjectClass(final SubjectClass subjectClass) {
+		mDaoSession.getSubjectClassDao().insertOrReplace(subjectClass);
+	}
+	
+	@Nullable
+	public List<SubjectClass> getSubjectClass() {
+		return mDaoSession.getSubjectClassDao().queryBuilder().list();
+	}
+	
+	public void insertClassTime(final ClassTime classTime) {
+		mDaoSession.getClassTimeDao().insertOrReplace(classTime);
+	}
+	
+	public List<ClassTime> getAllClassTime() {
+		return mDaoSession.getClassTimeDao().queryBuilder().list();
 	}
 	
 	public void clearDb() {
