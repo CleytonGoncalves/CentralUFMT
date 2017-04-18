@@ -26,7 +26,6 @@ public class DataManager {
 	private final DatabaseHelper mDbHelper;
 	private final JobManager mJobManager;
 	
-	private Student mStudent;
 	private boolean mLoggedInSiga;
 	
 	@Inject
@@ -39,21 +38,20 @@ public class DataManager {
 	}
 	
 	private void init() {
-		mStudent = mDbHelper.getStudent();
 		EventBus.getDefault().register(this);
 	}
 	
 	/* ----- Student ----- */
 	
 	public Student getStudent() {
-		return mStudent;
+		return mDbHelper.getStudent();
 	}
 	
 	/**
 	 * @return true, if there is a fetched Student
 	 */
 	public boolean hasStudent() {
-		return mStudent != null;
+		return getStudent() != null;
 	}
 
 	/* ----- Siga ----- */
@@ -137,8 +135,6 @@ public class DataManager {
 		cancelScheduleFetch();
 		cancelMenuRuFetch();
 		
-		mStudent = null;
-		
 		mPreferencesHelper.clear();
 		mDbHelper.clearDb();
 	}
@@ -150,7 +146,6 @@ public class DataManager {
 		if (sigaEvent.isSuccessful()) {
 			mLoggedInSiga = true;
 			
-			mStudent = sigaEvent.getResult();
 			mDbHelper.insertStudent(sigaEvent.getResult());
 			Timber.d("Student saved successfully");
 			
