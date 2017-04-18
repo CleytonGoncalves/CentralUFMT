@@ -7,6 +7,7 @@ import com.cleytongoncalves.centralufmt.data.jobs.MenuRuFetchJob;
 import com.cleytongoncalves.centralufmt.data.jobs.MoodleLogInJob;
 import com.cleytongoncalves.centralufmt.data.jobs.ScheduleFetchJob;
 import com.cleytongoncalves.centralufmt.data.jobs.SigaLogInJob;
+import com.cleytongoncalves.centralufmt.data.local.DatabaseHelper;
 import com.cleytongoncalves.centralufmt.data.local.PreferencesHelper;
 import com.cleytongoncalves.centralufmt.data.model.Student;
 
@@ -22,21 +23,23 @@ import timber.log.Timber;
 @Singleton
 public class DataManager {
 	private final PreferencesHelper mPreferencesHelper;
+	private final DatabaseHelper mDbHelper;
 	private final JobManager mJobManager;
 	
 	private Student mStudent;
 	private boolean mLoggedInSiga;
 	
 	@Inject
-	public DataManager(PreferencesHelper preferencesHelper, JobManager jobManager) {
-		mPreferencesHelper = preferencesHelper;
-		mJobManager = jobManager;
+	public DataManager(PreferencesHelper prefHelper, DatabaseHelper dbHelper, JobManager jobMngr) {
+		mPreferencesHelper = prefHelper;
+		mJobManager = jobMngr;
+		mDbHelper = dbHelper;
 		
 		init();
 	}
 	
 	private void init() {
-		mStudent = mPreferencesHelper.getStudent();
+		mStudent = mDbHelper.getStudent();
 		EventBus.getDefault().register(this);
 	}
 	
@@ -137,6 +140,7 @@ public class DataManager {
 		mStudent = null;
 		
 		mPreferencesHelper.clear();
+		mDbHelper.clearDb();
 	}
 
 	/* ----- EventBus Listeners ----- */
@@ -147,7 +151,7 @@ public class DataManager {
 			mLoggedInSiga = true;
 			
 			mStudent = sigaEvent.getResult();
-			mPreferencesHelper.putStudent(mStudent);
+			mDbHelper.insertStudent(sigaEvent.getResult());
 			Timber.d("Student saved successfully");
 			
 			//If there is more on the queue, cancel them (special case on Single Instance Jobs)

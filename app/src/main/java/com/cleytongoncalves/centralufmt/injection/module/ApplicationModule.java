@@ -8,8 +8,10 @@ import com.birbit.android.jobqueue.JobManager;
 import com.birbit.android.jobqueue.config.Configuration;
 import com.cleytongoncalves.centralufmt.CentralUfmt;
 import com.cleytongoncalves.centralufmt.data.jobs.NetworkJob;
+import com.cleytongoncalves.centralufmt.data.local.DatabaseHelper;
 import com.cleytongoncalves.centralufmt.data.local.PreferencesHelper;
-import com.cleytongoncalves.centralufmt.data.model.GsonAdaptersModel;
+import com.cleytongoncalves.centralufmt.data.model.DaoMaster;
+import com.cleytongoncalves.centralufmt.data.model.DaoSession;
 import com.cleytongoncalves.centralufmt.data.remote.NetworkService;
 import com.cleytongoncalves.centralufmt.injection.ApplicationContext;
 import com.cleytongoncalves.centralufmt.ui.schedule.GsonAdaptersAbstractScheduleData;
@@ -21,6 +23,7 @@ import com.cleytongoncalves.centralufmt.util.converter.LocalTimeConverter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import org.greenrobot.greendao.database.Database;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
@@ -65,7 +68,6 @@ public class ApplicationModule {
 		                        .registerTypeAdapter(LocalDate.class, new LocalDateConverter())
 		                        .registerTypeAdapter(LocalTime.class, new LocalTimeConverter())
 		                        .registerTypeAdapter(Interval.class, new IntervalConverter())
-		                        .registerTypeAdapterFactory(new GsonAdaptersModel())
 		                        .registerTypeAdapterFactory(new GsonAdaptersAbstractScheduleData())
 		                        .create();
 	}
@@ -93,5 +95,14 @@ public class ApplicationModule {
 						});
 		
 		return new JobManager(builder.build());
+	}
+	
+	@Provides
+	@Singleton
+	DaoSession provideDaoSession() {
+		DatabaseHelper.DbOpenHelper helper = new DatabaseHelper.DbOpenHelper(provideContext());
+		Database db = helper.getWritableDb();
+		
+		return new DaoMaster(db).newSession();
 	}
 }
