@@ -1,7 +1,8 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.neenbedankt.android-apt' //Dager2
+apply plugin: 'com.neenbedankt.android-apt' //Dagger2
 apply plugin: 'android-apt' //ButterKnife
-apply plugin: 'me.tatarka.retrolambda'
+apply plugin: 'me.tatarka.retrolambda' //Retrolambda
+apply plugin: 'org.greenrobot.greendao' //GreenDao
 
 def keystoreProperties = new Properties()
 keystoreProperties.load(new FileInputStream(rootProject.file("keystore.properties")))
@@ -59,6 +60,8 @@ android {
     }
 }
 
+greendao { schemaVersion 1 }
+
 dependencies {
     final SUPPORT_LIBRARY_VERSION = '25.1.1'
     final BUTTERKNIFE_VERSION = '8.4.0'
@@ -76,6 +79,7 @@ dependencies {
     final BUGSNAG_VERSION = '3.4.0'
     final IMMUTABLES_VERSION = '2.3.9'
     final JOBQUEUE_VERSION = '2.0.1'
+    final GREENDAO_VERSION = '3.2.2'
 
     //compile fileTree(include: ['*.jar'], dir: 'libs')
     compile "com.android.support:appcompat-v7:$SUPPORT_LIBRARY_VERSION"
@@ -118,4 +122,6 @@ dependencies {
     provided "org.immutables:gson:$IMMUTABLES_VERSION:annotations"
 
     compile "com.birbit:android-priority-jobqueue:$JOBQUEUE_VERSION"
+
+    compile "org.greenrobot:greendao:$GREENDAO_VERSION"
 }
