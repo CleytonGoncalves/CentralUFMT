@@ -18,8 +18,6 @@ import org.greenrobot.eventbus.ThreadMode;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import timber.log.Timber;
-
 @Singleton
 public class DataManager {
 	private final PreferencesHelper mPreferencesHelper;
@@ -146,11 +144,9 @@ public class DataManager {
 		if (sigaEvent.isSuccessful()) {
 			mLoggedInSiga = true;
 			
-			mDbHelper.insertStudent(sigaEvent.getResult());
-			Timber.d("Student saved successfully");
-			
 			//If there is more on the queue, cancel them (special case on Single Instance Jobs)
 			cancelSigaLogIn();
 		}
 	}
+	
 }
