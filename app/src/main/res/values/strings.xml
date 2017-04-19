@@ -7,10 +7,8 @@
     <string name="rga_log_in_hint">Matrícula (RGA)</string>
     <string name="pass_log_in_hint">Senha do Siga</string>
     <string name="action_log_in">Entrar</string>
-    <string name="action_log_out">Sair</string>
     <string name="action_anonymous_log_in">Entrar mais tarde</string>
     <string name="welcome_greetings">Olá %s!</string>
-    <string name="not_logged_in">Não Logado</string>
 
     <!-- Main Activity -->
     <string name="title_activity_main">@string/app_name</string>
@@ -18,6 +16,7 @@
     <string name="action_share_app">Compartilhar</string>
     <string name="action_settings">Configurações</string>
     <string name="toast_offline_main">Modo Offline</string>
+    <string name="not_logged_in">Não logado</string>
 
     <!-- Map Fragment -->
     <string name="title_fragment_map">Mapa</string>
@@ -37,12 +36,14 @@
     <!-- Schedule Fragment -->
     <string name="title_fragment_schedule">Horários</string>
     <string name="menu_refresh_schedule">Atualizar</string>
+    <string name="snack_success_schedule">Horário atualizado!</string>
     <string name="snack_error_schedule">Falha ao atualizar o horário.</string>
     <string name="snack_reload_schedule">Recarregar</string>
     <string name="snack_empty_schedule">O horário está vazio.</string>
     <string name="snack_dismiss_schedule">@android:string/ok</string>
 
     <!-- MenuRu Fragment -->
+    <string name="title_fragment_menuru">Cardápio</string>
     <string name="text_main_course_menuru">"\u2022 Prato Principal: "</string>
     <string name="text_garnish_menuru">"\u2022 Guarnição: "</string>
     <string name="text_vegetarian_menuru">"\u2022 Vegetariano: "</string>
@@ -58,19 +59,16 @@
 
     <!-- Curriculum Fragment -->
     <string name="title_fragment_curriculum">Grade do Curso</string>
-
-    <!-- Dialogs -->
-    <string name="dialog_action_ok">OK</string>
-    <string name="dialog_action_cancel">Cancelar</string>
-    <string name="dialog_error_title">Desculpe</string>
-    <string name="authentication_message">Você foi desconectado, por favor entre novamente!</string>
+    
+    <!-- Settings Activity -->
+    <string name="title_activity_settings">Configurações</string>
 
     <!-- Error messages -->
-    <string name="error_field_required">Campo Obrigatório</string>
-    <string name="error_canceled_log_in">Autenticação cancelada.</string>
+    <string name="error_field_required">Campo obrigatório</string>
+    <string name="error_canceled_log_in">Autenticação cancelada</string>
     <string name="error_invalid_rga">Número de Matrícula inválido</string>
     <string name="error_invalid_password">Senha inválida</string>
-    <string name="error_access_denied">Acesso Negado. Por favor confira os dados informados.</string>
+    <string name="error_access_denied">Acesso negado. Por favor confira os dados informados.</string>
     <string name="error_generic_log_in">Não foi possível entrar no momento.</string>
     <string name="error_message_play_services">Desculpe, você precisa de um dispositivo que suporte o Google Play Services para utilizar este app.</string>
 
@@ -78,11 +76,8 @@
     <string name="ufmt_logo_description">Logomarca da UFMT</string>
     <string name="navigation_drawer_open">Abrir menu de navegação</string>
     <string name="navigation_drawer_close">Fechar menu de navegação</string>
-    <string name="title_fragment_menuru">Cardápio</string>
 
     <!-- Uncategorized-->
     <string name="strings.xml_placeholder"/>
-    <string name="snack_success_schedule">Horário atualizado!</string>
-    <string name="title_activity_settings">Configurações</string>
 
 </resources>
