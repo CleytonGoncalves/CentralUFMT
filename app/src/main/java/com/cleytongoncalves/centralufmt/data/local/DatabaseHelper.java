@@ -39,7 +39,7 @@ public final class DatabaseHelper {
 	}
 	
 	public void insertStudent(final Student student) {
-		mDaoSession.getStudentDao().insertOrReplace(student);
+		mDaoSession.getStudentDao().save(student);
 	}
 	
 	@Nullable
@@ -47,8 +47,12 @@ public final class DatabaseHelper {
 		return mDaoSession.getStudentDao().queryBuilder().unique();
 	}
 	
+	public boolean hasStudent() {
+		return mDaoSession.getStudentDao().count() > 0;
+	}
+	
 	public void insertCourse(final Course course) {
-		mDaoSession.getCourseDao().insertOrReplace(course);
+		mDaoSession.getCourseDao().save(course);
 	}
 	
 	@Nullable
@@ -57,32 +61,41 @@ public final class DatabaseHelper {
 	}
 	
 	public void insertSubject(final Subject subject) {
-		mDaoSession.getSubjectDao().insertOrReplace(subject);
+		mDaoSession.getSubjectDao().save(subject);
 	}
 	
 	public void insertSubjectList(final List<Subject> subjects) {
-		mDaoSession.getSubjectDao().insertInTx(Collections.unmodifiableList(subjects));
+		mDaoSession.getSubjectDao().saveInTx(Collections.unmodifiableList(subjects));
 	}
 	
 	@Nullable
-	public List<Subject> getSubject() {
+	public List<Subject> getSubjectList() {
 		return mDaoSession.getSubjectDao().queryBuilder().list();
 	}
 	
 	public void insertSubjectClass(final SubjectClass subjectClass) {
-		mDaoSession.getSubjectClassDao().insertOrReplace(subjectClass);
+		mDaoSession.getSubjectClassDao().save(subjectClass);
+	}
+	
+	public void insertSubjectClassList(final List<SubjectClass> subjectClasses) {
+		mDaoSession.getSubjectClassDao().saveInTx(Collections.unmodifiableList(subjectClasses));
 	}
 	
 	@Nullable
-	public List<SubjectClass> getSubjectClass() {
+	public List<SubjectClass> getSubjectClassList() {
 		return mDaoSession.getSubjectClassDao().queryBuilder().list();
 	}
 	
 	public void insertClassTime(final ClassTime classTime) {
-		mDaoSession.getClassTimeDao().insertOrReplace(classTime);
+		mDaoSession.getClassTimeDao().save(classTime);
 	}
 	
-	public List<ClassTime> getAllClassTime() {
+	public void insertClassTimeList(final List<ClassTime> classTimes) {
+		mDaoSession.getClassTimeDao().saveInTx(Collections.unmodifiableList(classTimes));
+	}
+	
+	@Nullable
+	public List<ClassTime> getClassTimeList() {
 		return mDaoSession.getClassTimeDao().queryBuilder().list();
 	}
 	
