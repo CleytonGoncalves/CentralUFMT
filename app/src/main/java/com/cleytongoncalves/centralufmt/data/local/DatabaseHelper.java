@@ -17,6 +17,7 @@ import com.cleytongoncalves.centralufmt.injection.ApplicationContext;
 import org.greenrobot.greendao.AbstractDao;
 import org.greenrobot.greendao.query.QueryBuilder;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -57,6 +58,10 @@ public final class DatabaseHelper {
 	
 	public void insertSubject(final Subject subject) {
 		mDaoSession.getSubjectDao().insertOrReplace(subject);
+	}
+	
+	public void insertSubjectList(final List<Subject> subjects) {
+		mDaoSession.getSubjectDao().insertInTx(Collections.unmodifiableList(subjects));
 	}
 	
 	@Nullable
