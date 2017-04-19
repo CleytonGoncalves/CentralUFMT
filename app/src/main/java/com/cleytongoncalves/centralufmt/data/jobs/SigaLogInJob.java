@@ -7,8 +7,11 @@ import android.support.annotation.Nullable;
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
 import com.cleytongoncalves.centralufmt.data.events.SigaLogInEvent;
+import com.cleytongoncalves.centralufmt.data.local.DatabaseHelper;
 import com.cleytongoncalves.centralufmt.data.local.HtmlHelper;
+import com.cleytongoncalves.centralufmt.data.model.Course;
 import com.cleytongoncalves.centralufmt.data.model.Student;
+import com.cleytongoncalves.centralufmt.data.model.Subject;
 import com.cleytongoncalves.centralufmt.data.remote.NetworkOperation;
 import com.cleytongoncalves.centralufmt.data.remote.NetworkService;
 import com.cleytongoncalves.centralufmt.injection.component.ApplicationComponent;
@@ -18,6 +21,7 @@ import org.greenrobot.eventbus.EventBus;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -42,6 +46,8 @@ public final class SigaLogInJob extends NetworkJob {
 	private static final String EXACAO_SIGA_URL = "PConferencia_EXACAO.dll/listaEstrutura";
 	
 	@Inject Lazy<NetworkService> mLazyNetworkService;
+	@Inject DatabaseHelper mDatabaseHelper;
+	
 	private final String mRga;
 	private char[] mAuthKey;
 	
@@ -87,11 +93,24 @@ public final class SigaLogInJob extends NetworkJob {
 				networkService.get(BASE_SIGA_URL + EXACAO_SIGA_URL, CHARSET_ISO);
 		assertNetworkSuccess(exacaoGet);
 		
-		Student student = parseStudent(exacaoGet);
+		String exacaoHtml = exacaoGet.getResponseBody();
+		
+		Student student = parseStudent(exacaoHtml);
+		Course course = parseCourse(exacaoHtml);
+		List<Subject> curriculum = parseCurriculum(exacaoHtml);
+		
+		student.setCourseCode(course.getCode());
+		for (Subject subj : curriculum) {
+			subj.setCourseCode(course.getCode());
+		}
+		
+		mDatabaseHelper.insertCourse(course);
+		mDatabaseHelper.insertStudent(student);
+		mDatabaseHelper.insertSubjectList(curriculum);
 		
 		assertNotCancelled();
 		clearAuthKey();
-		EventBus.getDefault().post(new SigaLogInEvent(student));
+		EventBus.getDefault().post(new SigaLogInEvent());
 		Timber.d("Siga login successful");
 	}
 	
@@ -142,11 +161,17 @@ public final class SigaLogInJob extends NetworkJob {
 	
 	/* Helper Methods */
 	
-	private FormBody createFormParams(String html) {
+	private FormBody createFormParams(String html) throws JobExitingException {
 		final String loginField = "txt_login";
 		final String passwordField = "txt_senha";
 		
-		Map<String, String> paramsMap = HtmlHelper.parseSigaFormParams(html);
+		Map<String, String> paramsMap;
+		try {
+			paramsMap = HtmlHelper.parseSigaFormParams(html);
+		} catch (Exception e) {
+			throw new ParsingErrorException(e);
+		}
+		
 		paramsMap.put(loginField, mRga);
 		paramsMap.put(passwordField, String.valueOf(mAuthKey));
 		
@@ -155,7 +180,8 @@ public final class SigaLogInJob extends NetworkJob {
 			try {
 				formBody.addEncoded(entry.getKey(), URLEncoder.encode(entry.getValue(), "UTF-8"));
 			} catch (UnsupportedEncodingException e) {
-				Timber.wtf(e, "*** Encoding error on Siga LogIn Form Params ***");
+				Timber.wtf(e, "Encoding error on Siga LogIn Form Params");
+				throw new ParsingErrorException(e);
 			}
 		}
 		
@@ -164,9 +190,25 @@ public final class SigaLogInJob extends NetworkJob {
 		return formBody.build();
 	}
 	
-	private Student parseStudent(NetworkOperation operation) throws Exception {
+	private List<Subject> parseCurriculum(String htmlResponse) throws ParsingErrorException {
 		try {
-			return HtmlHelper.parseStudent(operation.getResponseBody());
+			return HtmlHelper.parseCurriculum(htmlResponse);
+		} catch (Exception e) {
+			throw new ParsingErrorException(e);
+		}
+	}
+	
+	private Course parseCourse(String htmlResponse) throws ParsingErrorException {
+		try {
+			return HtmlHelper.parseCourse(htmlResponse);
+		} catch (Exception e) {
+			throw new ParsingErrorException(e);
+		}
+	}
+	
+	private Student parseStudent(String htmlResponse) throws ParsingErrorException {
+		try {
+			return HtmlHelper.parseStudent(htmlResponse);
 		} catch (Exception e) {
 			throw new ParsingErrorException(e);
 		}
