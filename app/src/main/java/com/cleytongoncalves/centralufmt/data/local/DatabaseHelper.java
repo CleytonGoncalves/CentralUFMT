@@ -38,8 +38,18 @@ public final class DatabaseHelper {
 		}
 	}
 	
+	public void clearDb() {
+		for (AbstractDao dao : mDaoSession.getAllDaos()) {
+			dao.deleteAll();
+		}
+		
+		mDaoSession.clear();
+	}
+	
+	/* Student */
+	
 	public void insertStudent(final Student student) {
-		mDaoSession.getStudentDao().save(student);
+		mDaoSession.getStudentDao().insertOrReplace(student);
 	}
 	
 	@Nullable
@@ -51,8 +61,10 @@ public final class DatabaseHelper {
 		return mDaoSession.getStudentDao().count() > 0;
 	}
 	
+	/* Course */
+	
 	public void insertCourse(final Course course) {
-		mDaoSession.getCourseDao().save(course);
+		mDaoSession.getCourseDao().insertOrReplace(course);
 	}
 	
 	@Nullable
@@ -60,12 +72,14 @@ public final class DatabaseHelper {
 		return mDaoSession.getCourseDao().queryBuilder().unique();
 	}
 	
+	/* Subject */
+	
 	public void insertSubject(final Subject subject) {
-		mDaoSession.getSubjectDao().save(subject);
+		mDaoSession.getSubjectDao().insertOrReplace(subject);
 	}
 	
 	public void insertSubjectList(final List<Subject> subjects) {
-		mDaoSession.getSubjectDao().saveInTx(Collections.unmodifiableList(subjects));
+		mDaoSession.getSubjectDao().insertOrReplaceInTx(Collections.unmodifiableList(subjects));
 	}
 	
 	@Nullable
@@ -73,12 +87,15 @@ public final class DatabaseHelper {
 		return mDaoSession.getSubjectDao().queryBuilder().list();
 	}
 	
+	/* Subject Class */
+	
 	public void insertSubjectClass(final SubjectClass subjectClass) {
-		mDaoSession.getSubjectClassDao().save(subjectClass);
+		mDaoSession.getSubjectClassDao().insertOrReplace(subjectClass);
 	}
 	
 	public void insertSubjectClassList(final List<SubjectClass> subjectClasses) {
-		mDaoSession.getSubjectClassDao().saveInTx(Collections.unmodifiableList(subjectClasses));
+		mDaoSession.getSubjectClassDao()
+		           .insertOrReplaceInTx(Collections.unmodifiableList(subjectClasses));
 	}
 	
 	@Nullable
@@ -86,12 +103,14 @@ public final class DatabaseHelper {
 		return mDaoSession.getSubjectClassDao().queryBuilder().list();
 	}
 	
+	/* Class Time */
+	
 	public void insertClassTime(final ClassTime classTime) {
-		mDaoSession.getClassTimeDao().save(classTime);
+		mDaoSession.getClassTimeDao().insertOrReplace(classTime);
 	}
 	
 	public void insertClassTimeList(final List<ClassTime> classTimes) {
-		mDaoSession.getClassTimeDao().saveInTx(Collections.unmodifiableList(classTimes));
+		mDaoSession.getClassTimeDao().insertOrReplaceInTx(Collections.unmodifiableList(classTimes));
 	}
 	
 	@Nullable
@@ -99,13 +118,6 @@ public final class DatabaseHelper {
 		return mDaoSession.getClassTimeDao().queryBuilder().list();
 	}
 	
-	public void clearDb() {
-		for (AbstractDao dao : mDaoSession.getAllDaos()) {
-			dao.deleteAll();
-		}
-		
-		mDaoSession.clear();
-	}
 	
 	public static class DbOpenHelper extends DaoMaster.DevOpenHelper {
 		private static final String DB_NAME = "centralufmt-db";
