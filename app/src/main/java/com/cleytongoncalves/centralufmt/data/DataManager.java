@@ -49,7 +49,7 @@ public class DataManager {
 	 * @return true, if there is a fetched Student
 	 */
 	public boolean hasStudent() {
-		return getStudent() != null;
+		return mDbHelper.hasStudent();
 	}
 
 	/* ----- Siga ----- */
