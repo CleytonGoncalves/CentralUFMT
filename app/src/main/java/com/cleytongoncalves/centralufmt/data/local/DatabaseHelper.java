@@ -5,7 +5,6 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 
 import com.cleytongoncalves.centralufmt.BuildConfig;
-import com.cleytongoncalves.centralufmt.data.model.ClassTime;
 import com.cleytongoncalves.centralufmt.data.model.Course;
 import com.cleytongoncalves.centralufmt.data.model.DaoMaster;
 import com.cleytongoncalves.centralufmt.data.model.DaoSession;
@@ -25,6 +24,7 @@ import javax.inject.Singleton;
 
 @Singleton
 public final class DatabaseHelper {
+	private static final String DB_NAME = "centralufmt-db";
 	private final DaoSession mDaoSession;
 	
 	@Inject
@@ -74,10 +74,6 @@ public final class DatabaseHelper {
 	
 	/* Subject */
 	
-	public void insertSubject(final Subject subject) {
-		mDaoSession.getSubjectDao().insertOrReplace(subject);
-	}
-	
 	public void insertSubjectList(final List<Subject> subjects) {
 		mDaoSession.getSubjectDao().insertOrReplaceInTx(Collections.unmodifiableList(subjects));
 	}
@@ -89,10 +85,6 @@ public final class DatabaseHelper {
 	
 	/* Subject Class */
 	
-	public void insertSubjectClass(final SubjectClass subjectClass) {
-		mDaoSession.getSubjectClassDao().insertOrReplace(subjectClass);
-	}
-	
 	public void insertSubjectClassList(final List<SubjectClass> subjectClasses) {
 		mDaoSession.getSubjectClassDao()
 		           .insertOrReplaceInTx(Collections.unmodifiableList(subjectClasses));
@@ -103,24 +95,8 @@ public final class DatabaseHelper {
 		return mDaoSession.getSubjectClassDao().queryBuilder().list();
 	}
 	
-	/* Class Time */
-	
-	public void insertClassTime(final ClassTime classTime) {
-		mDaoSession.getClassTimeDao().insertOrReplace(classTime);
-	}
-	
-	public void insertClassTimeList(final List<ClassTime> classTimes) {
-		mDaoSession.getClassTimeDao().insertOrReplaceInTx(Collections.unmodifiableList(classTimes));
-	}
-	
-	@Nullable
-	public List<ClassTime> getClassTimeList() {
-		return mDaoSession.getClassTimeDao().queryBuilder().list();
-	}
-	
 	
 	public static class DbOpenHelper extends DaoMaster.DevOpenHelper {
-		private static final String DB_NAME = "centralufmt-db";
 		
 		@Inject
 		public DbOpenHelper(@ApplicationContext Context context) {
