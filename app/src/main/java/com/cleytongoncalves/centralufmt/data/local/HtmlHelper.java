@@ -3,8 +3,13 @@ package com.cleytongoncalves.centralufmt.data.local;
 import com.cleytongoncalves.centralufmt.data.model.Course;
 import com.cleytongoncalves.centralufmt.data.model.Student;
 import com.cleytongoncalves.centralufmt.data.model.Subject;
+import com.cleytongoncalves.centralufmt.data.model.SubjectClass;
 import com.cleytongoncalves.centralufmt.util.TextUtil;
 
+import org.joda.time.DateTime;
+import org.joda.time.Interval;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.TextNode;
@@ -63,7 +68,7 @@ public final class HtmlHelper {
 	public static List<Subject> parseCurriculum(String exacaoHtml) throws Exception {
 		Element body = Jsoup.parse(exacaoHtml).body();
 		List<Subject> curriculum = new ArrayList<>();
-
+		
 		//1st Tb = Carga horaria curso, 2nd = carga horaria cursada, 3rd = grade
 		Element curriculumTb = body.getElementsByTag("table").get(2);
 		
@@ -98,11 +103,11 @@ public final class HtmlHelper {
 			
 			int status;
 			if ("FALTA CURSAR".equals(statusText)) {
-				status = Subject.NOT_TAKEN;
+				status = Subject.FUTURE;
 			} else if ("Matriculada".equals(statusText)) {
 				status = Subject.ENROLLED;
 			} else {
-				status = Subject.TAKEN;
+				status = Subject.PAST;
 			}
 			
 			Subject subject = new Subject(code, title, courseLoad, term, status);
@@ -112,93 +117,81 @@ public final class HtmlHelper {
 		return curriculum;
 	}
 	
-	//public static List<Discipline> parseSchedule(String html) throws Exception {
-	//	Element body = Jsoup.parse(html).body();
-	//
-	//	if (body.text().contains(ACCESS_DENIED_ERROR)) {
-	//		throw new UnsupportedOperationException("Siga Access Denied");
-	//	}
-	//
-	//	Elements tables = body.getElementsByTag("table");
-	//
-	//	//17=tabela horarios, 18=total creditos/carga horaria
-	//	final int scheduleTable = 17;
-	//	Element horarioTable = tables.get(scheduleTable);
-	//	Elements rows = horarioTable.getElementsByTag("tr");
-	//
-	//	List<Discipline> disciplinas = new ArrayList<>();
-	//
-	//	//0=header, 1..n=disciplinas
-	//	for (int i = 1, rowsSize = rows.size(); i < rowsSize; i++) {
-	//		Element currRow = rows.get(i);
-	//		Elements content = currRow.children();
-	//
-	//		Discipline.Builder discBuilder = Discipline.builder();
-	//
-	//		//0="cod-nome disc", 1=primeiro dia, 2=hora inicio, 3=hora fim, 4=turma, 5=sala,
-	// 6=crd?, 7=cargaHor,
-	//		//8=tipo, 9=per. oferta
-	//		String titleAndCode[] = content.get(0).ownText().split("-");
-	//		discBuilder.code(titleAndCode[0]);
-	//		discBuilder.title(TextUtil.capsWordsFirstLetter(titleAndCode[1]));
-	//
-	//		discBuilder.group(content.get(4).ownText());
-	//		discBuilder.room(content.get(5).ownText());
-	//		discBuilder.crd(content.get(6).ownText());
-	//		discBuilder.courseLoad(content.get(7).ownText());
-	//		discBuilder.type(content.get(8).ownText());
-	//
-	//		String periodo = content.get(9).ownText(); //TODO PERIODO != TERM?
-	//		switch (periodo) {
-	//			case "1":
-	//				discBuilder.term("1º Semestre");
-	//				break;
-	//			case "2":
-	//				discBuilder.term("2º Semestre");
-	//				break;
-	//			case "3":
-	//				discBuilder.term("Anual");
-	//				break;
-	//			case "4":
-	//				discBuilder.term("Modular");
-	//				break;
-	//		}
-	//
-	//		List<Interval> aulas = new ArrayList<>();
-	//
-	//		DateTimeFormatter fmt = DateTimeFormat.forPattern("EEEEHH:mm").withLocale(LOCALE_PTBR);
-	//		boolean keepGoing = true;
-	//		for (int index = i; keepGoing; index++) {
-	//			String dia = content.get(1).ownText();
-	//			String horaInicio = content.get(2).ownText();
-	//			String horaFim = content.get(3).ownText();
-	//
-	//			//Format WED14:30
-	//			DateTime start = fmt.parseDateTime(dia + horaInicio);
-	//			DateTime end = fmt.parseDateTime(dia + horaFim);
-	//
-	//			Interval interval = new Interval(start, end);
-	//			aulas.add(interval);
-	//
-	//			if (index + 1 < rows.size()) {
-	//				content = rows.get(index + 1).children();
-	//				if (content.get(0).ownText().contains(NBSP_CODE)) { //is a continuation
-	//					i++;
-	//				} else {
-	//					keepGoing = false;
-	//				}
-	//			} else {
-	//				keepGoing = false;
-	//			}
-	//		}
-	//
-	//		discBuilder.classTimes(aulas);
-	//		disciplinas.add(discBuilder.build());
-	//	}
-	//
-	//	return disciplinas;
-	//}
-
+	public static List<SubjectClass> parseSchedule(String html) throws Exception {
+		Element body = Jsoup.parse(html).body();
+		
+		Elements tables = body.getElementsByTag("table");
+		
+		//17=tabela horarios, 18=total creditos/carga horaria
+		final int scheduleTable = 17;
+		Element horarioTable = tables.get(scheduleTable);
+		Elements rows = horarioTable.getElementsByTag("tr");
+		
+		List<SubjectClass> classes = new ArrayList<>();
+		
+		//0=header, 1..n=classes
+		for (int i = 1, rowsSize = rows.size(); i < rowsSize; i++) {
+			Element currRow = rows.get(i);
+			Elements content = currRow.children();
+			
+			//0="cod-nome disc", 1=primeiro dia, 2=hora inicio, 3=hora fim, 4=turma, 5=sala,
+			//6=crd?, 7=cargaHor, 8=tipo, 9=per. oferta
+			String titleAndCode[] = content.get(0).ownText().split("-");
+			Long subjectCode = Long.parseLong(titleAndCode[0]);
+			//String title = TextUtil.capsWordsFirstLetter(titleAndCode[1]);
+			
+			String group = content.get(4).ownText();
+			String room = content.get(5).ownText();
+			String crd = content.get(6).ownText();
+			//String courseLoad = content.get(7).ownText();
+			String type = content.get(8).ownText();
+			
+			//String periodo = content.get(9).ownText();
+			
+			List<Interval> aulas = parseClassTimes(content, rows, i);
+			
+			SubjectClass subjectClass =
+					new SubjectClass(subjectCode, group, room, crd, type, aulas);
+			
+			classes.add(subjectClass);
+		}
+		
+		return classes;
+	}
+	
+	private static List<Interval> parseClassTimes(Elements content, Elements rows,
+	                                              int pos) throws Exception {
+		List<Interval> aulas = new ArrayList<>();
+		
+		DateTimeFormatter fmt = DateTimeFormat.forPattern("EEEEHH:mm").withLocale(LOCALE_PTBR);
+		boolean keepGoing = true;
+		for (int index = pos; keepGoing; index++) {
+			String dia = content.get(1).ownText();
+			String horaInicio = content.get(2).ownText();
+			String horaFim = content.get(3).ownText();
+			
+			//Format WED14:30
+			DateTime start = fmt.parseDateTime(dia + horaInicio);
+			DateTime end = fmt.parseDateTime(dia + horaFim);
+			
+			Interval interval = new Interval(start, end);
+			aulas.add(interval);
+			
+			if (index + 1 < rows.size()) {
+				content = rows.get(index + 1).children();
+				if (content.get(0).ownText().contains(NBSP_CODE)) { //is a continuation
+					pos++;
+				} else {
+					keepGoing = false;
+				}
+			} else {
+				keepGoing = false;
+			}
+		}
+		
+		return aulas;
+	}
+	
 	/* ----- Static Helper Methods ----- */
 	
 	public static Map<String, String> parseSigaFormParams(String html) throws Exception {
