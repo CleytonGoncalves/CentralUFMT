@@ -54,7 +54,7 @@ public final class MoodleLogInJob extends NetworkJob {
 	
 	@Override
 	public void onAdded() {
-		Timber.d("Moodle login started");
+		Timber.i("Moodle login started");
 	}
 	
 	@Override
@@ -71,12 +71,12 @@ public final class MoodleLogInJob extends NetworkJob {
 		
 		List<Cookie> cookies = networkService.getCookieFromJar(BASE_AVA_URL);
 		
-		assertLogInSuccess(cookies);
+		assertLogInSuccess(cookies, logInPost.getResponseBody());
 		
 		assertNotCancelled();
 		clearAuthKey();
 		EventBus.getDefault().postSticky(new MoodleLogInEvent(cookies.get(0)));
-		Timber.d("Moodle login successful");
+		Timber.i("Moodle login successful");
 	}
 	
 	@Override
@@ -87,14 +87,14 @@ public final class MoodleLogInJob extends NetworkJob {
 		switch (cancelReason) {
 			case REACHED_RETRY_LIMIT:
 				EventBus.getDefault().post(new MoodleLogInEvent(MoodleLogInEvent.GENERAL_ERROR));
-				Timber.d("%s - Reached Retry Limit", msg);
+				Timber.i("%s - Reached Retry Limit", msg);
 				break;
 			case CANCELLED_VIA_SHOULD_RE_RUN:
 				EventBus.getDefault().post(new MoodleLogInEvent(MoodleLogInEvent.GENERAL_ERROR));
-				Timber.d("%s - HTTP Status 400 (Client Error)", msg);
+				Timber.i("%s - HTTP Status 400 (Client Error)", msg);
 				break;
 			case CANCELLED_WHILE_RUNNING:
-				Timber.d("%s - Job Cancelled", msg);
+				Timber.i("%s - Job Cancelled", msg);
 				break;
 		}
 	}
@@ -140,9 +140,9 @@ public final class MoodleLogInJob extends NetworkJob {
 		mAuthKey = null;
 	}
 	
-	private void assertLogInSuccess(List<Cookie> cookies) {
+	private void assertLogInSuccess(List<Cookie> cookies, String html) {
 		if (cookies.isEmpty()) {
-			throw new AuthenticationErrorException();
+			throw new AuthenticationErrorException(html);
 		}
 	}
 	

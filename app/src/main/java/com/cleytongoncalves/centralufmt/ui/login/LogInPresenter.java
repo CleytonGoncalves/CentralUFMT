@@ -44,7 +44,7 @@ public final class LogInPresenter implements Presenter<LogInMvpView> {
 		mView.showProgress(true);
 		
 		onLogInSuccess(); //Goes directly to the result
-		Timber.d("Anonymous LogIn");
+		Timber.i("Anonymous LogIn");
 	}
 	
 	void logIn(String rga, char[] password) {

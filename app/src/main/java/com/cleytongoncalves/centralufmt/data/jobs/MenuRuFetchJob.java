@@ -47,7 +47,7 @@ public final class MenuRuFetchJob extends NetworkJob {
 	
 	@Override
 	public void onAdded() {
-		Timber.d("MenuRu fetch started");
+		Timber.i("MenuRu fetch started");
 	}
 	
 	@Override
@@ -62,11 +62,11 @@ public final class MenuRuFetchJob extends NetworkJob {
 		
 		assertNotCancelled();
 		
-		MenuRu menuRu = parseMenuRu(menuGet);
+		MenuRu menuRu = parseMenuRu(menuGet.getResponseBody());
 		
 		assertNotCancelled();
 		EventBus.getDefault().post(new MenuRuFetchEvent(menuRu));
-		Timber.d("MenuRu fetch successful");
+		Timber.i("MenuRu fetch successful");
 	}
 	
 	@Override
@@ -75,14 +75,14 @@ public final class MenuRuFetchJob extends NetworkJob {
 		switch (cancelReason) {
 			case REACHED_RETRY_LIMIT:
 				EventBus.getDefault().post(new MenuRuFetchEvent(MenuRuFetchEvent.GENERAL_ERROR));
-				Timber.d("%s - Reached Retry Limit", msg);
+				Timber.i("%s - Reached Retry Limit", msg);
 				break;
 			case CANCELLED_VIA_SHOULD_RE_RUN:
 				EventBus.getDefault().post(new MenuRuFetchEvent(MenuRuFetchEvent.GENERAL_ERROR));
-				Timber.d("%s - HTTP Status 400 (Client Error)", msg);
+				Timber.i("%s - HTTP Status 400 (Client Error)", msg);
 				break;
 			case CANCELLED_WHILE_RUNNING:
-				Timber.d("%s - Job Cancelled", msg);
+				Timber.i("%s - Job Cancelled", msg);
 				break;
 		}
 	}
@@ -108,11 +108,11 @@ public final class MenuRuFetchJob extends NetworkJob {
 	
 	/* Helper Methods */
 	
-	private MenuRu parseMenuRu(NetworkOperation operation) {
+	private MenuRu parseMenuRu(String html) {
 		try {
-			return MenuParser.parse(operation.getResponseBody());
+			return MenuParser.parse(html);
 		} catch (Exception e) {
-			throw new ParsingErrorException(e);
+			throw new ParsingErrorException(e, html);
 		}
 	}
 }

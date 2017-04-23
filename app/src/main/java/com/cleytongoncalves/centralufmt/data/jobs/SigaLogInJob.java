@@ -38,7 +38,7 @@ import static com.cleytongoncalves.centralufmt.data.remote.NetworkService.CHARSE
 public final class SigaLogInJob extends NetworkJob {
 	public static final String TAG = SigaLogInJob.class.getName();
 	private static final int RETRY_LIMIT = 5;
-	private static final int RETRY_DELAY = 100;
+	private static final int RETRY_DELAY = 200;
 	
 	private static final String BASE_SIGA_URL = "http://academico-siga.ufmt.br/www-siga/dll/";
 	private static final String GET_SIGA_URL = "LoginUnicoIDBUFMT.dll/chamalogin";
@@ -68,7 +68,7 @@ public final class SigaLogInJob extends NetworkJob {
 	
 	@Override
 	public void onAdded() {
-		Timber.d("Siga login started");
+		Timber.i("Siga login started");
 	}
 	
 	@Override
@@ -111,7 +111,7 @@ public final class SigaLogInJob extends NetworkJob {
 		assertNotCancelled();
 		clearAuthKey();
 		EventBus.getDefault().post(new SigaLogInEvent());
-		Timber.d("Siga login successful");
+		Timber.i("Siga login successful");
 	}
 	
 	@Override
@@ -122,20 +122,20 @@ public final class SigaLogInJob extends NetworkJob {
 		switch (cancelReason) {
 			case REACHED_RETRY_LIMIT:
 				EventBus.getDefault().post(new SigaLogInEvent(SigaLogInEvent.GENERAL_ERROR));
-				Timber.d("%s - Reached Retry Limit", msg);
+				Timber.i("%s - Reached Retry Limit", msg);
 				break;
 			case CANCELLED_VIA_SHOULD_RE_RUN:
 				if (isAuthenticationException(throwable)) {
 					EventBus.getDefault().post(new SigaLogInEvent(SigaLogInEvent.ACCESS_DENIED));
-					Timber.d("%s - Access Denied (Wrong User/Auth)", msg);
+					Timber.i("%s - Authentication error (Wrong user/pass or server error)", msg);
 				} else {
 					EventBus.getDefault().post(new SigaLogInEvent(SigaLogInEvent.GENERAL_ERROR));
-					Timber.d("%s - HTTP Status 400 (Client Error)", msg);
+					Timber.i("%s - HTTP Status 400 (Client Error)", msg);
 				}
 				break;
 			case CANCELLED_WHILE_RUNNING:
 				EventBus.getDefault().post(new SigaLogInEvent(SigaLogInEvent.USER_CANCELLED));
-				Timber.d("%s - Job Cancelled", msg);
+				Timber.i("%s - Job Cancelled", msg);
 				break;
 		}
 	}
@@ -169,7 +169,7 @@ public final class SigaLogInJob extends NetworkJob {
 		try {
 			paramsMap = HtmlHelper.parseSigaFormParams(html);
 		} catch (Exception e) {
-			throw new ParsingErrorException(e);
+			throw new ParsingErrorException(e, html);
 		}
 		
 		paramsMap.put(loginField, mRga);
@@ -181,7 +181,7 @@ public final class SigaLogInJob extends NetworkJob {
 				formBody.addEncoded(entry.getKey(), URLEncoder.encode(entry.getValue(), "UTF-8"));
 			} catch (UnsupportedEncodingException e) {
 				Timber.wtf(e, "Encoding error on Siga LogIn Form Params");
-				throw new ParsingErrorException(e);
+				throw new ParsingErrorException(e, html);
 			}
 		}
 		
@@ -194,7 +194,7 @@ public final class SigaLogInJob extends NetworkJob {
 		try {
 			return HtmlHelper.parseCurriculum(htmlResponse);
 		} catch (Exception e) {
-			throw new ParsingErrorException(e);
+			throw new ParsingErrorException(e, htmlResponse);
 		}
 	}
 	
@@ -202,7 +202,7 @@ public final class SigaLogInJob extends NetworkJob {
 		try {
 			return HtmlHelper.parseCourse(htmlResponse);
 		} catch (Exception e) {
-			throw new ParsingErrorException(e);
+			throw new ParsingErrorException(e, htmlResponse);
 		}
 	}
 	
@@ -210,13 +210,13 @@ public final class SigaLogInJob extends NetworkJob {
 		try {
 			return HtmlHelper.parseStudent(htmlResponse);
 		} catch (Exception e) {
-			throw new ParsingErrorException(e);
+			throw new ParsingErrorException(e, htmlResponse);
 		}
 	}
 	
 	private void assertLoginSuccess(NetworkOperation operation) {
 		if (! operation.getResponseHeaders().containsKey("Set-Cookie")) {
-			throw new AuthenticationErrorException();
+			throw new AuthenticationErrorException(operation.getResponseBody());
 		}
 	}
 	

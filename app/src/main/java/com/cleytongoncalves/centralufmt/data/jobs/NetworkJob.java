@@ -12,6 +12,8 @@ import com.cleytongoncalves.centralufmt.util.NetworkUtil;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import timber.log.Timber;
+
 public abstract class NetworkJob extends Job {
 	@Retention(RetentionPolicy.SOURCE)
 	@IntDef({UI_HIGH, BACKGROUND})
@@ -81,14 +83,16 @@ public abstract class NetworkJob extends Job {
 	/* Job Exiting Exceptions */
 	
 	static final class AuthenticationErrorException extends JobExitingException {
-		AuthenticationErrorException() {
+		AuthenticationErrorException(String html) {
 			super("It seems the authentication has failed");
+			Timber.d("Authentication Error HTML:\n%s", html);
 		}
 	}
 	
 	static final class ParsingErrorException extends JobExitingException {
-		ParsingErrorException(Throwable root) {
-			super("There seems to be a parsing problem", root);
+		ParsingErrorException(Throwable cause, String html) {
+			super("There seems to be a parsing problem", cause);
+			Timber.d("Parsing Error HTML:\n%s", html);
 		}
 	}
 	

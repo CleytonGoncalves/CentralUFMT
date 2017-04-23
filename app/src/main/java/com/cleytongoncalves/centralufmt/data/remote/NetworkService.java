@@ -64,17 +64,17 @@ public final class NetworkService {
 				Timber.d("Successful GET Operation on %s", url);
 			} else {
 				result = new NetworkOperation(response.code());
-				Timber.w("Failed GET Operation on %s\nStatus Code: %d\nNetwork Error: %s", url,
+				Timber.d("Failed GET Operation on %s\nStatus Code: %d\nNetwork Error: %s", url,
 				         response.code(), responseBody);
 			}
 			response.close();
 		} catch (UnknownHostException e) {
 			result = new NetworkOperation(NETWORK_IO_ERROR);
-			Timber.i(e, "Failed GET operation on %s - Network Error (Probably not connected)",
+			Timber.d(e, "Failed GET operation on %s - Network Error (Probably not connected)",
 			         url);
 		} catch (IOException e) {
 			result = new NetworkOperation(NETWORK_IO_ERROR);
-			Timber.i(e, "Failed GET operation on %s - I/O Error", url);
+			Timber.d(e, "Failed GET operation on %s - I/O Error", url);
 		} catch (IllegalStateException e) {
 			result = new NetworkOperation(NETWORK_IO_ERROR);
 			Timber.w(e, "Failed GET operation on %s - IllegalState Error", url);
@@ -99,17 +99,17 @@ public final class NetworkService {
 				Timber.d("Successful POST Operation on %s", url);
 			} else {
 				result = new NetworkOperation(response.code());
-				Timber.w("Failed POST Operation on %s\nStatus Code: %d\nNetwork Error: %s", url,
+				Timber.d("Failed POST Operation on %s\nStatus Code: %d\nNetwork Error: %s", url,
 				         response.code(), responseBody);
 			}
 			response.close();
 		} catch (UnknownHostException e) {
 			result = new NetworkOperation(NETWORK_IO_ERROR);
-			Timber.i(e, "Failed POST operation on %s - Network Error",
+			Timber.d(e, "Failed POST operation on %s - Network Error",
 			         url);
 		} catch (IOException e) {
 			result = new NetworkOperation(NETWORK_IO_ERROR);
-			Timber.i(e, "Failed POST operation on %s - I/O Error", url);
+			Timber.d(e, "Failed POST operation on %s - I/O Error", url);
 		} catch (IllegalStateException e) {
 			result = new NetworkOperation(NETWORK_IO_ERROR);
 			Timber.w(e, "Failed POST operation on %s - IllegalState Error", url);

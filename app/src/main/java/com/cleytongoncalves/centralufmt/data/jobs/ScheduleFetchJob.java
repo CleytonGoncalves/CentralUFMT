@@ -8,8 +8,9 @@ import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
 import com.cleytongoncalves.centralufmt.data.DataManager;
 import com.cleytongoncalves.centralufmt.data.events.ScheduleFetchEvent;
+import com.cleytongoncalves.centralufmt.data.local.DatabaseHelper;
 import com.cleytongoncalves.centralufmt.data.local.HtmlHelper;
-import com.cleytongoncalves.centralufmt.data.model.Discipline;
+import com.cleytongoncalves.centralufmt.data.model.SubjectClass;
 import com.cleytongoncalves.centralufmt.data.remote.NetworkOperation;
 import com.cleytongoncalves.centralufmt.data.remote.NetworkService;
 import com.cleytongoncalves.centralufmt.injection.component.ApplicationComponent;
@@ -30,12 +31,13 @@ import static com.birbit.android.jobqueue.CancelReason.REACHED_RETRY_LIMIT;
 public final class ScheduleFetchJob extends NetworkJob {
 	public static final String TAG = ScheduleFetchJob.class.getName();
 	private static final int RETRY_LIMIT = 3;
-	private static final int RETRY_DELAY = 150;
+	private static final int RETRY_DELAY = 200;
 	
 	private static final String URL =
 			"http://academico-siga.ufmt.br/www-siga/dll/PlanilhaRgaAutenticada.dll/listaalunos";
 	
 	@Inject DataManager mDataManager;
+	@Inject DatabaseHelper mDatabaseHelper;
 	@Inject Lazy<NetworkService> mNetworkService;
 	
 	public ScheduleFetchJob() {
@@ -52,7 +54,7 @@ public final class ScheduleFetchJob extends NetworkJob {
 	
 	@Override
 	public void onAdded() {
-		Timber.d("Schedule fetch started");
+		Timber.i("Schedule fetch started");
 	}
 	
 	@Override
@@ -68,18 +70,14 @@ public final class ScheduleFetchJob extends NetworkJob {
 		
 		assertNotCancelled();
 		
-		List<Discipline> disciplineList;
-		try {
-			disciplineList = HtmlHelper.parseSchedule(scheduleGet.getResponseBody());
-		} catch (Exception e) {
-			throw new ParsingErrorException(e);
-		}
+		List<SubjectClass> classList = parseSchedule(scheduleGet.getResponseBody());
+		mDatabaseHelper.insertSubjectClassList(classList);
 		
-		ScheduleFetchEvent event = new ScheduleFetchEvent(disciplineList);
+		ScheduleFetchEvent event = new ScheduleFetchEvent(classList);
 		
 		assertNotCancelled();
 		EventBus.getDefault().post(event);
-		Timber.d("ScheduleFetchJob fetch successful");
+		Timber.i("Schedule fetch successful");
 	}
 	
 	@Override
@@ -90,19 +88,19 @@ public final class ScheduleFetchJob extends NetworkJob {
 			case REACHED_RETRY_LIMIT:
 				EventBus.getDefault()
 				        .post(new ScheduleFetchEvent(ScheduleFetchEvent.GENERAL_ERROR));
-				Timber.d("%s - Reached Retry Limit", msg);
+				Timber.i("%s - Reached Retry Limit", msg);
 				break;
 			case CANCELLED_VIA_SHOULD_RE_RUN:
 				EventBus.getDefault()
 				        .post(new ScheduleFetchEvent(ScheduleFetchEvent.GENERAL_ERROR));
 				if (isAuthenticationException(throwable)) {
-					Timber.d("%s - Not logged in on Siga", msg);
+					Timber.i("%s - Not logged in on Siga", msg);
 				} else {
-					Timber.d("%s - HTTP Status 400 (Client Error)", msg);
+					Timber.i("%s - HTTP Status 400 (Client Error)", msg);
 				}
 				break;
 			case CANCELLED_WHILE_RUNNING:
-				Timber.d("%s - Job Cancelled", msg);
+				Timber.i("%s - Job Cancelled", msg);
 				break;
 		}
 	}
@@ -125,9 +123,20 @@ public final class ScheduleFetchJob extends NetworkJob {
 		return RETRY_LIMIT;
 	}
 	
+	private List<SubjectClass> parseSchedule(String html) throws ParsingErrorException {
+		List<SubjectClass> classList;
+		try {
+			classList = HtmlHelper.parseSchedule(html);
+		} catch (Exception e) {
+			throw new ParsingErrorException(e, html);
+		}
+		
+		return classList;
+	}
+	
 	private void assertLoggedInSiga() {
 		if (! mDataManager.isLoggedInSiga()) {
-			throw new AuthenticationErrorException();
+			throw new AuthenticationErrorException("Not logged on Siga before fetching schedule");
 		}
 	}
 	

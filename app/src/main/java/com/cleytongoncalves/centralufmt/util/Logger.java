@@ -55,15 +55,18 @@ public final class Logger {
 			}
 			
 			@Override
+			public void v(String text, Object... args) {
+			}
+			
+			@Override
 			public void d(String text, Object... args) {
-				//Timber.d(text, args); //Too much text pollution
 			}
 			
 			@Override
 			public void e(Throwable t, String text, Object... args) {
 				if (t instanceof JobExitingException) {
-					//prevents from printing an error on expected Job exceptions
-					Timber.i(t, text, args);
+					//prevents from printing as error on expected Job exceptions
+					Timber.d(t, text, args);
 				} else {
 					Timber.e(t, text, args);
 				}
@@ -72,10 +75,6 @@ public final class Logger {
 			@Override
 			public void e(String text, Object... args) {
 				Timber.e(text, args);
-			}
-			
-			@Override
-			public void v(String text, Object... args) {
 			}
 		};
 	}
