@@ -4,6 +4,7 @@ import com.cleytongoncalves.centralufmt.data.model.Course;
 import com.cleytongoncalves.centralufmt.data.model.Student;
 import com.cleytongoncalves.centralufmt.data.model.Subject;
 import com.cleytongoncalves.centralufmt.data.model.SubjectClass;
+import com.cleytongoncalves.centralufmt.util.Pair;
 import com.cleytongoncalves.centralufmt.util.TextUtil;
 
 import org.joda.time.DateTime;
@@ -106,6 +107,8 @@ public final class HtmlHelper {
 				status = Subject.FUTURE;
 			} else if ("Matriculada".equals(statusText)) {
 				status = Subject.ENROLLED;
+			} else if (statusText.isEmpty()) {
+				status = Subject.OPTIONAL;
 			} else {
 				status = Subject.PAST;
 			}
@@ -120,11 +123,11 @@ public final class HtmlHelper {
 	public static List<SubjectClass> parseSchedule(String html) throws Exception {
 		Element body = Jsoup.parse(html).body();
 		
-		Elements tables = body.getElementsByTag("table");
+		Elements borderElements = body.getElementsByAttributeValue("border", "1");
 		
-		//17=tabela horarios, 18=total creditos/carga horaria
-		final int scheduleTable = 17;
-		Element horarioTable = tables.get(scheduleTable);
+		//0=tabela horarios
+		final int scheduleTable = 0;
+		Element horarioTable = borderElements.get(scheduleTable);
 		Elements rows = horarioTable.getElementsByTag("tr");
 		
 		List<SubjectClass> classes = new ArrayList<>();
@@ -148,7 +151,9 @@ public final class HtmlHelper {
 			
 			//String periodo = content.get(9).ownText();
 			
-			List<Interval> aulas = parseClassTimes(content, rows, i);
+			Pair<List<Interval>, Integer> pair = parseClassTimes(content, rows, i);
+			List<Interval> aulas = pair.getItem1(); //Lista de aulas
+			i = pair.getItem2(); //Outras materias a partir daqui
 			
 			SubjectClass subjectClass =
 					new SubjectClass(subjectCode, group, room, crd, type, aulas);
@@ -159,8 +164,8 @@ public final class HtmlHelper {
 		return classes;
 	}
 	
-	private static List<Interval> parseClassTimes(Elements content, Elements rows,
-	                                              int pos) throws Exception {
+	private static Pair<List<Interval>, Integer> parseClassTimes(Elements content, Elements rows,
+	                                                             int pos) throws Exception {
 		List<Interval> aulas = new ArrayList<>();
 		
 		DateTimeFormatter fmt = DateTimeFormat.forPattern("EEEEHH:mm").withLocale(LOCALE_PTBR);
@@ -189,7 +194,7 @@ public final class HtmlHelper {
 			}
 		}
 		
-		return aulas;
+		return new Pair<>(aulas, pos);
 	}
 	
 	/* ----- Static Helper Methods ----- */
