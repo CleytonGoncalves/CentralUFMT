@@ -1,23 +1,26 @@
 package com.cleytongoncalves.centralufmt.data.model;
 
 import org.greenrobot.greendao.DaoException;
+import org.greenrobot.greendao.annotation.Convert;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
-import org.greenrobot.greendao.annotation.ToMany;
+import org.greenrobot.greendao.annotation.ToOne;
+import org.greenrobot.greendao.converter.PropertyConverter;
 import org.joda.time.Interval;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-@Entity
+import timber.log.Timber;
+
+@SuppressWarnings("WeakerAccess") @Entity
 public final class SubjectClass {
+	private Long subjectCode;
+	
 	@Id
-	private long id;
-	
-	private long subjectId;
-	
-	private Integer grade;
+	private Long id;
 	
 	private String group;
 	
@@ -25,20 +28,13 @@ public final class SubjectClass {
 	
 	private String crd;
 	
-	private Integer credit;
+	private String type;
 	
-	@ToMany(referencedJoinProperty = "classId")
-	private List<ClassTime> classTimes;
+	@Convert(converter = IntervalListConverter.class, columnType = String.class)
+	private List<Interval> classTimes;
 	
-	public List<Interval> getIntervals() {
-		List<Interval> intervals = new ArrayList<>(classTimes.size());
-		
-		for (int i = 0; i < classTimes.size(); i++) {
-			intervals.add(classTimes.get(i).getInterval());
-		}
-		
-		return intervals;
-	}
+	@ToOne(joinProperty = "subjectCode")
+	private Subject subject;
 	
 	/**
 	 * Used to resolve relations
@@ -46,50 +42,45 @@ public final class SubjectClass {
 	@Generated(hash = 2040040024)
 	private transient DaoSession daoSession;
 	
-	/**
-	 * Used for active entity operations.
-	 */
+	/** Used for active entity operations. */
 	@Generated(hash = 313633891)
 	private transient SubjectClassDao myDao;
 	
-	@Generated(hash = 428791142)
-	public SubjectClass(long id, long subjectId, Integer grade, String group,
-	                    String classroom, String crd, Integer credit) {
-		this.id = id;
-		this.subjectId = subjectId;
-		this.grade = grade;
+	@Generated(hash = 711858396)
+	private transient Long subject__resolvedKey;
+	
+	public SubjectClass(Long subjectCode, String group, String classroom, String crd,
+	                    String type, List<Interval> classTimes) {
+		this.subjectCode = subjectCode;
 		this.group = group;
 		this.classroom = classroom;
 		this.crd = crd;
-		this.credit = credit;
+		this.type = type;
+		this.classTimes = classTimes;
 	}
 	
+	@Generated(hash = 535274261)
+	public SubjectClass(Long subjectCode, Long id, String group, String classroom, String crd,
+	                    String type, List<Interval> classTimes) {
+		this.subjectCode = subjectCode;
+		this.id = id;
+		this.group = group;
+		this.classroom = classroom;
+		this.crd = crd;
+		this.type = type;
+		this.classTimes = classTimes;
+	}
+
 	@Generated(hash = 1949292409)
 	public SubjectClass() {
 	}
 	
-	public long getId() {
-		return this.id;
+	public Long getSubjectId() {
+		return this.subjectCode;
 	}
 	
-	public void setId(long id) {
-		this.id = id;
-	}
-	
-	public long getSubjectId() {
-		return this.subjectId;
-	}
-	
-	public void setSubjectId(long subjectId) {
-		this.subjectId = subjectId;
-	}
-	
-	public Integer getGrade() {
-		return this.grade;
-	}
-	
-	public void setGrade(Integer grade) {
-		this.grade = grade;
+	public void setSubjectId(Long subjectId) {
+		this.subjectCode = subjectId;
 	}
 	
 	public String getGroup() {
@@ -116,14 +107,67 @@ public final class SubjectClass {
 		this.crd = crd;
 	}
 	
-	public Integer getCredit() {
-		return this.credit;
+	public String getType() {
+		return this.type;
 	}
 	
-	public void setCredit(Integer credit) {
-		this.credit = credit;
+	public void setType(String type) {
+		this.type = type;
 	}
 	
+	public List<Interval> getClassTimes() {
+		return this.classTimes != null ? this.classTimes : Collections.emptyList();
+	}
+	
+	public void setClassTimes(List<Interval> classTimes) {
+		this.classTimes = classTimes;
+	}
+	
+	public Long getSubjectCode() {
+		return this.subjectCode;
+	}
+	
+	public void setSubjectCode(Long subjectCode) {
+		this.subjectCode = subjectCode;
+	}
+	
+	public void setId(Long id) {
+		this.id = id;
+	}
+	
+	/**
+	 * To-one relationship, resolved on first access.
+	 */
+	@Generated(hash = 201052022)
+	public Subject getSubject() {
+		Long __key = this.subjectCode;
+		if (subject__resolvedKey == null || ! subject__resolvedKey.equals(__key)) {
+			final DaoSession daoSession = this.daoSession;
+			if (daoSession == null) {
+				throw new DaoException("Entity is detached from DAO context");
+			}
+			SubjectDao targetDao = daoSession.getSubjectDao();
+			Subject subjectNew = targetDao.load(__key);
+			synchronized (this) {
+				subject = subjectNew;
+				subject__resolvedKey = __key;
+			}
+		}
+		return subject;
+	}
+	
+	/**
+	 * called by internal mechanisms, do not call yourself.
+	 */
+	@Generated(hash = 549336497)
+	public void setSubject(Subject subject) {
+		synchronized (this) {
+			this.subject = subject;
+			subjectCode = subject == null ? null : subject.getCode();
+			subject__resolvedKey = subjectCode;
+		}
+	}
+
 	/**
 	 * Convenient call for {@link org.greenrobot.greendao.AbstractDao#delete(Object)}.
 	 * Entity must attached to an entity context.
@@ -135,7 +179,7 @@ public final class SubjectClass {
 		}
 		myDao.delete(this);
 	}
-	
+
 	/**
 	 * Convenient call for {@link org.greenrobot.greendao.AbstractDao#refresh(Object)}.
 	 * Entity must attached to an entity context.
@@ -147,7 +191,7 @@ public final class SubjectClass {
 		}
 		myDao.refresh(this);
 	}
-	
+
 	/**
 	 * Convenient call for {@link org.greenrobot.greendao.AbstractDao#update(Object)}.
 	 * Entity must attached to an entity context.
@@ -160,43 +204,67 @@ public final class SubjectClass {
 		myDao.update(this);
 	}
 	
-	/**
-	 * To-many relationship, resolved on first access (and after reset).
-	 * Changes to to-many relations are not persisted, make changes to the target entity.
-	 */
-	@Generated(hash = 450549024)
-	public List<ClassTime> getClassTimes() {
-		if (classTimes == null) {
-			final DaoSession daoSession = this.daoSession;
-			if (daoSession == null) {
-				throw new DaoException("Entity is detached from DAO context");
-			}
-			ClassTimeDao targetDao = daoSession.getClassTimeDao();
-			List<ClassTime> classTimesNew = targetDao._querySubjectClass_ClassTimes(id);
-			synchronized (this) {
-				if (classTimes == null) {
-					classTimes = classTimesNew;
-				}
-			}
-		}
-		return classTimes;
+	public Long getId() {
+		return this.id;
 	}
 	
-	/**
-	 * Resets a to-many relationship, making the next get call to query for a fresh result.
-	 */
-	@Generated(hash = 1785481954)
-	public synchronized void resetClassTimes() {
-		classTimes = null;
-	}
-	
-	/**
-	 * called by internal mechanisms, do not call yourself.
-	 */
+	/** called by internal mechanisms, do not call yourself. */
 	@Generated(hash = 691510618)
 	public void __setDaoSession(DaoSession daoSession) {
 		this.daoSession = daoSession;
 		myDao = daoSession != null ? daoSession.getSubjectClassDao() : null;
+	}
+	
+	
+	static class IntervalListConverter implements PropertyConverter<List<Interval>, String> {
+		@Override
+		public List<Interval> convertToEntityProperty(String databaseValue) {
+			String[] strArr = databaseValue.split(" && ");
+			List<Interval> list = new ArrayList<>(strArr.length);
+			
+			for (String intervalStr : strArr) {
+				list.add(convertStringToInterval(intervalStr));
+			}
+			
+			return list;
+		}
+		
+		@Override
+		public String convertToDatabaseValue(List<Interval> list) {
+			StringBuilder listStr = new StringBuilder();
+			
+			for (int i = 0, sz = list.size(); i < sz; i++) {
+				if (i != 0) { listStr.append(" && "); }
+				listStr.append(convertIntervalToString(list.get(i)));
+			}
+			
+			return listStr.toString();
+		}
+		
+		private Interval convertStringToInterval(String str) {
+			if (str == null || str.isEmpty()) { return null; }
+			
+			Interval interval = null;
+			try {
+				String[] split = str.split("->");
+				long start = Long.parseLong(split[0]);
+				long end = Long.parseLong(split[1]);
+				interval = new Interval(start, end);
+			} catch (Exception e) {
+				Timber.wtf(e, "Error converting String to Interval.");
+			}
+			
+			return interval;
+		}
+		
+		private String convertIntervalToString(Interval interval) {
+			if (interval == null) { return ""; }
+			
+			long start = interval.getStart().getMillis();
+			long end = interval.getEnd().getMillis();
+			
+			return String.valueOf(start) + "->" + String.valueOf(end);
+		}
 	}
 	
 }

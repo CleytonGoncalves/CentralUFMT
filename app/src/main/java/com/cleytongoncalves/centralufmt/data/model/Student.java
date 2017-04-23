@@ -6,7 +6,7 @@ import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.ToOne;
 
-@Entity
+@SuppressWarnings("WeakerAccess") @Entity
 public class Student {
 	@Id
 	private Long rga;

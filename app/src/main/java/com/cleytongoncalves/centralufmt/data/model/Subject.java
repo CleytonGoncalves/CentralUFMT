@@ -7,6 +7,7 @@ import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Index;
+import org.greenrobot.greendao.annotation.Keep;
 import org.greenrobot.greendao.annotation.NotNull;
 import org.greenrobot.greendao.annotation.ToMany;
 
@@ -14,13 +15,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
-@Entity
+@SuppressWarnings("WeakerAccess") @Entity
 public class Subject {
 	@Retention(RetentionPolicy.SOURCE)
-	@IntDef({ENROLLED, TAKEN, NOT_TAKEN}) @interface Status {}
+	@IntDef({ENROLLED, PAST, FUTURE, OPTIONAL}) @interface Status {}
 	public static final transient int ENROLLED = 1;
-	public static final transient int TAKEN = 2;
-	public static final transient int NOT_TAKEN = 3;
+	public static final transient int PAST = 2;
+	public static final transient int FUTURE = 3;
+	public static final transient int OPTIONAL = 4;
 	
 	private Long courseCode;
 	
@@ -38,8 +40,9 @@ public class Subject {
 	
 	private int status;
 	
-	@ToMany(referencedJoinProperty = "subjectId")
+	@ToMany(referencedJoinProperty = "subjectCode")
 	private List<SubjectClass> classes;
+	
 	/**
 	 * Used to resolve relations
 	 */
@@ -71,9 +74,9 @@ public class Subject {
 		this.term = term;
 		this.status = status;
 	}
-	
+
 	public boolean isOptional() {
-		return "99".equals(term);
+		return status == Subject.OPTIONAL;
 	}
 	
 	public Long getCourseCode() {
@@ -120,8 +123,12 @@ public class Subject {
 	 * To-many relationship, resolved on first access (and after reset).
 	 * Changes to to-many relations are not persisted, make changes to the target entity.
 	 */
-	@Generated(hash = 1000189865)
+	@Keep
 	public List<SubjectClass> getClasses() {
+		if (status != Subject.ENROLLED) {
+			throw new UnsupportedOperationException("Only enrolled subjects have classes");
+		}
+		
 		if (classes == null) {
 			final DaoSession daoSession = this.daoSession;
 			if (daoSession == null) {

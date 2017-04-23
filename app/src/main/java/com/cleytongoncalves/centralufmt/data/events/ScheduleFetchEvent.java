@@ -1,12 +1,12 @@
 package com.cleytongoncalves.centralufmt.data.events;
 
-import com.cleytongoncalves.centralufmt.data.model.Discipline;
+import com.cleytongoncalves.centralufmt.data.model.SubjectClass;
 
 import java.util.List;
 
-public final class ScheduleFetchEvent extends AbstractEvent<List<Discipline>> {
+public final class ScheduleFetchEvent extends AbstractEvent<List<SubjectClass>> {
 	
-	public ScheduleFetchEvent(List<Discipline> result) {
+	public ScheduleFetchEvent(List<SubjectClass> result) {
 		super(result);
 	}
 	
