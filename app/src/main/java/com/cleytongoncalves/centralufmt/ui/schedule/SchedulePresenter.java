@@ -7,7 +7,7 @@ import android.util.SparseArray;
 import com.cleytongoncalves.centralufmt.data.DataManager;
 import com.cleytongoncalves.centralufmt.data.events.ScheduleFetchEvent;
 import com.cleytongoncalves.centralufmt.data.local.PreferencesHelper;
-import com.cleytongoncalves.centralufmt.data.model.Discipline;
+import com.cleytongoncalves.centralufmt.data.model.SubjectClass;
 import com.cleytongoncalves.centralufmt.ui.base.Presenter;
 import com.cleytongoncalves.centralufmt.util.TextUtil;
 
@@ -106,14 +106,14 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 			failureToFetch();
 			return;
 		}
-
-		parseDisciplinesForAdapter(event.getResult());
+		
+		parseSubjectsForAdapter(event.getResult());
 	}
-
-	private void parseDisciplinesForAdapter(List<Discipline> disciplineList) {
+	
+	private void parseSubjectsForAdapter(List<SubjectClass> classList) {
 		if (mView == null) { return; }
-
-		mParserTask = new DataParserTask(disciplineList);
+		
+		mParserTask = new DataParserTask(classList);
 		mParserTask.execute();
 	}
 
@@ -164,11 +164,11 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 
 	
 	private static class DataParserTask extends AsyncTask<Void, Void, Void> {
-		private final List<Discipline> mEnrolled;
+		private final List<SubjectClass> mEnrolled;
 		private int mAmountOfDays;
 		private int mMaxDailyClasses;
-
-		DataParserTask(List<Discipline> enrolled) {
+		
+		DataParserTask(List<SubjectClass> enrolled) {
 			mEnrolled = enrolled;
 		}
 
@@ -200,10 +200,10 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 			mAmountOfDays = MINIMUM_AMOUNT_OF_DAYS;
 			mMaxDailyClasses = 0;
 			for (int i = 0, discListSize = mEnrolled.size(); i < discListSize; i++) {
-				Discipline disc = mEnrolled.get(i);
+				SubjectClass disc = mEnrolled.get(i);
 				List<Interval> classTimes = disc.getClassTimes();
-
-				for (int j = 0, classTimesSize = classTimes.size(); j < classTimesSize; j++) {
+				
+				for (int j = 0, classesSz = classTimes.size(); j < classesSz; j++) {
 					Interval inter = classTimes.get(j);
 					DateTime start = inter.getStart();
 					DateTime end = inter.getEnd();
@@ -213,13 +213,14 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 						//Adds saturday and/or sunday
 						mAmountOfDays = dayOfWeek;
 					}
-
-					String title = TextUtil.capsWordsFirstLetter(disc.getTitle());
+					
+					String title = TextUtil.capsWordsFirstLetter(disc.getSubject().getTitle());
 					title = TextUtil.ellipsizeString(title, MAXIMUM_TITLE_LENGTH);
 
 					String time = start.toString("HH:mm") + " - " + end.toString("HH:mm");
-
-					String room = TextUtil.ellipsizeString(disc.getRoom(), MAXIMUM_ROOM_LENGTH);
+					
+					String room =
+							TextUtil.ellipsizeString(disc.getClassroom(), MAXIMUM_ROOM_LENGTH);
 
 					DisciplineModelView discData =
 							DisciplineModelView.of(dayOfWeek - 1, title, time, room);
