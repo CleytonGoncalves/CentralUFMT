@@ -1,4 +1,4 @@
-package com.cleytongoncalves.centralufmt.data.jobs;
+package com.cleytongoncalves.centralufmt.data.jobs.network;
 
 
 import android.support.annotation.NonNull;

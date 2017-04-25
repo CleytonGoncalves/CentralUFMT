@@ -6,18 +6,18 @@ package com.cleytongoncalves.centralufmt.data.jobs;
  */
 public abstract class JobExitingException extends RuntimeException {
 	
-	JobExitingException() {
+	public JobExitingException() {
 	}
 	
-	JobExitingException(String message) {
+	public JobExitingException(String message) {
 		super(message);
 	}
 	
-	JobExitingException(String message, Throwable cause) {
+	public JobExitingException(String message, Throwable cause) {
 		super(message, cause);
 	}
 	
-	JobExitingException(Throwable cause) {
+	public JobExitingException(Throwable cause) {
 		super(cause);
 	}
 }

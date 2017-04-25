@@ -7,7 +7,7 @@ import android.content.SharedPreferences;
 import com.birbit.android.jobqueue.JobManager;
 import com.birbit.android.jobqueue.config.Configuration;
 import com.cleytongoncalves.centralufmt.CentralUfmt;
-import com.cleytongoncalves.centralufmt.data.jobs.NetworkJob;
+import com.cleytongoncalves.centralufmt.data.jobs.network.NetworkJob;
 import com.cleytongoncalves.centralufmt.data.local.DatabaseHelper;
 import com.cleytongoncalves.centralufmt.data.local.PreferencesHelper;
 import com.cleytongoncalves.centralufmt.data.model.DaoMaster;

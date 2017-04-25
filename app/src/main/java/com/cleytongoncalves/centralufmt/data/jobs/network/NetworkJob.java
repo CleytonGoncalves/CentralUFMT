@@ -1,10 +1,11 @@
-package com.cleytongoncalves.centralufmt.data.jobs;
+package com.cleytongoncalves.centralufmt.data.jobs.network;
 
 import android.support.annotation.IntDef;
 import android.support.annotation.StringDef;
 
 import com.birbit.android.jobqueue.Job;
 import com.birbit.android.jobqueue.Params;
+import com.cleytongoncalves.centralufmt.data.jobs.JobExitingException;
 import com.cleytongoncalves.centralufmt.data.remote.NetworkOperation;
 import com.cleytongoncalves.centralufmt.injection.component.ApplicationComponent;
 import com.cleytongoncalves.centralufmt.util.NetworkUtil;
@@ -16,7 +17,7 @@ import timber.log.Timber;
 
 public abstract class NetworkJob extends Job {
 	@Retention(RetentionPolicy.SOURCE)
-	@IntDef({UI_HIGH, BACKGROUND})
+	@IntDef({UI_HIGH, BACKGROUND, BACKGROUND_HIGH})
 	@interface Priority {}
 	static final int BACKGROUND = 1;
 	static final int BACKGROUND_HIGH = 2;
