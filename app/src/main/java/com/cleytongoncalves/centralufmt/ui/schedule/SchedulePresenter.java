@@ -10,12 +10,12 @@ import com.cleytongoncalves.centralufmt.data.local.PreferencesHelper;
 import com.cleytongoncalves.centralufmt.data.model.SubjectClass;
 import com.cleytongoncalves.centralufmt.ui.base.Presenter;
 import com.cleytongoncalves.centralufmt.util.TextUtil;
+import com.cleytongoncalves.centralufmt.util.TimeInterval;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.joda.time.DateTime;
-import org.joda.time.Interval;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -201,10 +201,10 @@ final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDat
 			mMaxDailyClasses = 0;
 			for (int i = 0, discListSize = mEnrolled.size(); i < discListSize; i++) {
 				SubjectClass disc = mEnrolled.get(i);
-				List<Interval> classTimes = disc.getClassTimes();
+				List<TimeInterval> classTimes = disc.getClassTimes();
 				
 				for (int j = 0, classesSz = classTimes.size(); j < classesSz; j++) {
-					Interval inter = classTimes.get(j);
+					TimeInterval inter = classTimes.get(j);
 					DateTime start = inter.getStart();
 					DateTime end = inter.getEnd();
 

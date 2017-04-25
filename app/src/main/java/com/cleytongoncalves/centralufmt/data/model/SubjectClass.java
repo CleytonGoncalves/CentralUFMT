@@ -1,5 +1,7 @@
 package com.cleytongoncalves.centralufmt.data.model;
 
+import com.cleytongoncalves.centralufmt.util.TimeInterval;
+
 import org.greenrobot.greendao.DaoException;
 import org.greenrobot.greendao.annotation.Convert;
 import org.greenrobot.greendao.annotation.Entity;
@@ -7,13 +9,10 @@ import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.ToOne;
 import org.greenrobot.greendao.converter.PropertyConverter;
-import org.joda.time.Interval;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import timber.log.Timber;
 
 @SuppressWarnings("WeakerAccess") @Entity
 public final class SubjectClass {
@@ -31,7 +30,7 @@ public final class SubjectClass {
 	private String type;
 	
 	@Convert(converter = IntervalListConverter.class, columnType = String.class)
-	private List<Interval> classTimes;
+	private List<TimeInterval> classTimes;
 	
 	@ToOne(joinProperty = "subjectCode")
 	private Subject subject;
@@ -50,7 +49,7 @@ public final class SubjectClass {
 	private transient Long subject__resolvedKey;
 	
 	public SubjectClass(Long subjectCode, String group, String classroom, String crd,
-	                    String type, List<Interval> classTimes) {
+	                    String type, List<TimeInterval> classTimes) {
 		this.subjectCode = subjectCode;
 		this.group = group;
 		this.classroom = classroom;
@@ -59,9 +58,9 @@ public final class SubjectClass {
 		this.classTimes = classTimes;
 	}
 	
-	@Generated(hash = 535274261)
+	@Generated(hash = 540908254)
 	public SubjectClass(Long subjectCode, Long id, String group, String classroom, String crd,
-	                    String type, List<Interval> classTimes) {
+	                    String type, List<TimeInterval> classTimes) {
 		this.subjectCode = subjectCode;
 		this.id = id;
 		this.group = group;
@@ -115,11 +114,11 @@ public final class SubjectClass {
 		this.type = type;
 	}
 	
-	public List<Interval> getClassTimes() {
+	public List<TimeInterval> getClassTimes() {
 		return this.classTimes != null ? this.classTimes : Collections.emptyList();
 	}
 	
-	public void setClassTimes(List<Interval> classTimes) {
+	public void setClassTimes(List<TimeInterval> classTimes) {
 		this.classTimes = classTimes;
 	}
 	
@@ -216,54 +215,31 @@ public final class SubjectClass {
 	}
 	
 	
-	static class IntervalListConverter implements PropertyConverter<List<Interval>, String> {
+	static class IntervalListConverter implements PropertyConverter<List<TimeInterval>, String> {
+		private static final String VAL_SEPARATOR = " & ";
+		
 		@Override
-		public List<Interval> convertToEntityProperty(String databaseValue) {
-			String[] strArr = databaseValue.split(" && ");
-			List<Interval> list = new ArrayList<>(strArr.length);
+		public List<TimeInterval> convertToEntityProperty(String databaseValue) {
+			String[] strArr = databaseValue.split(VAL_SEPARATOR);
+			List<TimeInterval> list = new ArrayList<>(strArr.length);
 			
 			for (String intervalStr : strArr) {
-				list.add(convertStringToInterval(intervalStr));
+				list.add(new TimeInterval(intervalStr));
 			}
 			
 			return list;
 		}
 		
 		@Override
-		public String convertToDatabaseValue(List<Interval> list) {
+		public String convertToDatabaseValue(List<TimeInterval> list) {
 			StringBuilder listStr = new StringBuilder();
 			
 			for (int i = 0, sz = list.size(); i < sz; i++) {
-				if (i != 0) { listStr.append(" && "); }
-				listStr.append(convertIntervalToString(list.get(i)));
+				if (i != 0) { listStr.append(VAL_SEPARATOR); }
+				listStr.append(list.get(i).toString());
 			}
 			
 			return listStr.toString();
-		}
-		
-		private Interval convertStringToInterval(String str) {
-			if (str == null || str.isEmpty()) { return null; }
-			
-			Interval interval = null;
-			try {
-				String[] split = str.split("->");
-				long start = Long.parseLong(split[0]);
-				long end = Long.parseLong(split[1]);
-				interval = new Interval(start, end);
-			} catch (Exception e) {
-				Timber.wtf(e, "Error converting String to Interval.");
-			}
-			
-			return interval;
-		}
-		
-		private String convertIntervalToString(Interval interval) {
-			if (interval == null) { return ""; }
-			
-			long start = interval.getStart().getMillis();
-			long end = interval.getEnd().getMillis();
-			
-			return String.valueOf(start) + "->" + String.valueOf(end);
 		}
 	}
 	

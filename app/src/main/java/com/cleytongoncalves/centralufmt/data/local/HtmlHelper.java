@@ -6,9 +6,9 @@ import com.cleytongoncalves.centralufmt.data.model.Subject;
 import com.cleytongoncalves.centralufmt.data.model.SubjectClass;
 import com.cleytongoncalves.centralufmt.util.Pair;
 import com.cleytongoncalves.centralufmt.util.TextUtil;
+import com.cleytongoncalves.centralufmt.util.TimeInterval;
 
 import org.joda.time.DateTime;
-import org.joda.time.Interval;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.jsoup.Jsoup;
@@ -151,8 +151,8 @@ public final class HtmlHelper {
 			
 			//String periodo = content.get(9).ownText();
 			
-			Pair<List<Interval>, Integer> pair = parseClassTimes(content, rows, i);
-			List<Interval> aulas = pair.getItem1(); //Lista de aulas
+			Pair<List<TimeInterval>, Integer> pair = parseClassTimes(content, rows, i);
+			List<TimeInterval> aulas = pair.getItem1(); //Lista de aulas
 			i = pair.getItem2(); //Outras materias a partir daqui
 			
 			SubjectClass subjectClass =
@@ -164,9 +164,10 @@ public final class HtmlHelper {
 		return classes;
 	}
 	
-	private static Pair<List<Interval>, Integer> parseClassTimes(Elements content, Elements rows,
-	                                                             int pos) throws Exception {
-		List<Interval> aulas = new ArrayList<>();
+	private static Pair<List<TimeInterval>, Integer> parseClassTimes(Elements content,
+	                                                                 Elements rows,
+	                                                                 int pos) throws Exception {
+		List<TimeInterval> aulas = new ArrayList<>();
 		
 		DateTimeFormatter fmt = DateTimeFormat.forPattern("EEEEHH:mm").withLocale(LOCALE_PTBR);
 		boolean keepGoing = true;
@@ -179,7 +180,7 @@ public final class HtmlHelper {
 			DateTime start = fmt.parseDateTime(dia + horaInicio);
 			DateTime end = fmt.parseDateTime(dia + horaFim);
 			
-			Interval interval = new Interval(start, end);
+			TimeInterval interval = new TimeInterval(start, end);
 			aulas.add(interval);
 			
 			if (index + 1 < rows.size()) {

@@ -1,68 +1,66 @@
 package com.cleytongoncalves.centralufmt.util;
 
-import org.joda.time.Instant;
+import org.joda.time.DateTime;
 import org.joda.time.Interval;
-import org.joda.time.LocalTime;
+import org.joda.time.format.DateTimeFormatter;
 
 public final class TimeInterval {
-	private static final Instant CONSTANT = new Instant(0);
-	private final LocalTime start;
-	private final LocalTime end;
+	private static final String STR_SEPARATOR = "->";
 	
-	public TimeInterval(LocalTime start, LocalTime end) {
-		this.start = start;
-		this.end = end;
+	private final Interval mInterval;
+	
+	public TimeInterval(String startStr, String endStr, DateTimeFormatter fmt) {
+		DateTime start = fmt.parseDateTime(startStr);
+		DateTime end = fmt.parseDateTime(endStr);
+		
+		mInterval = new Interval(start, end);
 	}
 	
-	public TimeInterval(String start, String end) {
-		this.start = LocalTime.parse(start);
-		this.end = LocalTime.parse(end);
+	public TimeInterval(DateTime start, DateTime end) {
+		mInterval = new Interval(start, end);
+	}
+	
+	public TimeInterval(String fromToString) {
+		String[] split = fromToString.split(STR_SEPARATOR);
+		long startMillis = Long.parseLong(split[0]);
+		long endMillis = Long.parseLong(split[1]);
+		
+		mInterval = new Interval(startMillis, endMillis);
 	}
 	
 	public boolean overlapsWith(TimeInterval timeInterval) {
-		return this.toInterval().overlaps(timeInterval.toInterval());
+		return mInterval.overlaps(timeInterval.getInterval());
 	}
 	
-	public LocalTime getStart() {
-		return start;
+	public DateTime getStart() {
+		return mInterval.getStart();
 	}
 	
-	public LocalTime getEnd() {
-		return end;
+	public DateTime getEnd() {
+		return mInterval.getEnd();
 	}
 	
 	public boolean isBeforeNow() {
-		return LocalTime.now().isBefore(start);
-	}
-	
-	public boolean isNow() {
-		return ! isBeforeNow() && ! isAfterNow();
+		return mInterval.isBeforeNow();
 	}
 	
 	public boolean isAfterNow() {
-		return LocalTime.now().isAfter(end);
+		return mInterval.isAfterNow();
 	}
 	
-	public boolean isValidJodaInterval() {
-		try {
-			toInterval(); //throws Exception if not valid
-			return true;
-		} catch (IllegalArgumentException e) { return false; }
+	public boolean isNow() {
+		return ! (isBeforeNow() || isAfterNow());
 	}
 	
-	/**
-	 * @return this represented as a proper Interval
-	 * @throws IllegalArgumentException if invalid (end is before start)
-	 */
-	private Interval toInterval() throws IllegalArgumentException {
-		return new Interval(start.toDateTime(CONSTANT), end.toDateTime(CONSTANT));
+	private Interval getInterval() {
+		return mInterval;
 	}
 	
 	@Override
 	public String toString() {
-		return "TimeInterval{" +
-				       "start=" + start +
-				       ", end=" + end +
-				       '}';
+		long start = mInterval.getStartMillis();
+		long end = mInterval.getEndMillis();
+		
+		return String.valueOf(start) + STR_SEPARATOR + String.valueOf(end);
 	}
 }
