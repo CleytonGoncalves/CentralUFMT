@@ -8,6 +8,7 @@ import com.cleytongoncalves.centralufmt.BuildConfig;
 import com.cleytongoncalves.centralufmt.data.model.Course;
 import com.cleytongoncalves.centralufmt.data.model.DaoMaster;
 import com.cleytongoncalves.centralufmt.data.model.DaoSession;
+import com.cleytongoncalves.centralufmt.data.model.Schedule;
 import com.cleytongoncalves.centralufmt.data.model.Student;
 import com.cleytongoncalves.centralufmt.data.model.Subject;
 import com.cleytongoncalves.centralufmt.data.model.SubjectClass;
@@ -93,6 +94,21 @@ public final class DatabaseHelper {
 	@Nullable
 	public List<SubjectClass> getSubjectClassList() {
 		return mDaoSession.getSubjectClassDao().queryBuilder().list();
+	}
+	
+	/* Schedule */
+	
+	public boolean hasSchedule() {
+		return mDaoSession.getScheduleDao().count() >= 1;
+	}
+	
+	public void insertSchedule(final Schedule schedule) {
+		mDaoSession.getScheduleDao().insertOrReplace(schedule);
+	}
+	
+	@Nullable
+	public Schedule getSchedule() {
+		return mDaoSession.getScheduleDao().queryBuilder().unique();
 	}
 	
 	

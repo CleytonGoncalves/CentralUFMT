@@ -1,289 +1,108 @@
 package com.cleytongoncalves.centralufmt.ui.schedule;
 
-import android.os.AsyncTask;
 import android.support.annotation.Nullable;
-import android.util.SparseArray;
 
 import com.cleytongoncalves.centralufmt.data.DataManager;
 import com.cleytongoncalves.centralufmt.data.events.ScheduleFetchEvent;
-import com.cleytongoncalves.centralufmt.data.local.PreferencesHelper;
-import com.cleytongoncalves.centralufmt.data.model.SubjectClass;
+import com.cleytongoncalves.centralufmt.data.local.DatabaseHelper;
 import com.cleytongoncalves.centralufmt.ui.base.Presenter;
-import com.cleytongoncalves.centralufmt.util.TextUtil;
-import com.cleytongoncalves.centralufmt.util.TimeInterval;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.joda.time.DateTime;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import javax.inject.Inject;
 
-import timber.log.Timber;
-
-final class SchedulePresenter implements Presenter<ScheduleMvpView>, ScheduleDataPresenter {
-	private static final int MAXIMUM_TITLE_LENGTH = 25;
-	private static final int MAXIMUM_ROOM_LENGTH = 10;
-	static final int MINIMUM_AMOUNT_OF_DAYS = 5;
-
+final class SchedulePresenter implements Presenter<ScheduleMvpView> {
 	private final DataManager mDataManager;
-	private final PreferencesHelper mPreferencesHelper;
-
+	private final DatabaseHelper mDatabaseHelper;
+	
 	@Nullable private ScheduleMvpView mView;
-	@Nullable private ScheduleAdapter mAdapter;
-
-	@Nullable private DataParserTask mParserTask;
-
+	
+	private boolean mFetchingData;
+	
 	@Inject
-	SchedulePresenter(DataManager dataManager, PreferencesHelper preferencesHelper) {
+	SchedulePresenter(DataManager dataManager, DatabaseHelper databaseHelper) {
 		mDataManager = dataManager;
-		mPreferencesHelper = preferencesHelper;
+		mDatabaseHelper = databaseHelper;
 	}
 
 	/* View Methods */
-
+	
 	@Override
 	public void attachView(ScheduleMvpView mvpView) {
 		mView = mvpView;
 	}
-
+	
 	@Override
 	public void detachView() {
 		mView = null;
-		detachAdapter();
+		//should be here?
 		if (EventBus.getDefault().isRegistered(this)) { EventBus.getDefault().unregister(this); }
-
-		if (mParserTask != null) {
-			mParserTask.cancel(true);
-			mParserTask = null;
-		}
 	}
-
+	
 	void loadSchedule(boolean forceUpdate) {
-		if (isLoadingData()) { return; }
+		if (isFetchingData()) { return; }
 		
-		if (mView != null) {
-			mView.showRecyclerView(false);
-			mView.showProgressBar(true);
-		}
+		showViewDataLoading(true);
+		if (mView != null) { mView.hideSnackIfShown(); }
 		
-		ScheduleData schedule = null;
-		if (! forceUpdate) { schedule = mPreferencesHelper.getSchedule(); }
-		
-		if (schedule == null) {
-			//Fetch -> Parse -> Show
+		if (forceUpdate || ! mDatabaseHelper.hasSchedule()) {
 			EventBus.getDefault().register(this);
 			mDataManager.fetchSchedule();
+			mFetchingData = true;
 		} else {
-			//Show (already parsed)
-			onDataChanged(schedule);
+			displayDataFromDb();
 		}
-	}
-
-	/* Adapter Methods */
-
-	@Override
-	public void attachAdapter(ScheduleAdapter adapter) {
-		mAdapter = adapter;
-	}
-
-	@Override
-	public void detachAdapter() {
-		mAdapter = null;
 	}
 
 	/* Data Methods */
-
+	
 	@Subscribe(threadMode = ThreadMode.MAIN)
 	public void onScheduleFetched(ScheduleFetchEvent event) {
-		if (! event.isSuccessful()) {
-			failureToFetch();
-			return;
-		}
+		EventBus.getDefault().unregister(this);
 		
-		parseSubjectsForAdapter(event.getResult());
+		if (event.isSuccessful()) {
+			onFetchSuccess();
+		} else {
+			onFetchFailure();
+		}
 	}
 	
-	private void parseSubjectsForAdapter(List<SubjectClass> classList) {
+	private void onFetchSuccess() {
+		mFetchingData = false;
+		
+		if (mView != null) { mView.showDataUpdatedSnack(); }
+		displayDataFromDb();
+	}
+	
+	private void onFetchFailure() {
 		if (mView == null) { return; }
 		
-		mParserTask = new DataParserTask(classList);
-		mParserTask.execute();
+		mView.showGeneralErrorSnack();
+		displayDataFromDb(); //display non-updated data if available
 	}
-
-	@Subscribe(threadMode = ThreadMode.MAIN)
-	public void onDataChanged(ScheduleData schedule) {
-		if (mView == null || mAdapter == null) { return; }
-
-		int gridSpan = schedule.getAmountOfDays();
-		if (gridSpan > MINIMUM_AMOUNT_OF_DAYS) { mView.setGridSpanCount(gridSpan); }
-
-		mAdapter.setScheduleData(schedule);
-		mAdapter.notifyDataSetChanged();
-
-		mView.hideSnackIfShown();
-		mView.showProgressBar(false);
-		mView.showRecyclerView(true);
-
-		if (schedule.isEmpty()) {
-			mView.showEmptyScheduleSnack();
-		} else if (isLoadingData()) {
-			mView.showDataUpdatedSnack();
-			mPreferencesHelper.putSchedule(schedule);
-		}
-
-		if (isLoadingData()) {
-			EventBus.getDefault().unregister(this);
-			mParserTask = null;
-		}
-	}
-
-	private void failureToFetch() {
-		EventBus.getDefault().unregister(this);
-
-		if (mView != null) {
-			mView.showProgressBar(false);
-			mView.showGeneralErrorSnack();
-		}
-	}
-
-	/* Private Helper Methods */
 	
-	/**
-	 * @return true, when fetching OR parsing data
-	 */
-	private boolean isLoadingData() {
-		return EventBus.getDefault().isRegistered(this);
-	}
-
-	
-	private static class DataParserTask extends AsyncTask<Void, Void, Void> {
-		private final List<SubjectClass> mEnrolled;
-		private int mAmountOfDays;
-		private int mMaxDailyClasses;
+	private void displayDataFromDb() {
+		if (mView == null) { return; }
 		
-		DataParserTask(List<SubjectClass> enrolled) {
-			mEnrolled = enrolled;
+		if (mDatabaseHelper.hasSchedule()) {
+			mView.updateAdapterData(mDatabaseHelper.getSchedule());
 		}
-
-		@Override
-		protected Void doInBackground(Void... params) {
-			ScheduleData schedule = null;
-
-			if (mEnrolled.isEmpty()) {
-				schedule = ScheduleData.emptySchedule();
-			} else {
-				SparseArray<SortedSet<DisciplineModelView>> rawSchedule = parseToRawSchedule();
-
-				if (! isCancelled()) {
-					List<DisciplineModelView> scheduleList = createListForDisplay(rawSchedule);
-					schedule = ScheduleData.of(mMaxDailyClasses, mAmountOfDays, scheduleList);
-				}
-			}
-
-			Timber.d("Schedule parsed - Canceled: %s", schedule == null);
-			if (schedule != null && ! isCancelled()) { EventBus.getDefault().post(schedule); }
-			return null;
-		}
-
-		private SparseArray<SortedSet<DisciplineModelView>> parseToRawSchedule() {
-		/* Parses the discipline list to a sorted *map* (dayOfWeek -> SortedSet(Starting Hour)) */
-			SparseArray<SortedSet<DisciplineModelView>> rawSchedule =
-					new SparseArray<>(mEnrolled.size()); //Max # of different hours
-
-			mAmountOfDays = MINIMUM_AMOUNT_OF_DAYS;
-			mMaxDailyClasses = 0;
-			for (int i = 0, discListSize = mEnrolled.size(); i < discListSize; i++) {
-				SubjectClass disc = mEnrolled.get(i);
-				List<TimeInterval> classTimes = disc.getClassTimes();
-				
-				for (int j = 0, classesSz = classTimes.size(); j < classesSz; j++) {
-					TimeInterval inter = classTimes.get(j);
-					DateTime start = inter.getStart();
-					DateTime end = inter.getEnd();
-
-					int dayOfWeek = start.getDayOfWeek();
-					if (dayOfWeek > MINIMUM_AMOUNT_OF_DAYS) {
-						//Adds saturday and/or sunday
-						mAmountOfDays = dayOfWeek;
-					}
-					
-					String title = TextUtil.capsWordsFirstLetter(disc.getSubject().getTitle());
-					title = TextUtil.ellipsizeString(title, MAXIMUM_TITLE_LENGTH);
-
-					String time = start.toString("HH:mm") + " - " + end.toString("HH:mm");
-					
-					String room =
-							TextUtil.ellipsizeString(disc.getClassroom(), MAXIMUM_ROOM_LENGTH);
-
-					DisciplineModelView discData =
-							DisciplineModelView.of(dayOfWeek - 1, title, time, room);
-
-					SortedSet<DisciplineModelView> viewSet = rawSchedule.get(start.getHourOfDay());
-					if (viewSet == null) {
-						viewSet = new TreeSet<>();
-						rawSchedule.put(start.getHourOfDay(), viewSet);
-						mMaxDailyClasses++;
-					}
-					viewSet.add(discData);
-				}
-			}
-
-			return rawSchedule;
-		}
-
-		private List<DisciplineModelView> createListForDisplay
-				(SparseArray<SortedSet<DisciplineModelView>> rawSchedule) {
-			/* Creates a list sorted by the necessary adapter order, with emptyItem items on
-			emptyItem
-		classes */
-			List<DisciplineModelView> scheduleList = new ArrayList<>(mAmountOfDays *
-					                                                         mMaxDailyClasses);
-
-			int lastDay = 0;
-			int scheduleSize = rawSchedule.size();
-			for (int i = 0, position = 0; i < scheduleSize; i++) {
-				SortedSet<DisciplineModelView> hourlyData = rawSchedule.valueAt(i);
-
-				int currColumn = 0;
-				for (DisciplineModelView data : hourlyData) {
-					currColumn = position % mAmountOfDays;
-					int nextDataColumn = data.getColumn();
-
-					//Creates fillers until it gets to the correct position
-					if (currColumn < nextDataColumn) {
-						for (; currColumn < nextDataColumn; currColumn++) {
-							scheduleList.add(DisciplineModelView.emptyItem());
-							position++;
-						}
-					} else if (currColumn > nextDataColumn) {
-						int amountOfFillers = (mAmountOfDays - 1) - currColumn; //Finish the line
-						amountOfFillers += nextDataColumn; //plus the amount to get to the next
-						for (int j = 0; j < amountOfFillers; j++) {
-							scheduleList.add(DisciplineModelView.emptyItem());
-							position++;
-						}
-					}
-
-					scheduleList.add(data);
-					position++;
-				}
-
-				lastDay = currColumn;
-			}
-
-			//fills the last line
-			for (; lastDay < mAmountOfDays; ++ lastDay) {
-				scheduleList.add(DisciplineModelView.emptyItem());
-			}
-
-			return Collections.unmodifiableList(scheduleList);
-		}
+		
+		showViewDataLoading(false);
+	}
+	
+	/* Helper Methods */
+	
+	private boolean isFetchingData() {
+		return mFetchingData;
+	}
+	
+	private void showViewDataLoading(boolean isLoading) {
+		if (mView == null) { return; }
+		
+		mView.showRecyclerView(! isLoading);
+		mView.showProgressBar(isLoading);
 	}
 }

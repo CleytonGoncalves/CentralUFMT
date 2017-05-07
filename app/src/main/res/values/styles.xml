@@ -24,12 +24,16 @@
     <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@drawable/background_splash</item>
     </style>
-
-    <style name="dividerLine">
+    
+    <style name="dividerHorizontal">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_marginRight">10dp</item>
-        <item name="android:layout_marginLeft">10dp</item>
-        <item name="android:layout_height">1dp</item>
+        <item name="android:layout_height">1px</item>
+        <item name="android:background">@color/divider</item>
+    </style>
+    
+    <style name="dividerVertical">
+        <item name="android:layout_width">1px</item>
+        <item name="android:layout_height">match_parent</item>
         <item name="android:background">@color/divider</item>
     </style>
 

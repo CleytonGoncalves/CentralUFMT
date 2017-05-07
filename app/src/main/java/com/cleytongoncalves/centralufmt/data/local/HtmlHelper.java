@@ -1,14 +1,13 @@
 package com.cleytongoncalves.centralufmt.data.local;
 
+import com.cleytongoncalves.centralufmt.data.model.ClassTime;
 import com.cleytongoncalves.centralufmt.data.model.Course;
 import com.cleytongoncalves.centralufmt.data.model.Student;
 import com.cleytongoncalves.centralufmt.data.model.Subject;
 import com.cleytongoncalves.centralufmt.data.model.SubjectClass;
 import com.cleytongoncalves.centralufmt.util.Pair;
 import com.cleytongoncalves.centralufmt.util.TextUtil;
-import com.cleytongoncalves.centralufmt.util.TimeInterval;
 
-import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.jsoup.Jsoup;
@@ -151,23 +150,22 @@ public final class HtmlHelper {
 			
 			//String periodo = content.get(9).ownText();
 			
-			Pair<List<TimeInterval>, Integer> pair = parseClassTimes(content, rows, i);
-			List<TimeInterval> aulas = pair.getItem1(); //Lista de aulas
+			Pair<List<ClassTime>, Integer> pair = parseClassTimes(content, rows, i);
+			List<ClassTime> aulas = pair.getItem1(); //Lista de aulas
 			i = pair.getItem2(); //Outras materias a partir daqui
 			
-			SubjectClass subjectClass =
-					new SubjectClass(subjectCode, group, room, crd, type, aulas);
-			
-			classes.add(subjectClass);
+			for (ClassTime currClassTime : aulas) {
+				classes.add(new SubjectClass(subjectCode, group, room, crd, type, currClassTime));
+			}
 		}
 		
 		return classes;
 	}
 	
-	private static Pair<List<TimeInterval>, Integer> parseClassTimes(Elements content,
-	                                                                 Elements rows,
-	                                                                 int pos) throws Exception {
-		List<TimeInterval> aulas = new ArrayList<>();
+	private static Pair<List<ClassTime>, Integer> parseClassTimes(Elements content,
+	                                                              Elements rows,
+	                                                              int pos) throws Exception {
+		List<ClassTime> aulas = new ArrayList<>();
 		
 		DateTimeFormatter fmt = DateTimeFormat.forPattern("EEEEHH:mm").withLocale(LOCALE_PTBR);
 		boolean keepGoing = true;
@@ -176,12 +174,8 @@ public final class HtmlHelper {
 			String horaInicio = content.get(2).ownText();
 			String horaFim = content.get(3).ownText();
 			
-			//Format WED14:30
-			DateTime start = fmt.parseDateTime(dia + horaInicio);
-			DateTime end = fmt.parseDateTime(dia + horaFim);
-			
-			TimeInterval interval = new TimeInterval(start, end);
-			aulas.add(interval);
+			//Format WED13:30, WED15:30
+			aulas.add(new ClassTime(dia + horaInicio, dia + horaFim, fmt));
 			
 			if (index + 1 < rows.size()) {
 				content = rows.get(index + 1).children();

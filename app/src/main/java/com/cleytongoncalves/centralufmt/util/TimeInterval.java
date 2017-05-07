@@ -1,11 +1,13 @@
 package com.cleytongoncalves.centralufmt.util;
 
+import android.support.annotation.NonNull;
+
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.joda.time.format.DateTimeFormatter;
 
-public final class TimeInterval {
-	private static final String STR_SEPARATOR = "->";
+public final class TimeInterval implements Comparable<TimeInterval> {
+	public static final String STR_SEPARATOR = "->";
 	
 	private final Interval mInterval;
 	
@@ -20,11 +22,7 @@ public final class TimeInterval {
 		mInterval = new Interval(start, end);
 	}
 	
-	public TimeInterval(String fromToString) {
-		String[] split = fromToString.split(STR_SEPARATOR);
-		long startMillis = Long.parseLong(split[0]);
-		long endMillis = Long.parseLong(split[1]);
-		
+	public TimeInterval(Long startMillis, Long endMillis) {
 		mInterval = new Interval(startMillis, endMillis);
 	}
 	
@@ -52,7 +50,7 @@ public final class TimeInterval {
 		return ! (isBeforeNow() || isAfterNow());
 	}
 	
-	private Interval getInterval() {
+	public Interval getInterval() {
 		return mInterval;
 	}
 	
@@ -62,5 +60,33 @@ public final class TimeInterval {
 		long end = mInterval.getEndMillis();
 		
 		return String.valueOf(start) + STR_SEPARATOR + String.valueOf(end);
+	}
+	
+	@Override
+	public int compareTo(@NonNull TimeInterval o) {
+		Interval i1 = this.getInterval();
+		Interval i2 = o.getInterval();
+		if (i1.isAfter(i2)) {
+			return 1;
+		} else if (i1.isBefore(i2)) {
+			return - 1;
+		} else {
+			return 0;
+		}
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) { return true; }
+		if (o == null || getClass() != o.getClass()) { return false; }
+		
+		TimeInterval that = (TimeInterval) o;
+		
+		return mInterval.equals(that.mInterval);
+	}
+	
+	@Override
+	public int hashCode() {
+		return mInterval.hashCode();
 	}
 }

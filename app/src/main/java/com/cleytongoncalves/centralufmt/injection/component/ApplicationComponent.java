@@ -9,8 +9,8 @@ import com.cleytongoncalves.centralufmt.data.jobs.network.MenuRuFetchJob;
 import com.cleytongoncalves.centralufmt.data.jobs.network.MoodleLogInJob;
 import com.cleytongoncalves.centralufmt.data.jobs.network.ScheduleFetchJob;
 import com.cleytongoncalves.centralufmt.data.jobs.network.SigaLogInJob;
+import com.cleytongoncalves.centralufmt.data.local.DatabaseHelper;
 import com.cleytongoncalves.centralufmt.data.local.PreferencesHelper;
-import com.cleytongoncalves.centralufmt.data.remote.NetworkService;
 import com.cleytongoncalves.centralufmt.injection.ApplicationContext;
 import com.cleytongoncalves.centralufmt.injection.module.ApplicationModule;
 
@@ -28,11 +28,11 @@ public interface ApplicationComponent {
 	
 	Application application();
 	
-	NetworkService networkService();
-	
 	PreferencesHelper preferencesHelper();
 	
 	DataManager dataManager();
+	
+	DatabaseHelper databaseHelper();
 	
 	void inject(CentralUfmt centralUfmt);
 

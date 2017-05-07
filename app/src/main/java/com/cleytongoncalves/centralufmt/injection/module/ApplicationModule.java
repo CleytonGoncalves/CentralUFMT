@@ -14,7 +14,6 @@ import com.cleytongoncalves.centralufmt.data.model.DaoMaster;
 import com.cleytongoncalves.centralufmt.data.model.DaoSession;
 import com.cleytongoncalves.centralufmt.data.remote.NetworkService;
 import com.cleytongoncalves.centralufmt.injection.ApplicationContext;
-import com.cleytongoncalves.centralufmt.ui.schedule.GsonAdaptersAbstractScheduleData;
 import com.cleytongoncalves.centralufmt.util.Logger;
 import com.cleytongoncalves.centralufmt.util.converter.DateTimeConverter;
 import com.cleytongoncalves.centralufmt.util.converter.IntervalConverter;
@@ -68,7 +67,6 @@ public class ApplicationModule {
 		                        .registerTypeAdapter(LocalDate.class, new LocalDateConverter())
 		                        .registerTypeAdapter(LocalTime.class, new LocalTimeConverter())
 		                        .registerTypeAdapter(Interval.class, new IntervalConverter())
-		                        .registerTypeAdapterFactory(new GsonAdaptersAbstractScheduleData())
 		                        .create();
 	}
 	

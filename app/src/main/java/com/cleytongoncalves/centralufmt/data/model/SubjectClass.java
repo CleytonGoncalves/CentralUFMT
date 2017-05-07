@@ -1,6 +1,6 @@
 package com.cleytongoncalves.centralufmt.data.model;
 
-import com.cleytongoncalves.centralufmt.util.TimeInterval;
+import com.cleytongoncalves.centralufmt.util.converter.DBConverterAsString;
 
 import org.greenrobot.greendao.DaoException;
 import org.greenrobot.greendao.annotation.Convert;
@@ -8,15 +8,13 @@ import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.ToOne;
-import org.greenrobot.greendao.converter.PropertyConverter;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import org.joda.time.Interval;
 
 @SuppressWarnings("WeakerAccess") @Entity
 public final class SubjectClass {
 	private Long subjectCode;
+	
+	private Long scheduleId;
 	
 	@Id
 	private Long id;
@@ -29,8 +27,8 @@ public final class SubjectClass {
 	
 	private String type;
 	
-	@Convert(converter = IntervalListConverter.class, columnType = String.class)
-	private List<TimeInterval> classTimes;
+	@Convert(converter = ClassTimeConverter.class, columnType = String.class)
+	private ClassTime classTime;
 	
 	@ToOne(joinProperty = "subjectCode")
 	private Subject subject;
@@ -49,39 +47,32 @@ public final class SubjectClass {
 	private transient Long subject__resolvedKey;
 	
 	public SubjectClass(Long subjectCode, String group, String classroom, String crd,
-	                    String type, List<TimeInterval> classTimes) {
+	                    String type, ClassTime classTime) {
 		this.subjectCode = subjectCode;
 		this.group = group;
 		this.classroom = classroom;
 		this.crd = crd;
 		this.type = type;
-		this.classTimes = classTimes;
+		this.classTime = classTime;
 	}
 	
-	@Generated(hash = 540908254)
-	public SubjectClass(Long subjectCode, Long id, String group, String classroom, String crd,
-	                    String type, List<TimeInterval> classTimes) {
+	@Generated(hash = 600261141)
+	public SubjectClass(Long subjectCode, Long scheduleId, Long id, String group,
+	                    String classroom, String crd, String type, ClassTime classTime) {
 		this.subjectCode = subjectCode;
+		this.scheduleId = scheduleId;
 		this.id = id;
 		this.group = group;
 		this.classroom = classroom;
 		this.crd = crd;
 		this.type = type;
-		this.classTimes = classTimes;
+		this.classTime = classTime;
 	}
 
 	@Generated(hash = 1949292409)
 	public SubjectClass() {
 	}
-	
-	public Long getSubjectId() {
-		return this.subjectCode;
-	}
-	
-	public void setSubjectId(Long subjectId) {
-		this.subjectCode = subjectId;
-	}
-	
+
 	public String getGroup() {
 		return this.group;
 	}
@@ -112,14 +103,6 @@ public final class SubjectClass {
 	
 	public void setType(String type) {
 		this.type = type;
-	}
-	
-	public List<TimeInterval> getClassTimes() {
-		return this.classTimes != null ? this.classTimes : Collections.emptyList();
-	}
-	
-	public void setClassTimes(List<TimeInterval> classTimes) {
-		this.classTimes = classTimes;
 	}
 	
 	public Long getSubjectCode() {
@@ -154,7 +137,7 @@ public final class SubjectClass {
 		}
 		return subject;
 	}
-	
+
 	/**
 	 * called by internal mechanisms, do not call yourself.
 	 */
@@ -207,6 +190,22 @@ public final class SubjectClass {
 		return this.id;
 	}
 	
+	public Long getScheduleId() {
+		return this.scheduleId;
+	}
+	
+	public void setScheduleId(Long scheduleId) {
+		this.scheduleId = scheduleId;
+	}
+	
+	public ClassTime getClassTime() {
+		return this.classTime;
+	}
+	
+	public void setClassTime(ClassTime classTime) {
+		this.classTime = classTime;
+	}
+
 	/** called by internal mechanisms, do not call yourself. */
 	@Generated(hash = 691510618)
 	public void __setDaoSession(DaoSession daoSession) {
@@ -214,32 +213,21 @@ public final class SubjectClass {
 		myDao = daoSession != null ? daoSession.getSubjectClassDao() : null;
 	}
 	
-	
-	static class IntervalListConverter implements PropertyConverter<List<TimeInterval>, String> {
-		private static final String VAL_SEPARATOR = " & ";
-		
+	static class ClassTimeConverter extends DBConverterAsString<ClassTime> {
 		@Override
-		public List<TimeInterval> convertToEntityProperty(String databaseValue) {
-			String[] strArr = databaseValue.split(VAL_SEPARATOR);
-			List<TimeInterval> list = new ArrayList<>(strArr.length);
-			
-			for (String intervalStr : strArr) {
-				list.add(new TimeInterval(intervalStr));
-			}
-			
-			return list;
+		public ClassTime convertToEntityProperty(String databaseValue) {
+			String[] strArr = databaseValue.split(SEPARATOR);
+			Interval interval = new Interval(Long.parseLong(strArr[0]), Long.parseLong(strArr[1]));
+			return new ClassTime(interval);
 		}
 		
 		@Override
-		public String convertToDatabaseValue(List<TimeInterval> list) {
-			StringBuilder listStr = new StringBuilder();
+		public String convertToDatabaseValue(ClassTime entityProperty) {
+			Interval interval = entityProperty.getInterval();
+			long start = interval.getStartMillis();
+			long end = interval.getEndMillis();
 			
-			for (int i = 0, sz = list.size(); i < sz; i++) {
-				if (i != 0) { listStr.append(VAL_SEPARATOR); }
-				listStr.append(list.get(i).toString());
-			}
-			
-			return listStr.toString();
+			return String.valueOf(start) + SEPARATOR + String.valueOf(end);
 		}
 	}
 	

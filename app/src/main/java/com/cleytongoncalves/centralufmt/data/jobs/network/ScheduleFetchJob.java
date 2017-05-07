@@ -10,6 +10,7 @@ import com.cleytongoncalves.centralufmt.data.DataManager;
 import com.cleytongoncalves.centralufmt.data.events.ScheduleFetchEvent;
 import com.cleytongoncalves.centralufmt.data.local.DatabaseHelper;
 import com.cleytongoncalves.centralufmt.data.local.HtmlHelper;
+import com.cleytongoncalves.centralufmt.data.model.Schedule;
 import com.cleytongoncalves.centralufmt.data.model.SubjectClass;
 import com.cleytongoncalves.centralufmt.data.remote.NetworkOperation;
 import com.cleytongoncalves.centralufmt.data.remote.NetworkService;
@@ -73,7 +74,14 @@ public final class ScheduleFetchJob extends NetworkJob {
 		List<SubjectClass> classList = parseSchedule(scheduleGet.getResponseBody());
 		mDatabaseHelper.insertSubjectClassList(classList);
 		
-		ScheduleFetchEvent event = new ScheduleFetchEvent(classList);
+		Schedule schedule = new Schedule(classList);
+		mDatabaseHelper.insertSchedule(schedule);
+		for (SubjectClass currClass : classList) {
+			currClass.setScheduleId(schedule.getId());
+			currClass.update();
+		}
+		
+		ScheduleFetchEvent event = new ScheduleFetchEvent();
 		
 		assertNotCancelled();
 		EventBus.getDefault().post(event);

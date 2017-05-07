@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 
 import com.cleytongoncalves.centralufmt.data.model.Student;
 import com.cleytongoncalves.centralufmt.data.model.menuru.MenuRu;
-import com.cleytongoncalves.centralufmt.ui.schedule.ScheduleData;
 import com.google.gson.Gson;
 
 import javax.inject.Inject;
@@ -69,20 +68,6 @@ public class PreferencesHelper {
 			return null;
 		}
 		return mGson.fromJson(studentJson, Student.class);
-	}
-	
-	/* Schedule */
-
-	public void putSchedule(ScheduleData schedule) {
-		mSharedPref.edit().putString(PREF_KEY_SCHEDULE_DATA, mGson.toJson(schedule)).apply();
-	}
-
-	@Nullable
-	public ScheduleData getSchedule() {
-		String scheduleJson = mSharedPref.getString(PREF_KEY_SCHEDULE_DATA, null);
-		if (scheduleJson == null) { return null; }
-
-		return mGson.fromJson(scheduleJson, ScheduleData.class);
 	}
 	
 	/* MenuRu */
