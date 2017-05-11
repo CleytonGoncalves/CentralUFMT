@@ -5,7 +5,6 @@ import org.greenrobot.greendao.DaoException;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
-import org.greenrobot.greendao.annotation.Keep;
 import org.greenrobot.greendao.annotation.ToMany;
 
 import java.util.ArrayList;
@@ -58,21 +57,21 @@ public final class Schedule {
 		parseWeekdaysSchedule();
 	}
 	
-	@Keep
+	@Generated(hash = 1136147708)
 	public Schedule(Long id) {
 		this.id = id;
 	}
 	
-	@Keep
+	@Generated(hash = 729319394)
 	public Schedule() {
 	}
-	
+
 	public boolean hasSaturdayClasses() {
-		return saturday.isEmpty();
+		return ! saturday.isEmpty();
 	}
 	
 	public boolean hasSundayClasses() {
-		return sunday.isEmpty();
+		return ! sunday.isEmpty();
 	}
 	
 	public boolean isEmpty() {
@@ -80,7 +79,9 @@ public final class Schedule {
 	}
 	
 	public List<SubjectClass> getWeekdayClasses(int weekdayConstant) {
-		if (allClasses == null) { syncWeekdaysClasses(); }
+		if (allClasses == null) {
+			syncWeekdaysClasses();
+		}
 		
 		switch (weekdayConstant) {
 			case MONDAY:
@@ -98,7 +99,7 @@ public final class Schedule {
 			case SUNDAY:
 				return sunday;
 			default:
-				throw new IllegalArgumentException("Invalid weekday constant");
+				throw new IllegalArgumentException("Invalid weekday constant: " + weekdayConstant);
 		}
 	}
 	
