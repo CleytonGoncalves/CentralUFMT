@@ -18,6 +18,7 @@ import com.cleytongoncalves.centralufmt.injection.component.ApplicationComponent
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -34,8 +35,11 @@ public final class ScheduleFetchJob extends NetworkJob {
 	private static final int RETRY_LIMIT = 3;
 	private static final int RETRY_DELAY = 200;
 	
-	private static final String URL =
+	private static final String URL_ORIG =
 			"http://academico-siga.ufmt.br/www-siga/dll/PlanilhaRgaAutenticada.dll/listaalunos";
+	
+	private static final String URL =
+			"http://www.mocky.io/v2/590d4a5b250000fc00807b05";
 	
 	@Inject DataManager mDataManager;
 	@Inject DatabaseHelper mDatabaseHelper;
@@ -72,9 +76,12 @@ public final class ScheduleFetchJob extends NetworkJob {
 		assertNotCancelled();
 		
 		List<SubjectClass> classList = parseSchedule(scheduleGet.getResponseBody());
+		mDatabaseHelper.clearSubjectClassList();
 		mDatabaseHelper.insertSubjectClassList(classList);
+		Collections.sort(classList);
 		
 		Schedule schedule = new Schedule(classList);
+		mDatabaseHelper.clearSchedule();
 		mDatabaseHelper.insertSchedule(schedule);
 		for (SubjectClass currClass : classList) {
 			currClass.setScheduleId(schedule.getId());

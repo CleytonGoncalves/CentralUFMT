@@ -75,6 +75,10 @@ public final class DatabaseHelper {
 	
 	/* Subject */
 	
+	public void clearSubjectList() {
+		mDaoSession.getSubjectDao().deleteAll();
+	}
+	
 	public void insertSubjectList(final List<Subject> subjects) {
 		mDaoSession.getSubjectDao().insertOrReplaceInTx(Collections.unmodifiableList(subjects));
 	}
@@ -85,6 +89,10 @@ public final class DatabaseHelper {
 	}
 	
 	/* Subject Class */
+	
+	public void clearSubjectClassList() {
+		mDaoSession.getSubjectClassDao().deleteAll();
+	}
 	
 	public void insertSubjectClassList(final List<SubjectClass> subjectClasses) {
 		mDaoSession.getSubjectClassDao()
@@ -97,6 +105,10 @@ public final class DatabaseHelper {
 	}
 	
 	/* Schedule */
+	
+	public void clearSchedule() {
+		mDaoSession.getScheduleDao().deleteAll();
+	}
 	
 	public boolean hasSchedule() {
 		return mDaoSession.getScheduleDao().count() >= 1;
