@@ -3,7 +3,6 @@ package com.cleytongoncalves.centralufmt.data.local;
 import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
 
-import com.cleytongoncalves.centralufmt.data.model.Student;
 import com.cleytongoncalves.centralufmt.data.model.menuru.MenuRu;
 import com.google.gson.Gson;
 
@@ -13,13 +12,13 @@ import javax.inject.Singleton;
 @Singleton
 public class PreferencesHelper {
 	public static final String PREF_FILE_NAME = "central_ufmt_pref_file";
-	private static final String PREF_KEY_STUDENT = "PREF_KEY_STUDENT";
 	private static final String PREF_KEY_RGA = "PREF_KEY_RGA";
 	private static final String PREF_KEY_AUTH = "PREF_KEY_AUTH";
-	private static final String PREF_KEY_SCHEDULE_DATA = "PREF_KEY_SCHEDULE_DATA";
 	private static final String PREF_KEY_ROUTE_OPTION = "PREF_KEY_ROUTE_OPTION";
 	private static final String PREF_KEY_POI_OPTION = "PREF_KEY_POI_OPTION";
 	private static final String PREF_KEY_MENURU = "PREF_KEY_MENURU";
+	private static final String PREF_KEY_SCHEDULE_SATURDAY = "PREF_KEY_SCHEDULE_SATURDAY";
+	private static final String PREF_KEY_SCHEDULE_SUNDAY = "PREF_KEY_SCHEDULE_SUNDAY";
 	
 	private final SharedPreferences mSharedPref;
 	private final Gson mGson;
@@ -54,20 +53,22 @@ public class PreferencesHelper {
 		return auth.length > 0 ? auth : null;
 	}
 	
-	/* Student */
-
-	public void putStudent(Student student) {
-		mSharedPref.edit().putString(PREF_KEY_STUDENT, mGson.toJson(student)).apply();
+	/* Schedule */
+	
+	public void putScheduleShowSaturday(boolean enabled) {
+		mSharedPref.edit().putBoolean(PREF_KEY_SCHEDULE_SATURDAY, enabled).apply();
 	}
-
-	@Nullable
-	public Student getStudent() {
-		String studentJson = mSharedPref.getString(PREF_KEY_STUDENT, null);
-
-		if (studentJson == null) {
-			return null;
-		}
-		return mGson.fromJson(studentJson, Student.class);
+	
+	public boolean getScheduleShowSaturday() {
+		return mSharedPref.getBoolean(PREF_KEY_SCHEDULE_SATURDAY, false);
+	}
+	
+	public void putScheduleShowSunday(boolean enabled) {
+		mSharedPref.edit().putBoolean(PREF_KEY_SCHEDULE_SUNDAY, enabled).apply();
+	}
+	
+	public boolean getScheduleShowSunday() {
+		return mSharedPref.getBoolean(PREF_KEY_SCHEDULE_SUNDAY, false);
 	}
 	
 	/* MenuRu */

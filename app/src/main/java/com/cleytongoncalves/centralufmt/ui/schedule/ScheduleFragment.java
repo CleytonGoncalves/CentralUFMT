@@ -14,32 +14,44 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RadioGroup;
+import android.widget.ToggleButton;
 
 import com.cleytongoncalves.centralufmt.CentralUfmt;
 import com.cleytongoncalves.centralufmt.R;
 import com.cleytongoncalves.centralufmt.data.model.Schedule;
 import com.cleytongoncalves.centralufmt.ui.base.BaseActivity;
 
-import org.joda.time.DateTimeConstants;
-
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 
-public final class ScheduleFragment extends Fragment implements ScheduleMvpView {
+import static org.joda.time.DateTimeConstants.FRIDAY;
+import static org.joda.time.DateTimeConstants.MONDAY;
+import static org.joda.time.DateTimeConstants.SATURDAY;
+import static org.joda.time.DateTimeConstants.SUNDAY;
+import static org.joda.time.DateTimeConstants.THURSDAY;
+import static org.joda.time.DateTimeConstants.TUESDAY;
+import static org.joda.time.DateTimeConstants.WEDNESDAY;
+
+public final class ScheduleFragment extends Fragment implements ScheduleMvpView,
+		                                                                ToggleButton
+				                                                                .OnClickListener {
 	@Inject SchedulePresenter mPresenter;
 	
 	@BindView(R.id.schedule_progress_bar) ContentLoadingProgressBar mProgressBar;
 	@BindView(R.id.schedule_recycler_view) RecyclerView mRecyclerView;
+	@BindView(R.id.schedule_radio_group) RadioGroup mTabRadioGroup;
 	private Unbinder mUnbinder;
 	
-	private ScheduleAdapter mAdapter;
 	private View mRootView;
 	private Snackbar mSnackbar;
 	
-	private int mTabWeekday = DateTimeConstants.MONDAY;
+	private ScheduleAdapter mAdapter;
+	private int mTabWeekday;
 	
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -59,7 +71,17 @@ public final class ScheduleFragment extends Fragment implements ScheduleMvpView 
 		mRecyclerView.setLayoutManager(
 				new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
 		
-		mAdapter = new ScheduleAdapter();
+		mTabRadioGroup.setOnCheckedChangeListener((group, checkedId) -> {
+			for (int i = 0; i < mTabRadioGroup.getChildCount(); i++) {
+				final ToggleButton view = (ToggleButton) mTabRadioGroup.getChildAt(i);
+				view.setChecked(view.getId() == checkedId);
+			}
+		});
+		
+		mTabWeekday = mPresenter.getDefaultWeekday();
+		((ToggleButton) mTabRadioGroup.getChildAt(mTabWeekday - 1)).setChecked(true);
+		
+		mAdapter = new ScheduleAdapter(mTabWeekday);
 		mRecyclerView.setAdapter(mAdapter);
 		
 		mPresenter.loadSchedule(false);
@@ -97,14 +119,64 @@ public final class ScheduleFragment extends Fragment implements ScheduleMvpView 
 		super.onDestroy();
 		CentralUfmt.getRefWatcher(getActivity()).watch(this);
 	}
-
+	
+	@OnClick({R.id.schedule_btn_mon, R.id.schedule_btn_tue, R.id.schedule_btn_wed,
+	          R.id.schedule_btn_thu, R.id.schedule_btn_fri, R.id.schedule_btn_sat,
+	          R.id.schedule_btn_sun})
+	public void onClick(View v) {
+		int id = v.getId();
+		
+		mTabRadioGroup.check(0);
+		mTabRadioGroup.check(id);
+		
+		switch (id) {
+			case R.id.schedule_btn_mon:
+				mTabWeekday = MONDAY;
+				break;
+			case R.id.schedule_btn_tue:
+				mTabWeekday = TUESDAY;
+				break;
+			case R.id.schedule_btn_wed:
+				mTabWeekday = WEDNESDAY;
+				break;
+			case R.id.schedule_btn_thu:
+				mTabWeekday = THURSDAY;
+				break;
+			case R.id.schedule_btn_fri:
+				mTabWeekday = FRIDAY;
+				break;
+			case R.id.schedule_btn_sat:
+				mTabWeekday = SATURDAY;
+				break;
+			case R.id.schedule_btn_sun:
+				mTabWeekday = SUNDAY;
+				break;
+		}
+		
+		updateAdapterWeekday();
+	}
+	
+	private void updateAdapterWeekday() {
+		mAdapter.setWeekday(mTabWeekday);
+		mAdapter.notifyDataSetChanged();
+	}
+	
 	/* MVP Methods */
 	
 	@Override
 	public void updateAdapterData(Schedule schedule) {
-		mAdapter.setWeekday(mTabWeekday);
 		mAdapter.setSchedule(schedule);
 		mAdapter.notifyDataSetChanged();
+	}
+	
+	@Override
+	public void showSaturday(boolean enabled) {
+		mTabRadioGroup.getChildAt(SATURDAY - 1).setVisibility(enabled ? View.VISIBLE : View.GONE);
+	}
+	
+	@Override
+	public void showSunday(boolean enabled) {
+		mTabRadioGroup.getChildAt(SUNDAY - 1).setVisibility(enabled ? View.VISIBLE : View.GONE);
 	}
 	
 	@Override
@@ -152,4 +224,5 @@ public final class ScheduleFragment extends Fragment implements ScheduleMvpView 
 			mSnackbar.dismiss();
 		}
 	}
+	
 }

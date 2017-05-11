@@ -18,4 +18,11 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="card_margin">5dp</dimen>
     <dimen name="card_corner_radius">4dp</dimen>
+    
+    
+    <!-- Workaround "Couldn't resolve resource @id/visible" bug of TextInputLayout -->
+    <!-- http://stackoverflow.com/a/42079386 -->
+    <item name="visible" type="id"/>
+    <item name="masked" type="id"/>
+
 </resources>

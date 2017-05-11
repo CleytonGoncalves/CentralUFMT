@@ -41,6 +41,13 @@
     <string name="snack_reload_schedule">Recarregar</string>
     <string name="snack_empty_schedule">O horário está vazio.</string>
     <string name="snack_dismiss_schedule">@android:string/ok</string>
+    <string name="title_btn_mon">Seg</string>
+    <string name="title_btn_tue">Ter</string>
+    <string name="title_btn_wed">Qua</string>
+    <string name="title_btn_thu">Qui</string>
+    <string name="title_btn_fri">Sex</string>
+    <string name="title_btn_sat">Sáb</string>
+    <string name="title_btn_sun">Dom</string>
 
     <!-- MenuRu Fragment -->
     <string name="title_fragment_menuru">Cardápio</string>

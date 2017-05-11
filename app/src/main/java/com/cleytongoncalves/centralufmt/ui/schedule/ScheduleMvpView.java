@@ -6,6 +6,10 @@ import com.cleytongoncalves.centralufmt.ui.base.MvpView;
 interface ScheduleMvpView extends MvpView {
 	void updateAdapterData(Schedule schedule);
 	
+	void showSaturday(boolean enabled);
+	
+	void showSunday(boolean enabled);
+	
 	void showRecyclerView(boolean enabled);
 	
 	void showProgressBar(boolean enabled);

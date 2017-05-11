@@ -21,14 +21,15 @@ final class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 	private Schedule mSchedule;
 	private int mWeekday;
 	
-	ScheduleAdapter() {
+	ScheduleAdapter(int weekday) {
+		mWeekday = weekday;
 		setHasStableIds(true);
 	}
 	
 	@Override
 	public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 		LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-		return new ClassViewHolder(inflater.inflate(R.layout.schedule_card, parent, false));
+		return new ClassViewHolder(inflater.inflate(R.layout.item_schedule, parent, false));
 	}
 	
 	@Override
@@ -44,7 +45,7 @@ final class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 	
 	@Override
 	public int getItemCount() {
-		if (mSchedule != null) { return getCurrentWeekdayClasses().size(); } else { return 0; }
+		return mSchedule != null ? getCurrentWeekdayClasses().size() : 0;
 	}
 	
 	@Override
