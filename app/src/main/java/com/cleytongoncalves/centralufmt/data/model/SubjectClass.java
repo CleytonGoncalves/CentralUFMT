@@ -1,5 +1,7 @@
 package com.cleytongoncalves.centralufmt.data.model;
 
+import android.support.annotation.NonNull;
+
 import com.cleytongoncalves.centralufmt.util.converter.DBConverterAsString;
 
 import org.greenrobot.greendao.DaoException;
@@ -11,7 +13,7 @@ import org.greenrobot.greendao.annotation.ToOne;
 import org.joda.time.Interval;
 
 @SuppressWarnings("WeakerAccess") @Entity
-public final class SubjectClass {
+public final class SubjectClass implements Comparable<SubjectClass> {
 	private Long subjectCode;
 	
 	private Long scheduleId;
@@ -39,7 +41,9 @@ public final class SubjectClass {
 	@Generated(hash = 2040040024)
 	private transient DaoSession daoSession;
 	
-	/** Used for active entity operations. */
+	/**
+	 * Used for active entity operations.
+	 */
 	@Generated(hash = 313633891)
 	private transient SubjectClassDao myDao;
 	
@@ -68,11 +72,11 @@ public final class SubjectClass {
 		this.type = type;
 		this.classTime = classTime;
 	}
-
+	
 	@Generated(hash = 1949292409)
 	public SubjectClass() {
 	}
-
+	
 	public String getGroup() {
 		return this.group;
 	}
@@ -137,7 +141,7 @@ public final class SubjectClass {
 		}
 		return subject;
 	}
-
+	
 	/**
 	 * called by internal mechanisms, do not call yourself.
 	 */
@@ -149,7 +153,7 @@ public final class SubjectClass {
 			subject__resolvedKey = subjectCode;
 		}
 	}
-
+	
 	/**
 	 * Convenient call for {@link org.greenrobot.greendao.AbstractDao#delete(Object)}.
 	 * Entity must attached to an entity context.
@@ -161,7 +165,7 @@ public final class SubjectClass {
 		}
 		myDao.delete(this);
 	}
-
+	
 	/**
 	 * Convenient call for {@link org.greenrobot.greendao.AbstractDao#refresh(Object)}.
 	 * Entity must attached to an entity context.
@@ -173,7 +177,7 @@ public final class SubjectClass {
 		}
 		myDao.refresh(this);
 	}
-
+	
 	/**
 	 * Convenient call for {@link org.greenrobot.greendao.AbstractDao#update(Object)}.
 	 * Entity must attached to an entity context.
@@ -204,6 +208,11 @@ public final class SubjectClass {
 	
 	public void setClassTime(ClassTime classTime) {
 		this.classTime = classTime;
+	}
+	
+	@Override
+	public int compareTo(@NonNull SubjectClass o) {
+		return this.classTime.compareTo(o.getClassTime());
 	}
 
 	/** called by internal mechanisms, do not call yourself. */
