@@ -7,7 +7,7 @@ import android.support.annotation.Nullable;
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
 import com.cleytongoncalves.centralufmt.data.events.MenuRuFetchEvent;
-import com.cleytongoncalves.centralufmt.data.local.MenuParser;
+import com.cleytongoncalves.centralufmt.data.local.MenuRuParser;
 import com.cleytongoncalves.centralufmt.data.model.menuru.MenuRu;
 import com.cleytongoncalves.centralufmt.data.remote.NetworkOperation;
 import com.cleytongoncalves.centralufmt.data.remote.NetworkService;
@@ -110,7 +110,7 @@ public final class MenuRuFetchJob extends NetworkJob {
 	
 	private MenuRu parseMenuRu(String html) {
 		try {
-			return MenuParser.parse(html);
+			return MenuRuParser.parse(html);
 		} catch (Exception e) {
 			throw new ParsingErrorException(e, html);
 		}

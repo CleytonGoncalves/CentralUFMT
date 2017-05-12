@@ -20,11 +20,11 @@ import java.util.regex.Pattern;
 
 import timber.log.Timber;
 
-public class MenuParser {
+public class MenuRuParser {
 	private static final Charset CHARSET = Charset.forName("UTF-8");
 	private static final char NBSP_CODE = '\u00a0';
-
-	private MenuParser() {
+	
+	private MenuRuParser() {
 	}
 
 	public static MenuRu parse(String pageHtml) throws Exception {
