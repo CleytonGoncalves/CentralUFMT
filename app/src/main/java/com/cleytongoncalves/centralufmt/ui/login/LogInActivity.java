@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,12 +32,15 @@ public final class LogInActivity extends BaseActivity implements LogInMvpView {
 	private static final int MIN_RGA_LENGTH = 8;
 
 	@Inject LogInPresenter mPresenter;
-	@BindView(R.id.rga_text_field) EditText mRgaView;
-	@BindView(R.id.pass_text_field) EditText mPasswordView;
-	@BindView(R.id.button_log_in) Button mLogInButton;
-	@BindView(R.id.progress) ProgressBar mProgressView;
-	@BindView(R.id.button_anonymous_log_in) TextView mAnonymousLogInButton;
-
+	@BindView(R.id.login_rga_edit_text) EditText mRgaView;
+	@BindView(R.id.login_auth_edit_text) EditText mPasswordView;
+	@BindView(R.id.login_button_login) Button mLogInButton;
+	@BindView(R.id.login_button_anonymous_login) TextView mAnonymousLogInButton;
+	
+	@BindView(R.id.login_form_layout) LinearLayout mFormView;
+	@BindView(R.id.login_progress_bar) ProgressBar mProgressView;
+	
+	
 	private boolean mShouldFinishOnStop;
 
 	/**
@@ -97,8 +101,8 @@ public final class LogInActivity extends BaseActivity implements LogInMvpView {
 			super.onBackPressed();
 		}
 	}
-
-	@OnEditorAction(R.id.pass_text_field)
+	
+	@OnEditorAction(R.id.login_auth_edit_text)
 	boolean onPasswordAction(int id) {
 		if (id == R.id.action_login || id == EditorInfo.IME_NULL) {
 			triggerLogIn();
@@ -106,8 +110,8 @@ public final class LogInActivity extends BaseActivity implements LogInMvpView {
 		}
 		return false;
 	}
-
-	@OnClick(R.id.button_log_in)
+	
+	@OnClick(R.id.login_button_login)
 	protected void onLogInClick() {
 		triggerLogIn();
 	}
@@ -156,8 +160,8 @@ public final class LogInActivity extends BaseActivity implements LogInMvpView {
 			mPresenter.logIn(rga, password);
 		}
 	}
-
-	@OnClick(R.id.button_anonymous_log_in)
+	
+	@OnClick(R.id.login_button_anonymous_login)
 	protected void onAnonymousLogInClick() {
 		mPresenter.anonymousLogIn();
 	}
@@ -179,18 +183,13 @@ public final class LogInActivity extends BaseActivity implements LogInMvpView {
 	}
 
 	@Override
-	public void showProgress(boolean show) {
+	public void showProgressBar(boolean show) {
 		mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
 	}
-
+	
 	@Override
-	public void setLogInButtonEnabled(boolean enabled) {
-		mLogInButton.setVisibility(enabled ? View.VISIBLE : View.INVISIBLE);
-	}
-
-	@Override
-	public void setAnonymousLogInEnabled(boolean enabled) {
-		mAnonymousLogInButton.setVisibility(enabled ? View.VISIBLE : View.INVISIBLE);
+	public void showLoginForm(boolean show) {
+		mFormView.setVisibility(show ? View.VISIBLE : View.GONE);
 	}
 
 	@Override

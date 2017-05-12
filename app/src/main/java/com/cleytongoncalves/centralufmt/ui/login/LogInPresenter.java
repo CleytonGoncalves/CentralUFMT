@@ -23,7 +23,7 @@ public final class LogInPresenter implements Presenter<LogInMvpView> {
 		mDataManager = dataManager;
 	}
 	
-	/* View Methods */
+	/* MVP Methods */
 	
 	@Override
 	public void attachView(LogInMvpView mvpView) {
@@ -36,12 +36,12 @@ public final class LogInPresenter implements Presenter<LogInMvpView> {
 		if (EventBus.getDefault().isRegistered(this)) { EventBus.getDefault().unregister(this); }
 	}
 	
+	/* View Methods */
+	
 	void anonymousLogIn() {
 		if (mView == null) { return; }
 		
-		mView.setLogInButtonEnabled(false);
-		mView.setAnonymousLogInEnabled(false);
-		mView.showProgress(true);
+		mView.showLoginForm(false);
 		
 		onLogInSuccess(); //Goes directly to the result
 		Timber.i("Anonymous LogIn");
@@ -49,9 +49,8 @@ public final class LogInPresenter implements Presenter<LogInMvpView> {
 	
 	void logIn(String rga, char[] password) {
 		if (mView != null) {
-			mView.setLogInButtonEnabled(false);
-			mView.setAnonymousLogInEnabled(false);
-			mView.showProgress(true);
+			mView.showLoginForm(false);
+			mView.showProgressBar(true);
 		}
 		
 		EventBus.getDefault().register(this);
@@ -82,16 +81,16 @@ public final class LogInPresenter implements Presenter<LogInMvpView> {
 	private void onLogInSuccess() {
 		if (mView == null) { return; }
 		
-		mView.showProgress(false);
+		mView.showProgressBar(false);
+		
 		mView.onLogInSuccessful();
 	}
 	
 	private void onLogInFailure(int reason) {
 		if (mView == null) { return; }
 		
-		mView.showProgress(false);
-		mView.setLogInButtonEnabled(true);
-		mView.setAnonymousLogInEnabled(true);
+		mView.showProgressBar(false);
+		mView.showLoginForm(true);
 		
 		switch (reason) {
 			case SigaLogInEvent.ACCESS_DENIED:
@@ -104,4 +103,5 @@ public final class LogInPresenter implements Presenter<LogInMvpView> {
 				mView.showGeneralLogInError();
 		}
 	}
+	
 }
