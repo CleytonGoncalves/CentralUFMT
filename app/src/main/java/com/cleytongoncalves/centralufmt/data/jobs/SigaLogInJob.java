@@ -1,4 +1,4 @@
-package com.cleytongoncalves.centralufmt.data.jobs.network;
+package com.cleytongoncalves.centralufmt.data.jobs;
 
 
 import android.support.annotation.NonNull;
@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
 import com.cleytongoncalves.centralufmt.data.events.SigaLogInEvent;
-import com.cleytongoncalves.centralufmt.data.jobs.JobExitingException;
 import com.cleytongoncalves.centralufmt.data.local.DatabaseHelper;
 import com.cleytongoncalves.centralufmt.data.local.HtmlHelper;
 import com.cleytongoncalves.centralufmt.data.model.Course;

@@ -1,11 +1,10 @@
-package com.cleytongoncalves.centralufmt.data.jobs.network;
+package com.cleytongoncalves.centralufmt.data.jobs;
 
 import android.support.annotation.IntDef;
 import android.support.annotation.StringDef;
 
 import com.birbit.android.jobqueue.Job;
 import com.birbit.android.jobqueue.Params;
-import com.cleytongoncalves.centralufmt.data.jobs.JobExitingException;
 import com.cleytongoncalves.centralufmt.data.remote.NetworkOperation;
 import com.cleytongoncalves.centralufmt.injection.component.ApplicationComponent;
 import com.cleytongoncalves.centralufmt.util.NetworkUtil;
