@@ -3,7 +3,6 @@ package com.cleytongoncalves.centralufmt.data;
 import com.birbit.android.jobqueue.JobManager;
 import com.birbit.android.jobqueue.TagConstraint;
 import com.cleytongoncalves.centralufmt.data.events.SigaLogInEvent;
-import com.cleytongoncalves.centralufmt.data.jobs.MenuRuFetchJob;
 import com.cleytongoncalves.centralufmt.data.jobs.MoodleLogInJob;
 import com.cleytongoncalves.centralufmt.data.jobs.ScheduleFetchJob;
 import com.cleytongoncalves.centralufmt.data.jobs.SigaLogInJob;
@@ -115,23 +114,12 @@ public class DataManager {
 		mJobManager.cancelJobsInBackground(null, TagConstraint.ANY, ScheduleFetchJob.TAG);
 	}
 
-	/* ----- Menu RU ----- */
-	
-	public void fetchMenuRu() {
-		mJobManager.addJobInBackground(new MenuRuFetchJob());
-	}
-	
-	private void cancelMenuRuFetch() {
-		mJobManager.cancelJobsInBackground(null, TagConstraint.ANY, MenuRuFetchJob.TAG);
-	}
-	
 	/* ----- Settings - LogOut ----- */
 	
 	public void logOut() {
 		cancelSigaLogIn();
 		cancelMoodleLogIn();
 		cancelScheduleFetch();
-		cancelMenuRuFetch();
 		
 		mPreferencesHelper.clear();
 		mDbHelper.clearDb();

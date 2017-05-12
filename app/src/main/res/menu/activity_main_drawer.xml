@@ -30,10 +30,6 @@
     <group
         android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_menuru"
-            android:icon="@drawable/ic_dining"
-            android:title="@string/title_fragment_menuru"/>
-        <item
             android:id="@+id/nav_map"
             android:icon="@drawable/ic_menu_map"
             android:title="@string/title_fragment_map"/>

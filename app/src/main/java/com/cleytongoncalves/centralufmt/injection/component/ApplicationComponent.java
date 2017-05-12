@@ -5,7 +5,6 @@ import android.content.Context;
 
 import com.cleytongoncalves.centralufmt.CentralUfmt;
 import com.cleytongoncalves.centralufmt.data.DataManager;
-import com.cleytongoncalves.centralufmt.data.jobs.MenuRuFetchJob;
 import com.cleytongoncalves.centralufmt.data.jobs.MoodleLogInJob;
 import com.cleytongoncalves.centralufmt.data.jobs.ScheduleFetchJob;
 import com.cleytongoncalves.centralufmt.data.jobs.SigaLogInJob;
@@ -42,5 +41,4 @@ public interface ApplicationComponent {
 	
 	void inject(ScheduleFetchJob scheduleFetchJob);
 	
-	void inject(MenuRuFetchJob menuRuFetchJob);
 }

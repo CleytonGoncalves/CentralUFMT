@@ -4,7 +4,7 @@ package com.cleytongoncalves.centralufmt.data.jobs;
  * To be subclassed by any exception intentionally used to <b>cancel/retry a job</b>
  * i.e. exceptions, failures, or illegal states
  */
-abstract class JobExitingException extends RuntimeException {
+public abstract class JobExitingException extends RuntimeException {
 	
 	JobExitingException() {
 	}

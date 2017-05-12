@@ -26,7 +26,6 @@ import com.cleytongoncalves.centralufmt.data.DataManager;
 import com.cleytongoncalves.centralufmt.data.model.Student;
 import com.cleytongoncalves.centralufmt.ui.base.BaseActivity;
 import com.cleytongoncalves.centralufmt.ui.map.MapFragment;
-import com.cleytongoncalves.centralufmt.ui.menuru.MenuRuFragment;
 import com.cleytongoncalves.centralufmt.ui.moodle.MoodleFragment;
 import com.cleytongoncalves.centralufmt.ui.schedule.ScheduleFragment;
 import com.cleytongoncalves.centralufmt.ui.settings.SettingsActivity;
@@ -161,8 +160,6 @@ public class MainActivity extends BaseActivity
 				id = R.id.nav_moodle;
 			} else if (fragTag.equals(ScheduleFragment.class.getName())) {
 				id = R.id.nav_schedule;
-			} else if (fragTag.equals(MenuRuFragment.class.getName())) {
-				id = R.id.nav_menuru;
 			}
 
 			title = getFragmentTitle(currFragment);
@@ -186,9 +183,6 @@ public class MainActivity extends BaseActivity
 
 		Fragment fragment;
 		switch (id) {
-			case R.id.nav_menuru:
-				fragment = new MenuRuFragment();
-				break;
 			case R.id.nav_schedule:
 				fragment = new ScheduleFragment();
 				break;
@@ -246,7 +240,7 @@ public class MainActivity extends BaseActivity
 		if (mDataManager.hasStudent()) {
 			Student student = mDataManager.getStudent();
 			mainText.setText(student.getFirstName() + " " + student.getLastName());
-			secondaryText.setText(student.getRga());
+			secondaryText.setText("" + student.getRga());
 		} else {
 			mainText.setText(getString(R.string.not_logged_in));
 			secondaryText.setVisibility(View.INVISIBLE);
@@ -310,8 +304,6 @@ public class MainActivity extends BaseActivity
 			title = getString(R.string.title_fragment_moodle);
 		} else if (fragment instanceof ScheduleFragment) {
 			title = getString(R.string.title_fragment_schedule);
-		} else if (fragment instanceof MenuRuFragment) {
-			title = getString(R.string.title_fragment_menuru);
 		} else {
 			title = mDefaultTitle;
 		}

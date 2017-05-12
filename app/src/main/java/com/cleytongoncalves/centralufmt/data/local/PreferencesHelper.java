@@ -3,9 +3,6 @@ package com.cleytongoncalves.centralufmt.data.local;
 import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
 
-import com.cleytongoncalves.centralufmt.data.model.menuru.MenuRu;
-import com.google.gson.Gson;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -16,17 +13,14 @@ public class PreferencesHelper {
 	private static final String PREF_KEY_AUTH = "PREF_KEY_AUTH";
 	private static final String PREF_KEY_ROUTE_OPTION = "PREF_KEY_ROUTE_OPTION";
 	private static final String PREF_KEY_POI_OPTION = "PREF_KEY_POI_OPTION";
-	private static final String PREF_KEY_MENURU = "PREF_KEY_MENURU";
 	private static final String PREF_KEY_SCHEDULE_SATURDAY = "PREF_KEY_SCHEDULE_SATURDAY";
 	private static final String PREF_KEY_SCHEDULE_SUNDAY = "PREF_KEY_SCHEDULE_SUNDAY";
 	
 	private final SharedPreferences mSharedPref;
-	private final Gson mGson;
 
 	@Inject
-	PreferencesHelper(SharedPreferences sharedPreferences, Gson gson) {
+	PreferencesHelper(SharedPreferences sharedPreferences) {
 		mSharedPref = sharedPreferences;
-		mGson = gson;
 	}
 	
 	/* LogOut*/
@@ -69,20 +63,6 @@ public class PreferencesHelper {
 	
 	public boolean getScheduleShowSunday() {
 		return mSharedPref.getBoolean(PREF_KEY_SCHEDULE_SUNDAY, false);
-	}
-	
-	/* MenuRu */
-
-	public void putMenuRu(MenuRu menuRu) {
-		mSharedPref.edit().putString(PREF_KEY_MENURU, mGson.toJson(menuRu)).apply();
-	}
-
-	@Nullable
-	public MenuRu getMenuRu() {
-		String menuRuJson = mSharedPref.getString(PREF_KEY_MENURU, null);
-		if (menuRuJson == null) { return null; }
-
-		return mGson.fromJson(menuRuJson, MenuRu.class);
 	}
 	
 	/* Map Preferences */
